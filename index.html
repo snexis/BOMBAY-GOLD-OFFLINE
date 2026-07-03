@@ -79,6 +79,7 @@ font-size:28px;
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
 getDatabase,
@@ -87,19 +88,19 @@ onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
-apiKey: "...",
-authDomain: "...",
-databaseURL: "...",
-projectId: "...",
-storageBucket: "...",
-messagingSenderId: "...",
-appId: "..."
+apiKey: "AIzaSyDS5w8TPFVLoy1i-RFJlRaCY_8LG9Xmpuw",
+authDomain: "liveresultboard.firebaseapp.com",
+databaseURL: "https://liveresultboard-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId: "liveresultboard",
+storageBucket: "liveresultboard.firebasestorage.app",
+messagingSenderId: "464276956164",
+appId: "1:464276956164:web:68a0c1b7648e8d9f45c151"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-onValue(ref(db,"results"),(snapshot)=>{
+onValue(ref(db,"results"), (snapshot) => {
 const data = snapshot.val();
 
 if(data){
@@ -108,6 +109,7 @@ document.getElementById("lff").innerText = data.lff || "No Data";
 document.getElementById("mumbai").innerText = data.mumbai || "No Data";
 }
 });
+
 </script>
 </body>
 </html>
