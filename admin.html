@@ -14,7 +14,7 @@ padding:20px;
 }
 
 .container{
-max-width:600px;
+max-width:500px;
 margin:auto;
 }
 
@@ -24,16 +24,15 @@ padding:15px;
 margin:10px 0;
 border:none;
 border-radius:8px;
-font-size:18px;
 }
 
 button{
+width:100%;
 padding:15px;
 background:red;
 color:white;
 border:none;
 cursor:pointer;
-width:100%;
 font-size:18px;
 border-radius:8px;
 }
@@ -58,9 +57,7 @@ opacity:.9;
 </div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
 import {
 getDatabase,
 ref,
@@ -82,24 +79,18 @@ const db = getDatabase(app);
 
 window.saveResult = function(){
 
-const cmm = document.getElementById("mmc").value;
-const lff = document.getElementById("ffl").value;
+const mmc = document.getElementById("mmc").value;
+const ffl = document.getElementById("ffl").value;
 const mumbai = document.getElementById("mumbai").value;
 
 set(ref(db,"results"),{
 mmc:mmc,
 ffl:ffl,
 mumbai:mumbai
-})
-.then(()=>{
-alert("Result Updated Successfully");
-})
-.catch((error)=>{
-alert("Error: " + error.message);
 });
 
+alert("Result Updated Successfully");
 }
-
 </script>
 
 </body>
