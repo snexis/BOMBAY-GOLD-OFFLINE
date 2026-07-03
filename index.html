@@ -61,12 +61,12 @@ font-size:28px;
 
 <div class="card">
 <h2>MMC</h2>
-<div id="mmc" class="result">Loading...</div>
+<div id="cmm" class="result">Loading...</div>
 </div>
 
 <div class="card">
 <h2>FFL</h2>
-<div id="ffl" class="result">Loading...</div>
+<div id="lff" class="result">Loading...</div>
 </div>
 
 <div class="card">
@@ -75,11 +75,9 @@ font-size:28px;
 </div>
 
 </div>
-
 </div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
 getDatabase,
@@ -109,7 +107,7 @@ document.getElementById("lff").innerText = data.lff || "No Data";
 document.getElementById("mumbai").innerText = data.mumbai || "No Data";
 }
 });
-
 </script>
+
 </body>
 </html>
