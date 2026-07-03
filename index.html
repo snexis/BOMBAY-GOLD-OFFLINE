@@ -61,12 +61,12 @@ font-size:28px;
 
 <div class="card">
 <h2>MMC</h2>
-<div id="cmm" class="result">Loading...</div>
+<div id="mmc" class="result">Loading...</div>
 </div>
 
 <div class="card">
 <h2>FFL</h2>
-<div id="lff" class="result">Loading...</div>
+<div id="ffl" class="result">Loading...</div>
 </div>
 
 <div class="card">
@@ -106,8 +106,8 @@ onValue(ref(db,"results"), (snapshot) => {
 const data = snapshot.val();
 
 if(data){
-document.getElementById("cmm").innerText = data.cmm;
-document.getElementById("lff").innerText = data.lff;
+document.getElementById("mmc").innerText = data.cmm;
+document.getElementById("ffl").innerText = data.lff;
 document.getElementById("mumbai").innerText = data.mumbai;
 }
 
