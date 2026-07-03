@@ -49,8 +49,8 @@ opacity:.9;
 
 <h1>Admin Panel</h1>
 
-<input id="cmm" placeholder="CMM Result">
-<input id="lff" placeholder="LFF Result">
+<input id="mmc" placeholder="MMC Result">
+<input id="ffl" placeholder="FFL Result">
 <input id="mumbai" placeholder="Mumbai Result">
 
 <button onclick="saveResult()">Save Result</button>
@@ -87,8 +87,8 @@ const lff = document.getElementById("lff").value;
 const mumbai = document.getElementById("mumbai").value;
 
 set(ref(db,"results"),{
-cmm:cmm,
-lff:lff,
+mmc:mmc,
+ffl:ffl,
 mumbai:mumbai
 })
 .then(()=>{
