@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,10 +13,18 @@ color:white;
 padding:20px;
 }
 
+.container{
+max-width:600px;
+margin:auto;
+}
+
 input{
 width:100%;
 padding:15px;
 margin:10px 0;
+border:none;
+border-radius:8px;
+font-size:18px;
 }
 
 button{
@@ -25,10 +33,19 @@ background:red;
 color:white;
 border:none;
 cursor:pointer;
+width:100%;
+font-size:18px;
+border-radius:8px;
+}
+
+button:hover{
+opacity:.9;
 }
 </style>
 </head>
 <body>
+
+<div class="container">
 
 <h1>Admin Panel</h1>
 
@@ -38,9 +55,12 @@ cursor:pointer;
 
 <button onclick="saveResult()">Save Result</button>
 
+</div>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
 getDatabase,
 ref,
@@ -70,9 +90,13 @@ set(ref(db,"results"),{
 cmm:cmm,
 lff:lff,
 mumbai:mumbai
-});
-
+})
+.then(()=>{
 alert("Result Updated Successfully");
+})
+.catch((error)=>{
+alert("Error: " + error.message);
+});
 
 }
 
