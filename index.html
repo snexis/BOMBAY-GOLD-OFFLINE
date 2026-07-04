@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live Result Board</title>
+<title>Live Dashboard</title>
 
 <style>
 body{
@@ -19,14 +19,34 @@ max-width:1200px;
 margin:auto;
 }
 
-.card{
-background:white;
-color:black;
-padding:20px;
-border-radius:15px;
-margin-bottom:20px;
+.header{
 text-align:center;
-box-shadow:0 10px 20px rgba(0,0,0,.3);
+margin-bottom:20px;
+}
+
+.tabs{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:center;
+margin-bottom:30px;
+}
+
+.tab-btn{
+padding:12px 20px;
+border:none;
+border-radius:10px;
+background:black;
+color:white;
+cursor:pointer;
+}
+
+.section{
+display:none;
+}
+
+.section.active{
+display:block;
 }
 
 .grid{
@@ -35,16 +55,25 @@ grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 gap:20px;
 }
 
+.card{
+background:white;
+color:black;
+padding:20px;
+border-radius:15px;
+text-align:center;
+box-shadow:0 10px 20px rgba(0,0,0,.3);
+}
+
 .result{
-font-size:40px;
+font-size:35px;
 font-weight:bold;
 color:red;
 }
 
-@media(max-width:768px){
-.result{
+.weather{
 font-size:28px;
-}
+font-weight:bold;
+color:blue;
 }
 </style>
 </head>
@@ -52,21 +81,30 @@ font-size:28px;
 
 <div class="container">
 
-<div class="card">
-<h1>🔥 LIVE RESULT BOARD 🔥</h1>
-<p>Realtime Auto Update</p>
+<div class="header">
+<h1>🔥 LIVE DASHBOARD 🔥</h1>
+<p>Realtime + Manual Hybrid System</p>
 </div>
 
+<div class="tabs">
+<button class="tab-btn" onclick="showTab('result')">Result</button>
+<button class="tab-btn" onclick="showTab('cricket')">Cricket</button>
+<button class="tab-btn" onclick="showTab('football')">Football</button>
+<button class="tab-btn" onclick="showTab('weather')">Weather</button>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="section active">
 <div class="grid">
 
 <div class="card">
 <h2>MMC</h2>
-<div id="cmm" class="result">Loading...</div>
+<div id="mmc" class="result">Loading...</div>
 </div>
 
 <div class="card">
 <h2>FFL</h2>
-<div id="lff" class="result">Loading...</div>
+<div id="ffl" class="result">Loading...</div>
 </div>
 
 <div class="card">
@@ -77,7 +115,34 @@ font-size:28px;
 </div>
 </div>
 
+<!-- CRICKET -->
+<div id="cricket" class="section">
+<div class="card">
+<h2>🏏 Live Cricket</h2>
+<div id="cricketScore" class="result">Loading...</div>
+</div>
+</div>
+
+<!-- FOOTBALL -->
+<div id="football" class="section">
+<div class="card">
+<h2>⚽ Live Football</h2>
+<div id="footballScore" class="result">Loading...</div>
+</div>
+</div>
+
+<!-- WEATHER -->
+<div id="weather" class="section">
+<div class="card">
+<h2>🌦 Live Weather</h2>
+<div id="weatherData" class="weather">Loading...</div>
+</div>
+</div>
+
+</div>
+
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
 getDatabase,
@@ -86,13 +151,13 @@ onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyDS5w8TPFVLoy1i-RFJlRaCY_8LG9Xmpuw",
-authDomain: "liveresultboard.firebaseapp.com",
-databaseURL: "https://liveresultboard-default-rtdb.asia-southeast1.firebasedatabase.app",
-projectId: "liveresultboard",
-storageBucket: "liveresultboard.firebasestorage.app",
-messagingSenderId: "464276956164",
-appId: "1:464276956164:web:68a0c1b7648e8d9f45c151"
+apiKey: "YOUR_API_KEY",
+authDomain: "YOUR_AUTH_DOMAIN",
+databaseURL: "YOUR_DATABASE_URL",
+projectId: "YOUR_PROJECT_ID",
+storageBucket: "YOUR_BUCKET",
+messagingSenderId: "YOUR_SENDER_ID",
+appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -102,11 +167,48 @@ onValue(ref(db,"results"), (snapshot) => {
 const data = snapshot.val();
 
 if(data){
-document.getElementById("cmm").innerText = data.cmm || "No Data";
-document.getElementById("lff").innerText = data.lff || "No Data";
+document.getElementById("mmc").innerText = data.mmc || "No Data";
+document.getElementById("ffl").innerText = data.ffl || "No Data";
 document.getElementById("mumbai").innerText = data.mumbai || "No Data";
 }
 });
+
+onValue(ref(db,"manual"), (snapshot) => {
+const data = snapshot.val();
+
+if(data){
+if(data.cricket){
+document.getElementById("cricketScore").innerText = data.cricket;
+}
+if(data.football){
+document.getElementById("footballScore").innerText = data.football;
+}
+if(data.weather){
+document.getElementById("weatherData").innerText = data.weather;
+}
+}
+});
+
+window.showTab = function(tabName){
+document.querySelectorAll(".section").forEach(section=>{
+section.classList.remove("active");
+});
+document.getElementById(tabName).classList.add("active");
+}
+
+async function fetchWeather(){
+try{
+const res = await fetch("https://wttr.in/?format=3");
+const data = await res.text();
+document.getElementById("weatherData").innerText = data;
+}catch{
+document.getElementById("weatherData").innerText = "Weather Error";
+}
+}
+
+setInterval(fetchWeather,30000);
+fetchWeather();
+
 </script>
 
 </body>
