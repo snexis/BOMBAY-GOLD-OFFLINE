@@ -92,8 +92,6 @@ width:100%;
 border-collapse:collapse;
 background:white;
 color:black;
-border-radius:10px;
-overflow:hidden;
 }
 
 th,td{
@@ -117,7 +115,7 @@ color:white;
 
 <div class="header">
 <h1>🔥 ULTIMATE LIVE DASHBOARD 🔥</h1>
-<p>Realtime + Manual + History + Winner System</p>
+<p>Realtime + Manual + Auto Hybrid</p>
 </div>
 
 <div class="tabs">
@@ -192,11 +190,14 @@ color:white;
 <td colspan="2">Loading...</td>
 </tr>
 </tbody>
-
 </table>
 
 </div>
-  <script type="module">
+</div>
+
+</div>
+
+<script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
@@ -214,10 +215,11 @@ storageBucket: "liveresultboard.firebasestorage.app",
 messagingSenderId: "464276956164",
 appId: "1:464276956164:web:68a0c1b7648e8d9f45c151"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+let manualCricket = false;
+let manualFootball = false;
 let manualWeather = false;
 
 onValue(ref(db,"results"), (snapshot)=>{
@@ -234,19 +236,39 @@ onValue(ref(db,"manual"), (snapshot)=>{
 const data = snapshot.val();
 
 if(data){
-document.getElementById("cricketScore").innerText =
-data.cricket || "No Data";
 
-document.getElementById("footballScore").innerText =
-data.football || "No Data";
+if(data.cricket && data.cricket.trim() !== ""){
+manualCricket = true;
+document.getElementById("cricketScore").innerText = data.cricket;
+}else{
+manualCricket = false;
+fetchCricket();
+}
 
-if(data.weather){
+if(data.football && data.football.trim() !== ""){
+manualFootball = true;
+document.getElementById("footballScore").innerText = data.football;
+}else{
+manualFootball = false;
+fetchFootball();
+}
+
+if(data.weather && data.weather.trim() !== ""){
 manualWeather = true;
-document.getElementById("weatherData").innerText =
-data.weather;
+document.getElementById("weatherData").innerText = data.weather;
 }else{
 manualWeather = false;
+fetchWeather();
 }
+
+}else{
+manualCricket = false;
+manualFootball = false;
+manualWeather = false;
+
+fetchCricket();
+fetchFootball();
+fetchWeather();
 }
 });
 
@@ -254,8 +276,7 @@ onValue(ref(db,"winner"), (snapshot)=>{
 const data = snapshot.val();
 
 if(data){
-document.getElementById("winner").innerText =
-data.name || "Waiting...";
+document.getElementById("winner").innerText = data.name || "Waiting...";
 document.getElementById("alertSound").play();
 }
 });
@@ -294,28 +315,29 @@ const res = await fetch("https://wttr.in/?format=3");
 const data = await res.text();
 document.getElementById("weatherData").innerText = data;
 }catch{
-document.getElementById("weatherData").innerText =
-"Weather Error";
+document.getElementById("weatherData").innerText = "Weather Error";
 }
 }
 
 async function fetchCricket(){
+if(manualCricket) return;
+
 try{
 document.getElementById("cricketScore").innerText =
-"Live Cricket Updating...";
+"Auto Cricket Updating...";
 }catch{
-document.getElementById("cricketScore").innerText =
-"Cricket Error";
+document.getElementById("cricketScore").innerText = "Cricket Error";
 }
 }
 
 async function fetchFootball(){
+if(manualFootball) return;
+
 try{
 document.getElementById("footballScore").innerText =
-"Live Football Updating...";
+"Auto Football Updating...";
 }catch{
-document.getElementById("footballScore").innerText =
-"Football Error";
+document.getElementById("footballScore").innerText = "Football Error";
 }
 }
 
@@ -331,6 +353,3 @@ setInterval(fetchFootball,30000);
 
 </body>
 </html>
-</div>
-
-</div>
