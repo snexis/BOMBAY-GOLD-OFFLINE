@@ -93,7 +93,6 @@ color:blue;
 <button class="tab-btn" onclick="showTab('weather')">Weather</button>
 </div>
 
-<!-- RESULT -->
 <div id="result" class="section active">
 <div class="grid">
 
@@ -115,7 +114,6 @@ color:blue;
 </div>
 </div>
 
-<!-- CRICKET -->
 <div id="cricket" class="section">
 <div class="card">
 <h2>🏏 Live Cricket</h2>
@@ -123,7 +121,6 @@ color:blue;
 </div>
 </div>
 
-<!-- FOOTBALL -->
 <div id="football" class="section">
 <div class="card">
 <h2>⚽ Live Football</h2>
@@ -131,7 +128,6 @@ color:blue;
 </div>
 </div>
 
-<!-- WEATHER -->
 <div id="weather" class="section">
 <div class="card">
 <h2>🌦 Live Weather</h2>
@@ -142,7 +138,6 @@ color:blue;
 </div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
 getDatabase,
@@ -177,15 +172,9 @@ onValue(ref(db,"manual"), (snapshot) => {
 const data = snapshot.val();
 
 if(data){
-if(data.cricket){
-document.getElementById("cricketScore").innerText = data.cricket;
-}
-if(data.football){
-document.getElementById("footballScore").innerText = data.football;
-}
-if(data.weather){
-document.getElementById("weatherData").innerText = data.weather;
-}
+document.getElementById("cricketScore").innerText = data.cricket || "No Data";
+document.getElementById("footballScore").innerText = data.football || "No Data";
+document.getElementById("weatherData").innerText = data.weather || "No Data";
 }
 });
 
@@ -194,20 +183,20 @@ document.querySelectorAll(".section").forEach(section=>{
 section.classList.remove("active");
 });
 document.getElementById(tabName).classList.add("active");
-}
+};
 
 async function fetchWeather(){
 try{
 const res = await fetch("https://wttr.in/?format=3");
 const data = await res.text();
 document.getElementById("weatherData").innerText = data;
-}catch{
+}catch(error){
 document.getElementById("weatherData").innerText = "Weather Error";
 }
 }
 
-setInterval(fetchWeather,30000);
 fetchWeather();
+setInterval(fetchWeather,30000);
 
 </script>
 
