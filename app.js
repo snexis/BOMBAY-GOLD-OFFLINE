@@ -7,3 +7,9 @@ onValue(ref(db,"manual"),(snapshot)=>{
     updateManualSports(data);
 
 });
+import {
+
+fetchWeather,
+updateManualWeather
+
+} from "./weather.js";
