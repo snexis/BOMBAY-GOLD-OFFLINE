@@ -1,225 +1,139 @@
-// ==========================
-// UI.JS
-// ==========================
+/**
+ * Professional Live Dashboard V2
+ * File: js/ui.js
+ * Final Version
+ */
 
-// ---------- TAB SYSTEM ----------
+const UI = {
+    /**
+     * Show Loading
+     */
+    showLoader() {
+        const loader = document.getElementById("loader");
+        if (loader) {
+            loader.classList.remove("hidden");
+        }
+    },
 
-window.showTab = function(tabName){
+    /**
+     * Hide Loading
+     */
+    hideLoader() {
+        const loader = document.getElementById("loader");
+        if (loader) {
+            loader.classList.add("hidden");
+        }
+    },
 
-document.querySelectorAll(".section").forEach(section=>{
+    /**
+     * Update Text
+     * @param {string} id
+     * @param {string|number} value
+     */
+    setText(id, value) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = value ?? "--";
+        }
+    },
 
-section.classList.remove("active");
+    /**
+     * Update HTML
+     * @param {string} id
+     * @param {string} html
+     */
+    setHTML(id, html) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.innerHTML = html;
+        }
+    },
 
-});
+    /**
+     * Show Toast
+     * @param {string} message
+     * @param {string} type
+     */
+    toast(message, type = "info") {
 
-const tab=document.getElementById(tabName);
+        const toast = document.createElement("div");
 
-if(tab){
+        toast.className = `
+            fixed
+            bottom-5
+            right-5
+            px-4
+            py-3
+            rounded-xl
+            shadow-lg
+            text-white
+            z-50
+            transition
+            duration-300
+        `;
 
-tab.classList.add("active");
+        switch (type) {
 
-}
+            case "success":
+                toast.classList.add("bg-green-600");
+                break;
 
+            case "error":
+                toast.classList.add("bg-red-600");
+                break;
+
+            case "warning":
+                toast.classList.add("bg-yellow-500");
+                break;
+
+            default:
+                toast.classList.add("bg-blue-600");
+        }
+
+        toast.textContent = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add("opacity-0");
+
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+
+        }, 2500);
+    },
+
+    /**
+     * Format Number
+     * @param {number} num
+     */
+    formatNumber(num) {
+
+        if (num === null || num === undefined || isNaN(num)) {
+            return "--";
+        }
+
+        return Number(num).toLocaleString("en-IN");
+    },
+
+    /**
+     * Format Currency
+     * @param {number} amount
+     */
+    formatCurrency(amount) {
+
+        if (amount === null || amount === undefined || isNaN(amount)) {
+            return "₹0";
+        }
+
+        return new Intl.NumberFormat("en-IN", {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 2
+        }).format(amount);
+    }
 };
 
-// ---------- LOADING ----------
-
-export function showLoading(id){
-
-const el=document.getElementById(id);
-
-if(el){
-
-el.innerHTML="Loading...";
-
-}
-
-}
-
-// ---------- TEXT UPDATE ----------
-
-export function setText(id,text){
-
-const el=document.getElementById(id);
-
-if(el){
-
-el.innerText=text;
-
-}
-
-}
-
-// ---------- RESULT UPDATE ----------
-
-export function updateResult(data){
-
-if(!data) return;
-
-setText("mmc",data.mmc || "--");
-
-setText("ffl",data.ffl || "--");
-
-setText("mumbai",data.mumbai || "--");
-
-}
-
-// ---------- WINNER ----------
-
-export function updateWinner(data){
-
-if(!data) return;
-
-setText("winner",data.name || "Waiting...");
-
-const sound=document.getElementById("alertSound");
-
-if(sound){
-
-sound.play().catch(()=>{});
-
-}
-
-}
-
-// ---------- BANNER ----------
-
-export function updateBanner(data){
-
-if(!data) return;
-
-setText("bannerTitle",data.title || "Ultimate Live Dashboard");
-
-setText("bannerSubtitle",data.subtitle || "");
-
-}
-
-// ---------- ANNOUNCEMENT ----------
-
-export function updateAnnouncement(data){
-
-if(!data) return;
-
-setText("announcement",data.text || "");
-
-}
-
-// ---------- HISTORY ----------
-
-export function updateHistory(data){
-
-const table=document.getElementById("historyTable");
-
-if(!table) return;
-
-let html="";
-
-if(data){
-
-Object.keys(data).reverse().forEach(key=>{
-
-html+=`
-
-<tr>
-
-<td>${data[key].game}</td>
-
-<td>${data[key].result}</td>
-
-</tr>
-
-`;
-
-});
-
-}else{
-
-html=`
-
-<tr>
-
-<td colspan="2">
-
-No History
-
-</td>
-
-</tr>
-
-`;
-
-}
-
-table.innerHTML=html;
-
-}
-
-// ---------- CLOCK ----------
-
-function liveClock(){
-
-const now=new Date();
-
-const time=now.toLocaleTimeString();
-
-const date=now.toLocaleDateString();
-
-const clock=document.getElementById("liveClock");
-
-if(clock){
-
-clock.innerHTML=date+" | "+time;
-
-}
-
-}
-
-liveClock();
-
-setInterval(liveClock,1000);
-
-// ---------- DARK MODE ----------
-
-window.toggleDarkMode=function(){
-
-document.body.classList.toggle("dark");
-
-localStorage.setItem(
-
-"theme",
-
-document.body.classList.contains("dark") ? "dark":"light"
-
-);
-
-};
-
-if(localStorage.getItem("theme")=="dark"){
-
-document.body.classList.add("dark");
-
-}
-
-// ---------- VISITOR ----------
-
-let visitor=localStorage.getItem("visitor");
-
-if(!visitor){
-
-visitor=1;
-
-}else{
-
-visitor=parseInt(visitor)+1;
-
-}
-
-localStorage.setItem("visitor",visitor);
-
-const v=document.getElementById("visitorCount");
-
-if(v){
-
-v.innerText=visitor;
-
-}
+// Global Access
+window.UI = UI;
