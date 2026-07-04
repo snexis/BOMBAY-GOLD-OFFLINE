@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel</title>
+<title>Ultimate Admin Panel</title>
 
 <style>
 body{
@@ -14,7 +14,7 @@ padding:20px;
 }
 
 .container{
-max-width:700px;
+max-width:800px;
 margin:auto;
 }
 
@@ -42,10 +42,15 @@ border-radius:10px;
 cursor:pointer;
 width:100%;
 font-size:18px;
+margin-top:10px;
 }
 
 button:hover{
 opacity:.9;
+}
+
+.hidden{
+display:none;
 }
 </style>
 </head>
@@ -53,23 +58,33 @@ opacity:.9;
 
 <div class="container">
 
-<div class="card">
-<h1>Admin Panel</h1>
-<p>Manual Override System</p>
+<!-- LOGIN -->
+<div class="card" id="loginBox">
+<h1>Admin Login</h1>
+
+<input id="adminPass" type="password" placeholder="Enter Password">
+
+<button onclick="loginAdmin()">Login</button>
 </div>
 
-<!-- Result Inputs -->
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="hidden">
+
+<div class="card">
+<h1>Ultimate Admin Panel</h1>
+<p>Control Full Dashboard</p>
+</div>
+
 <div class="card">
 <h2>Result Update</h2>
 
 <input id="mmc" placeholder="MMC Result">
 <input id="ffl" placeholder="FFL Result">
-<input id="mumbai" placeholder="Mumbai Result">
+<input id="mumbai" placeholder="M Bazar Result">
 
 <button onclick="saveResult()">Save Result</button>
 </div>
 
-<!-- Manual Sports -->
 <div class="card">
 <h2>Manual Live Update</h2>
 
@@ -80,15 +95,40 @@ opacity:.9;
 <button onclick="saveManual()">Save Manual Data</button>
 </div>
 
+<div class="card">
+<h2>Winner Update</h2>
+
+<input id="winnerName" placeholder="Winner Name">
+
+<button onclick="saveWinner()">Save Winner</button>
 </div>
 
+<div class="card">
+<h2>History Update</h2>
+
+<input id="historyGame" placeholder="Game Name">
+<input id="historyResult" placeholder="Game Result">
+
+<button onclick="saveHistory()">Save History</button>
+</div>
+
+<div class="card">
+<h2>System Control</h2>
+
+<button onclick="resetSystem()">Reset All Data</button>
+</div>
+
+</div>
+</div>
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
 getDatabase,
 ref,
-set
+set,
+push,
+remove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
@@ -104,35 +144,76 @@ appId: "1:464276956164:web:68a0c1b7648e8d9f45c151"
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-window.saveResult = function(){
+window.loginAdmin = function(){
+const pass = document.getElementById("adminPass").value;
 
+if(pass === "12345"){
+document.getElementById("loginBox").style.display = "none";
+document.getElementById("adminPanel").classList.remove("hidden");
+}else{
+alert("Wrong Password");
+}
+};
+
+window.saveResult = function(){
 const mmc = document.getElementById("mmc").value;
 const ffl = document.getElementById("ffl").value;
 const mumbai = document.getElementById("mumbai").value;
 
 set(ref(db,"results"),{
-mmc:mmc,
-ffl:ffl,
-mumbai:mumbai
+mmc:mmc || "",
+ffl:ffl || "",
+mumbai:mumbai || ""
 });
 
-alert("Result Updated Successfully");
-}
+alert("Result Updated");
+};
 
 window.saveManual = function(){
-
 const cricket = document.getElementById("cricket").value;
 const football = document.getElementById("football").value;
 const weather = document.getElementById("weather").value;
 
 set(ref(db,"manual"),{
-cricket:cricket,
-football:football,
-weather:weather
+cricket:cricket || "",
+football:football || "",
+weather:weather || ""
 });
 
-alert("Manual Data Updated Successfully");
-}
+alert("Manual Data Updated");
+};
+
+window.saveWinner = function(){
+const winnerName = document.getElementById("winnerName").value;
+
+set(ref(db,"winner"),{
+name:winnerName || ""
+});
+
+alert("Winner Updated");
+};
+
+window.saveHistory = function(){
+const game = document.getElementById("historyGame").value;
+const result = document.getElementById("historyResult").value;
+
+push(ref(db,"history"),{
+game:game || "",
+result:result || ""
+});
+
+alert("History Added");
+};
+
+window.resetSystem = function(){
+
+remove(ref(db,"results"));
+remove(ref(db,"manual"));
+remove(ref(db,"winner"));
+remove(ref(db,"history"));
+
+alert("System Reset Complete");
+};
 
 </script>
 
