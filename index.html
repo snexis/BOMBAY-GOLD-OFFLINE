@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live Dashboard</title>
+<title>Ultimate Live Dashboard</title>
 
 <style>
 body{
@@ -62,6 +62,7 @@ padding:20px;
 border-radius:15px;
 text-align:center;
 box-shadow:0 10px 20px rgba(0,0,0,.3);
+margin-bottom:20px;
 }
 
 .result{
@@ -75,15 +76,48 @@ font-size:28px;
 font-weight:bold;
 color:blue;
 }
+
+.winner{
+font-size:40px;
+color:gold;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+50%{opacity:0;}
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+color:black;
+border-radius:10px;
+overflow:hidden;
+}
+
+th,td{
+padding:15px;
+border:1px solid #ddd;
+}
+
+th{
+background:black;
+color:white;
+}
 </style>
 </head>
 <body>
 
+<audio id="alertSound">
+<source src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" type="audio/mpeg">
+</audio>
+
 <div class="container">
 
 <div class="header">
-<h1>🔥 LIVE DASHBOARD 🔥</h1>
-<p>Realtime + Manual Hybrid System</p>
+<h1>🔥 ULTIMATE LIVE DASHBOARD 🔥</h1>
+<p>Realtime + Manual + History + Winner System</p>
 </div>
 
 <div class="tabs">
@@ -91,6 +125,7 @@ color:blue;
 <button class="tab-btn" onclick="showTab('cricket')">Cricket</button>
 <button class="tab-btn" onclick="showTab('football')">Football</button>
 <button class="tab-btn" onclick="showTab('weather')">Weather</button>
+<button class="tab-btn" onclick="showTab('history')">History</button>
 </div>
 
 <div id="result" class="section active">
@@ -111,6 +146,11 @@ color:blue;
 <div id="mumbai" class="result">Loading...</div>
 </div>
 
+</div>
+
+<div class="card">
+<h2>🏆 Winner</h2>
+<div id="winner" class="winner">Waiting...</div>
 </div>
 </div>
 
@@ -135,9 +175,29 @@ color:blue;
 </div>
 </div>
 
-</div>
+<div id="history" class="section">
+<div class="card">
+<h2>📜 Result History</h2>
 
-<script type="module">
+<table>
+<thead>
+<tr>
+<th>Game</th>
+<th>Result</th>
+</tr>
+</thead>
+
+<tbody id="historyTable">
+<tr>
+<td colspan="2">Loading...</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+  <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
 getDatabase,
@@ -158,7 +218,9 @@ appId: "1:464276956164:web:68a0c1b7648e8d9f45c151"
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-onValue(ref(db,"results"), (snapshot) => {
+let manualWeather = false;
+
+onValue(ref(db,"results"), (snapshot)=>{
 const data = snapshot.val();
 
 if(data){
@@ -168,13 +230,52 @@ document.getElementById("mumbai").innerText = data.mumbai || "No Data";
 }
 });
 
-onValue(ref(db,"manual"), (snapshot) => {
+onValue(ref(db,"manual"), (snapshot)=>{
 const data = snapshot.val();
 
 if(data){
-document.getElementById("cricketScore").innerText = data.cricket || "No Data";
-document.getElementById("footballScore").innerText = data.football || "No Data";
-document.getElementById("weatherData").innerText = data.weather || "No Data";
+document.getElementById("cricketScore").innerText =
+data.cricket || "No Data";
+
+document.getElementById("footballScore").innerText =
+data.football || "No Data";
+
+if(data.weather){
+manualWeather = true;
+document.getElementById("weatherData").innerText =
+data.weather;
+}else{
+manualWeather = false;
+}
+}
+});
+
+onValue(ref(db,"winner"), (snapshot)=>{
+const data = snapshot.val();
+
+if(data){
+document.getElementById("winner").innerText =
+data.name || "Waiting...";
+document.getElementById("alertSound").play();
+}
+});
+
+onValue(ref(db,"history"), (snapshot)=>{
+const data = snapshot.val();
+
+if(data){
+let html = "";
+
+Object.keys(data).forEach((key)=>{
+html += `
+<tr>
+<td>${data[key].game}</td>
+<td>${data[key].result}</td>
+</tr>
+`;
+});
+
+document.getElementById("historyTable").innerHTML = html;
 }
 });
 
@@ -186,19 +287,50 @@ document.getElementById(tabName).classList.add("active");
 };
 
 async function fetchWeather(){
+if(manualWeather) return;
+
 try{
 const res = await fetch("https://wttr.in/?format=3");
 const data = await res.text();
 document.getElementById("weatherData").innerText = data;
-}catch(error){
-document.getElementById("weatherData").innerText = "Weather Error";
+}catch{
+document.getElementById("weatherData").innerText =
+"Weather Error";
+}
+}
+
+async function fetchCricket(){
+try{
+document.getElementById("cricketScore").innerText =
+"Live Cricket Updating...";
+}catch{
+document.getElementById("cricketScore").innerText =
+"Cricket Error";
+}
+}
+
+async function fetchFootball(){
+try{
+document.getElementById("footballScore").innerText =
+"Live Football Updating...";
+}catch{
+document.getElementById("footballScore").innerText =
+"Football Error";
 }
 }
 
 fetchWeather();
+fetchCricket();
+fetchFootball();
+
 setInterval(fetchWeather,30000);
+setInterval(fetchCricket,30000);
+setInterval(fetchFootball,30000);
 
 </script>
 
 </body>
 </html>
+</div>
+
+</div>
