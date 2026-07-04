@@ -31,6 +31,7 @@ padding:15px;
 margin:10px 0;
 border:none;
 border-radius:10px;
+outline:none;
 }
 
 button{
@@ -58,68 +59,56 @@ display:none;
 
 <div class="container">
 
-<!-- LOGIN -->
 <div class="card" id="loginBox">
 <h1>Admin Login</h1>
-
 <input id="adminPass" type="password" placeholder="Enter Password">
-
 <button onclick="loginAdmin()">Login</button>
 </div>
 
-<!-- ADMIN PANEL -->
 <div id="adminPanel" class="hidden">
 
 <div class="card">
 <h1>Ultimate Admin Panel</h1>
-<p>Control Full Dashboard</p>
+<p>Full Dashboard Control</p>
 </div>
 
 <div class="card">
 <h2>Result Update</h2>
-
 <input id="mmc" placeholder="MMC Result">
 <input id="ffl" placeholder="FFL Result">
 <input id="mumbai" placeholder="M Bazar Result">
-
 <button onclick="saveResult()">Save Result</button>
 </div>
 
 <div class="card">
 <h2>Manual Live Update</h2>
-
 <input id="cricket" placeholder="Cricket Score">
 <input id="football" placeholder="Football Score">
 <input id="weather" placeholder="Weather Update">
-
 <button onclick="saveManual()">Save Manual Data</button>
 </div>
 
 <div class="card">
 <h2>Winner Update</h2>
-
 <input id="winnerName" placeholder="Winner Name">
-
 <button onclick="saveWinner()">Save Winner</button>
 </div>
 
 <div class="card">
 <h2>History Update</h2>
-
 <input id="historyGame" placeholder="Game Name">
 <input id="historyResult" placeholder="Game Result">
-
 <button onclick="saveHistory()">Save History</button>
 </div>
 
 <div class="card">
 <h2>System Control</h2>
-
 <button onclick="resetSystem()">Reset All Data</button>
 </div>
 
 </div>
 </div>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -128,7 +117,8 @@ getDatabase,
 ref,
 set,
 push,
-remove
+remove,
+get
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
@@ -144,68 +134,90 @@ appId: "1:464276956164:web:68a0c1b7648e8d9f45c151"
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+if(localStorage.getItem("adminLogin") === "true"){
+document.getElementById("loginBox").style.display = "none";
+document.getElementById("adminPanel").classList.remove("hidden");
+loadOldData();
+}
+
 window.loginAdmin = function(){
 const pass = document.getElementById("adminPass").value;
 
 if(pass === "12345"){
+localStorage.setItem("adminLogin","true");
 document.getElementById("loginBox").style.display = "none";
 document.getElementById("adminPanel").classList.remove("hidden");
+loadOldData();
 }else{
 alert("Wrong Password");
 }
 };
 
+async function loadOldData(){
+
+const resultSnap = await get(ref(db,"results"));
+if(resultSnap.exists()){
+const data = resultSnap.val();
+document.getElementById("mmc").value = data.mmc || "";
+document.getElementById("ffl").value = data.ffl || "";
+document.getElementById("mumbai").value = data.mumbai || "";
+}
+
+const manualSnap = await get(ref(db,"manual"));
+if(manualSnap.exists()){
+const data = manualSnap.val();
+document.getElementById("cricket").value = data.cricket || "";
+document.getElementById("football").value = data.football || "";
+document.getElementById("weather").value = data.weather || "";
+}
+
+const winnerSnap = await get(ref(db,"winner"));
+if(winnerSnap.exists()){
+const data = winnerSnap.val();
+document.getElementById("winnerName").value = data.name || "";
+}
+}
+
 window.saveResult = function(){
-const mmc = document.getElementById("mmc").value;
-const ffl = document.getElementById("ffl").value;
-const mumbai = document.getElementById("mumbai").value;
-
 set(ref(db,"results"),{
-mmc:mmc || "",
-ffl:ffl || "",
-mumbai:mumbai || ""
+mmc: document.getElementById("mmc").value || "",
+ffl: document.getElementById("ffl").value || "",
+mumbai: document.getElementById("mumbai").value || ""
 });
-
-alert("Result Updated");
+alert("Result Updated Successfully");
 };
 
 window.saveManual = function(){
-const cricket = document.getElementById("cricket").value;
-const football = document.getElementById("football").value;
-const weather = document.getElementById("weather").value;
-
 set(ref(db,"manual"),{
-cricket:cricket || "",
-football:football || "",
-weather:weather || ""
+cricket: document.getElementById("cricket").value || "",
+football: document.getElementById("football").value || "",
+weather: document.getElementById("weather").value || ""
 });
-
-alert("Manual Data Updated");
+alert("Manual Data Updated Successfully");
 };
 
 window.saveWinner = function(){
-const winnerName = document.getElementById("winnerName").value;
-
 set(ref(db,"winner"),{
-name:winnerName || ""
+name: document.getElementById("winnerName").value || ""
 });
-
-alert("Winner Updated");
+alert("Winner Updated Successfully");
 };
 
 window.saveHistory = function(){
-const game = document.getElementById("historyGame").value;
-const result = document.getElementById("historyResult").value;
-
 push(ref(db,"history"),{
-game:game || "",
-result:result || ""
+game: document.getElementById("historyGame").value || "",
+result: document.getElementById("historyResult").value || ""
 });
 
-alert("History Added");
+document.getElementById("historyGame").value = "";
+document.getElementById("historyResult").value = "";
+
+alert("History Added Successfully");
 };
 
 window.resetSystem = function(){
+
+if(confirm("Are you sure?")){
 
 remove(ref(db,"results"));
 remove(ref(db,"manual"));
@@ -213,6 +225,7 @@ remove(ref(db,"winner"));
 remove(ref(db,"history"));
 
 alert("System Reset Complete");
+}
 };
 
 </script>
