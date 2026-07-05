@@ -1,140 +1,215 @@
-/**
- * ==========================================================
- * Professional Live Dashboard V2
- * File : js/api.js
- * Final Version
- * ==========================================================
- */
+/* ================================================= */
+/* APP STATE */
+/* ================================================= */
 
-const API = (() => {
+const App = {
 
-    // ==============================
-    // Configuration
-    // ==============================
+    initialized: false,
 
-    const CONFIG = {
-        BASE_URL: "",
-        TIMEOUT: 15000
-    };
+    settings: {},
 
-    // ==============================
-    // Generic Request
-    // ==============================
+    liveResults: [],
 
-    async function request(url, options = {}) {
+    oldResults: []
 
-        const controller = new AbortController();
+};
 
-        const timeout = setTimeout(() => {
-            controller.abort();
-        }, CONFIG.TIMEOUT);
 
-        try {
+/* ================================================= */
+/* LOAD WEBSITE SETTINGS */
+/* ================================================= */
 
-            const response = await fetch(CONFIG.BASE_URL + url, {
-                ...options,
-                signal: controller.signal
-            });
+async function initializeSettings() {
 
-            clearTimeout(timeout);
+    try {
 
-            if (!response.ok) {
-                throw new Error(
-                    `HTTP ${response.status} : ${response.statusText}`
-                );
-            }
+        App.settings = await loadSiteSettings();
 
-            return await response.json();
+        applyWebsiteSettings(App.settings);
 
-        } catch (error) {
+    } catch (error) {
 
-            clearTimeout(timeout);
+        console.error("Settings Error :", error);
 
-            console.error("API Error:", error);
-
-            throw error;
-        }
     }
 
-    // ==============================
-    // GET
-    // ==============================
+}
 
-    async function get(url) {
-        return request(url, {
-            method: "GET",
-            headers: {
-                "Accept": "application/json"
-            }
-        });
+
+/* ================================================= */
+/* LOAD SPORTS DATA */
+/* ================================================= */
+
+async function initializeSports() {
+
+    try {
+
+        const data = await Sports.fetch();
+
+        App.liveResults = data.liveResults;
+
+        App.oldResults = data.oldResults;
+
+    } catch (error) {
+
+        console.error("Sports Error :", error);
+
     }
 
-    // ==============================
-    // POST
-    // ==============================
+}
+/* ================================================= */
+/* RENDER LIVE RESULTS */
+/* ================================================= */
 
-    async function post(url, data = {}) {
+function renderLiveResults() {
 
-        return request(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify(data)
-        });
+    const container = document.getElementById("liveResultContainer");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (!App.liveResults.length) {
+
+        container.innerHTML = `
+            <div class="empty-message">
+                No Live Result Available
+            </div>
+        `;
+
+        return;
+
     }
 
-    // ==============================
-    // PUT
-    // ==============================
+    App.liveResults.forEach(result => {
 
-    async function put(url, data = {}) {
+        const card = document.createElement("div");
 
-        return request(url, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify(data)
-        });
+        card.className = "live-result-card";
+
+        card.innerHTML = `
+
+            <h3>${result.game || "-"}</h3>
+
+            <p><strong>Result :</strong> ${result.result || "-"}</p>
+
+            <p><strong>Time :</strong> ${result.time || "-"}</p>
+
+        `;
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+/* ================================================= */
+/* RENDER RESULT TABLE */
+/* ================================================= */
+
+function renderResultTable() {
+
+    const table = document.getElementById("resultTable");
+
+    if (!table) return;
+
+    table.innerHTML = "";
+
+    App.oldResults.forEach(item => {
+
+        table.innerHTML += `
+
+        <tr>
+
+            <td>${item.date || "-"}</td>
+
+            <td>${item.morning || "-"}</td>
+
+            <td>${item.day || "-"}</td>
+
+            <td>${item.night || "-"}</td>
+
+        </tr>
+
+        `;
+
+    });
+
+}
+/* ================================================= */
+/* INITIALIZE APPLICATION */
+/* ================================================= */
+
+async function initializeApp() {
+
+    try {
+
+        showLoader();
+
+        await initializeSettings();
+
+        await initializeSports();
+
+        renderLiveResults();
+
+        renderResultTable();
+
+        hideLoader();
+
+        App.initialized = true;
+
+        console.log("Application Started Successfully");
+
+    } catch (error) {
+
+        console.error("Application Initialization Error:", error);
+
+        hideLoader();
+
+        showToast("Something went wrong!", "error");
+
     }
 
-    // ==============================
-    // DELETE
-    // ==============================
+}
 
-    async function remove(url) {
 
-        return request(url, {
-            method: "DELETE",
-            headers: {
-                "Accept": "application/json"
-            }
-        });
-    }
+/* ================================================= */
+/* AUTO REFRESH */
+/* ================================================= */
 
-    // ==============================
-    // Public API
-    // ==============================
+function startApplication() {
 
-    return {
+    initializeApp();
 
-        config(config = {}) {
-            Object.assign(CONFIG, config);
-        },
+    Sports.startAutoRefresh(60000);
 
-        get,
+}
 
-        post,
 
-        put,
+/* ================================================= */
+/* PAGE LOAD */
+/* ================================================= */
 
-        delete: remove
-    };
+document.addEventListener("DOMContentLoaded", () => {
 
-})();
+    startApplication();
 
-// Global Access
-window.API = API;
+});
+
+
+/* ================================================= */
+/* WINDOW EVENTS */
+/* ================================================= */
+
+window.addEventListener("online", () => {
+
+    showToast("Internet Connected", "success");
+
+});
+
+window.addEventListener("offline", () => {
+
+    showToast("Internet Disconnected", "error");
+
+});
