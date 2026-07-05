@@ -1,84 +1,254 @@
-// ==========================
-// SPORTS.JS
-// ==========================
+/* ================================================= */
+/* Sports Module Configuration */
+/* ================================================= */
 
-// Manual Mode
-let manualSports = false;
+const SPORTS = {
 
-// Cricket Auto Update
-async function fetchCricket() {
+    apiUrl: "",
 
-    if (manualSports) return;
+    apiKey: "",
+
+    provider: "firebase",
+
+    timeout: 10000
+
+};
+
+
+/* ================================================= */
+/* Sports State */
+/* ================================================= */
+
+const sportsState = {
+
+    liveResults: [],
+
+    oldResults: [],
+
+    lastUpdated: null
+
+};
+
+
+/* ================================================= */
+/* Change API Only Here */
+/* ================================================= */
+
+function setSportsProvider(config = {}) {
+
+    Object.assign(SPORTS, config);
+
+}
+
+
+/* ================================================= */
+/* Get Live Results */
+/* ================================================= */
+
+async function getLiveResults() {
+
+    if (SPORTS.provider === "firebase") {
+
+        return await getCollection(COLLECTIONS.liveResults);
+
+    }
+
+    return [];
+
+}
+
+
+/* ================================================= */
+/* Get Old Results */
+/* ================================================= */
+
+async function getOldResults() {
+
+    if (SPORTS.provider === "firebase") {
+
+        return await getCollection(COLLECTIONS.oldResults);
+
+    }
+
+    return [];
+
+}
+/* ================================================= */
+/* Load Sports Data */
+/* ================================================= */
+
+async function loadSportsData() {
 
     try {
 
-        // এখানে পরে Cricket API যোগ হবে
+        sportsState.liveResults = await getLiveResults();
 
-        document.getElementById("cricketScore").innerText =
-            "No Live Match";
+        sportsState.oldResults = await getOldResults();
 
-    } catch (e) {
+        sportsState.lastUpdated = new Date();
 
-        document.getElementById("cricketScore").innerText =
-            "Cricket Error";
+        return sportsState;
 
-    }
+    } catch (error) {
 
-}
+        console.error("Sports Data Error:", error);
 
-// Football Auto Update
-async function fetchFootball() {
-
-    if (manualSports) return;
-
-    try {
-
-        // এখানে পরে Football API যোগ হবে
-
-        document.getElementById("footballScore").innerText =
-            "No Live Match";
-
-    } catch (e) {
-
-        document.getElementById("footballScore").innerText =
-            "Football Error";
+        return sportsState;
 
     }
 
 }
 
-// Manual Override
 
-export function updateManualSports(data) {
+/* ================================================= */
+/* Find Result By Date */
+/* ================================================= */
 
-    if (!data) return;
+function getResultByDate(date) {
 
-    manualSports = false;
+    return sportsState.oldResults.find(item => item.date === date);
 
-    if (data.cricket) {
+}
 
-        manualSports = true;
 
-        document.getElementById("cricketScore").innerText =
-            data.cricket;
+/* ================================================= */
+/* Get Latest Result */
+/* ================================================= */
+
+function getLatestResult() {
+
+    if (!sportsState.liveResults.length) {
+
+        return null;
 
     }
 
-    if (data.football) {
+    return sportsState.liveResults[0];
 
-        manualSports = true;
+}
 
-        document.getElementById("footballScore").innerText =
-            data.football;
+
+/* ================================================= */
+/* Refresh Sports Data */
+/* ================================================= */
+
+async function refreshSportsData() {
+
+    await loadSportsData();
+
+    return sportsState;
+
+}
+/* ================================================= */
+/* API Adapter */
+/* ================================================= */
+
+async function fetchSportsData() {
+
+    if (SPORTS.provider === "firebase") {
+
+        return await loadSportsData();
+
+    }
+
+    if (SPORTS.provider === "api") {
+
+        const response = await fetch(SPORTS.apiUrl, {
+
+            method: "GET",
+
+            headers: {
+
+                "Authorization": SPORTS.apiKey
+
+            }
+
+        });
+
+        if (!response.ok) {
+
+            throw new Error("API Request Failed");
+
+        }
+
+        const data = await response.json();
+
+        sportsState.liveResults = data.liveResults || [];
+
+        sportsState.oldResults = data.oldResults || [];
+
+        sportsState.lastUpdated = new Date();
+
+        return sportsState;
+
+    }
+
+    return sportsState;
+
+}
+
+
+/* ================================================= */
+/* Auto Refresh */
+/* ================================================= */
+
+let sportsRefreshTimer = null;
+
+function startSportsAutoRefresh(interval = 60000) {
+
+    stopSportsAutoRefresh();
+
+    sportsRefreshTimer = setInterval(async () => {
+
+        try {
+
+            await fetchSportsData();
+
+        } catch (error) {
+
+            console.error("Auto Refresh Error:", error);
+
+        }
+
+    }, interval);
+
+}
+
+function stopSportsAutoRefresh() {
+
+    if (sportsRefreshTimer) {
+
+        clearInterval(sportsRefreshTimer);
+
+        sportsRefreshTimer = null;
 
     }
 
 }
 
-// Start Auto Update
 
-fetchCricket();
-fetchFootball();
+/* ================================================= */
+/* Public Sports API */
+/* ================================================= */
 
-setInterval(fetchCricket, 30000);
-setInterval(fetchFootball, 30000);
+window.Sports = {
+
+    setProvider: setSportsProvider,
+
+    fetch: fetchSportsData,
+
+    refresh: refreshSportsData,
+
+    latest: getLatestResult,
+
+    byDate: getResultByDate,
+
+    startAutoRefresh: startSportsAutoRefresh,
+
+    stopAutoRefresh: stopSportsAutoRefresh,
+
+    state: sportsState
+
+};
+
+
