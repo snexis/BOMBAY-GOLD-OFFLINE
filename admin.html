@@ -1,1 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Panel</title>
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+</head>
+
+<body>
+
+<div id="adminApp">
+
+    <!-- Header -->
+
+    <header class="header">
+
+        <div class="logo-area">
+
+            <h1>
+
+                Website Admin Panel
+
+            </h1>
+
+            <p>
+
+                Manage Website Settings
+
+            </p>
+
+        </div>
+
+    </header>
+
+    <!-- Website Settings -->
+
+    <section class="admin-section">
+
+        <h2>
+
+            Website Settings
+
+        </h2>
+
+        <input
+            id="siteNameInput"
+            type="text"
+            placeholder="Website Name">
+
+        <input
+            id="logoInput"
+            type="text"
+            placeholder="Logo URL">
+
+        <input
+            id="welcomeInput"
+            type="text"
+            placeholder="Welcome Text">
+
+        <textarea
+            id="noticeInput"
+            placeholder="Notice"></textarea>
+
+        <textarea
+            id="footerInput"
+            placeholder="Footer Text"></textarea>
+
+        <button id="saveSettings">
+
+            Save Website Settings
+
+        </button>
+
+    </section>
+    <!-- Live Result Management -->
+
+    <section class="admin-section">
+
+        <h2>
+
+            Live Result Management
+
+        </h2>
+
+        <input
+            id="gameNameInput"
+            type="text"
+            placeholder="Game Name">
+
+        <input
+            id="gameResultInput"
+            type="text"
+            placeholder="Result">
+
+        <input
+            id="gameTimeInput"
+            type="text"
+            placeholder="Time">
+
+        <button id="saveLiveResult">
+
+            Save Live Result
+
+        </button>
+
+    </section>
+
+
+    <!-- Old Result Management -->
+
+    <section class="admin-section">
+
+        <h2>
+
+            Old Result Management
+
+        </h2>
+
+        <input
+            id="resultDateInput"
+            type="date">
+
+        <input
+            id="morningInput"
+            type="text"
+            placeholder="Morning Result">
+
+        <input
+            id="dayInput"
+            type="text"
+            placeholder="Day Result">
+
+        <input
+            id="nightInput"
+            type="text"
+            placeholder="Night Result">
+
+        <button id="saveOldResult">
+
+            Save Old Result
+
+        </button>
+
+    </section>
+
+
+    <!-- Preview Area -->
+
+    <section class="admin-section">
+
+        <h2>
+
+            Preview
+
+        </h2>
+
+        <div id="previewArea">
+
+            Data will appear here...
+
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+
+    <footer class="footer">
+
+        <div class="footer-content">
+
+            <p>
+
+                Admin Panel © 2026
+
+            </p>
+
+        </div>
+
+    </footer>
+
+</div>
+
+<!-- ================================================= -->
+<!-- Firebase CDN -->
+<!-- ================================================= -->
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
+
+<!-- ================================================= -->
+<!-- Project JavaScript -->
+<!-- ================================================= -->
+
+<script src="js/firebase.js"></script>
+<script src="js/admin.js"></script>
+
+</body>
+
+</html>
+
 
