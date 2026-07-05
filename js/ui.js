@@ -1,139 +1,235 @@
-/**
- * Professional Live Dashboard V2
- * File: js/ui.js
- * Final Version
- */
+/* ================================================= */
+/* UI Elements */
+/* ================================================= */
 
-const UI = {
-    /**
-     * Show Loading
-     */
-    showLoader() {
-        const loader = document.getElementById("loader");
-        if (loader) {
-            loader.classList.remove("hidden");
-        }
-    },
+const loader = document.getElementById("loader");
 
-    /**
-     * Hide Loading
-     */
-    hideLoader() {
-        const loader = document.getElementById("loader");
-        if (loader) {
-            loader.classList.add("hidden");
-        }
-    },
+const siteLogo = document.getElementById("siteLogo");
 
-    /**
-     * Update Text
-     * @param {string} id
-     * @param {string|number} value
-     */
-    setText(id, value) {
-        const el = document.getElementById(id);
-        if (el) {
-            el.textContent = value ?? "--";
-        }
-    },
+const siteName = document.getElementById("siteName");
 
-    /**
-     * Update HTML
-     * @param {string} id
-     * @param {string} html
-     */
-    setHTML(id, html) {
-        const el = document.getElementById(id);
-        if (el) {
-            el.innerHTML = html;
-        }
-    },
+const pageTitle = document.getElementById("pageTitle");
 
-    /**
-     * Show Toast
-     * @param {string} message
-     * @param {string} type
-     */
-    toast(message, type = "info") {
+const welcomeText = document.getElementById("welcomeText");
 
-        const toast = document.createElement("div");
+const noticeText = document.getElementById("noticeText");
 
-        toast.className = `
-            fixed
-            bottom-5
-            right-5
-            px-4
-            py-3
-            rounded-xl
-            shadow-lg
-            text-white
-            z-50
-            transition
-            duration-300
-        `;
+const footerText = document.getElementById("footerText");
 
-        switch (type) {
+const mainHeading = document.getElementById("mainHeading");
 
-            case "success":
-                toast.classList.add("bg-green-600");
-                break;
+const todayDate = document.getElementById("todayDate");
 
-            case "error":
-                toast.classList.add("bg-red-600");
-                break;
+const liveTitle = document.getElementById("liveTitle");
 
-            case "warning":
-                toast.classList.add("bg-yellow-500");
-                break;
+const allResultTitle = document.getElementById("allResultTitle");
 
-            default:
-                toast.classList.add("bg-blue-600");
-        }
+const scrollTopBtn = document.getElementById("scrollTopBtn");
 
-        toast.textContent = message;
 
-        document.body.appendChild(toast);
+/* ================================================= */
+/* Loader */
+/* ================================================= */
 
-        setTimeout(() => {
-            toast.classList.add("opacity-0");
+function showLoader(){
 
-            setTimeout(() => {
-                toast.remove();
-            }, 300);
+    loader.style.display = "flex";
 
-        }, 2500);
-    },
+}
 
-    /**
-     * Format Number
-     * @param {number} num
-     */
-    formatNumber(num) {
+function hideLoader(){
 
-        if (num === null || num === undefined || isNaN(num)) {
-            return "--";
-        }
+    loader.style.display = "none";
 
-        return Number(num).toLocaleString("en-IN");
-    },
+}
 
-    /**
-     * Format Currency
-     * @param {number} amount
-     */
-    formatCurrency(amount) {
 
-        if (amount === null || amount === undefined || isNaN(amount)) {
-            return "₹0";
-        }
+/* ================================================= */
+/* Website Settings */
+/* ================================================= */
 
-        return new Intl.NumberFormat("en-IN", {
-            style: "currency",
-            currency: "INR",
-            maximumFractionDigits: 2
-        }).format(amount);
+function applyWebsiteSettings(settings){
+
+    if(!settings) return;
+
+    if(settings.siteName){
+
+        siteName.textContent = settings.siteName;
+
+        pageTitle.textContent = settings.siteName;
+
     }
-};
 
-// Global Access
-window.UI = UI;
+    if(settings.logo){
+
+        siteLogo.src = settings.logo;
+
+    }
+
+    if(settings.welcomeText){
+
+        welcomeText.textContent = settings.welcomeText;
+
+    }
+
+    if(settings.notice){
+
+        noticeText.textContent = settings.notice;
+
+    }
+
+    if(settings.footer){
+
+        footerText.textContent = settings.footer;
+
+    }
+
+}
+/* ================================================= */
+/* Toast Notification */
+/* ================================================= */
+
+const toastContainer = document.getElementById("toastContainer");
+
+function showToast(message, type = "success") {
+
+    const toast = document.createElement("div");
+
+    toast.className = "toast " + type;
+
+    toast.textContent = message;
+
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+
+        toast.remove();
+
+    }, 3000);
+
+}
+
+
+/* ================================================= */
+/* Modal */
+/* ================================================= */
+
+const modal = document.getElementById("globalModal");
+
+const modalBody = document.getElementById("modalBody");
+
+const closeModal = document.getElementById("closeModal");
+
+function openModal(content) {
+
+    modalBody.innerHTML = content;
+
+    modal.style.display = "flex";
+
+}
+
+function hideModal() {
+
+    modal.style.display = "none";
+
+}
+
+closeModal.addEventListener("click", hideModal);
+
+window.addEventListener("click", function(event){
+
+    if(event.target === modal){
+
+        hideModal();
+
+    }
+
+});
+
+
+/* ================================================= */
+/* Scroll To Top */
+/* ================================================= */
+
+window.addEventListener("scroll", function(){
+
+    if(window.scrollY > 300){
+
+        scrollTopBtn.style.display = "block";
+
+    }else{
+
+        scrollTopBtn.style.display = "none";
+
+    }
+
+});
+
+scrollTopBtn.addEventListener("click", function(){
+
+    window.scrollTo({
+
+        top:0,
+
+        behavior:"smooth"
+
+    });
+
+});
+/* ================================================= */
+/* Today's Date */
+/* ================================================= */
+
+function updateTodayDate() {
+
+    const today = new Date();
+
+    const options = {
+
+        day: "2-digit",
+
+        month: "long",
+
+        year: "numeric"
+
+    };
+
+    todayDate.textContent = today.toLocaleDateString("en-IN", options);
+
+}
+
+
+/* ================================================= */
+/* Default Titles */
+/* ================================================= */
+
+function initializeUI() {
+
+    if (liveTitle) {
+
+        liveTitle.textContent = "Today's Live Game Results";
+
+    }
+
+    if (allResultTitle) {
+
+        allResultTitle.textContent = "Game Results";
+
+    }
+
+    updateTodayDate();
+
+    hideLoader();
+
+}
+
+
+/* ================================================= */
+/* Start UI */
+/* ================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    initializeUI();
+
+});
