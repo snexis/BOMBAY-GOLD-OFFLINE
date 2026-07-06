@@ -1,72 +1,181 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bombay Gold - Admin Panel</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BOMBAY GOLD Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <div class="admin-container">
-        <!-- Admin Header -->
-        <div class="admin-header">
-            <h1>BOMBAY GOLD - ADMIN PANEL</h1>
-            <p class="admin-subtitle">Control your live game results</p>
+  <div class="wrap">
+    <header class="site-header">
+      <h1 class="brand-title" id="siteTitle">BOMBAY GOLD</h1>
+      <div class="brand-sub" id="siteSubtitle">লাইভ গেম রেজাল্ট এবং সেটিংস কন্ট্রোল প্যানেল</div>
+    </header>
+
+    <div class="topbar">
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="index.html" target="_blank" class="btn blue" style="text-decoration:none; line-height:22px;">
+          Preview Live Site
+        </a>
+      </div>
+
+      <div class="toast" id="publishToast">
+        <span class="dot" id="toastDot"></span>
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <strong id="toastTitle">Ready</strong>
+          <small id="toastMsg">Make changes then click PUBLISH LIVE.</small>
         </div>
-
-        <!-- Global Settings Section -->
-        <div class="admin-section">
-            <h2>Global Settings</h2>
-            
-            <div class="form-group">
-                <label for="marqueeInput">Marquee Text:</label>
-                <input type="text" id="marqueeInput" placeholder="Enter marquee announcement">
-            </div>
-
-            <div class="form-group">
-                <label for="announcementInput">Announcement Text:</label>
-                <textarea id="announcementInput" placeholder="Enter announcement"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="tipsLinkInput">Tips Button Link:</label>
-                <input type="text" id="tipsLinkInput" placeholder="Enter tips link or content">
-            </div>
-
-            <div class="form-group">
-                <label for="pattiChartLinkInput">Patti Chart Button Link:</label>
-                <input type="text" id="pattiChartLinkInput" placeholder="Enter patti chart link or content">
-            </div>
-        </div>
-
-        <!-- Date Selection -->
-        <div class="admin-section">
-            <h2>Select Date</h2>
-            <div class="date-control">
-                <input type="date" id="dateInput">
-                <button class="btn-secondary" id="editDateBtn">Edit</button>
-                <button class="btn-secondary" id="addNewDateBtn">Add New Date Row</button>
-            </div>
-        </div>
-
-        <!-- Time Slots and Results Input -->
-        <div class="admin-section">
-            <h2>Game Results - <span id="selectedDate">Today</span></h2>
-            <div id="timeSlotContainer">
-                <!-- Time slot inputs will be dynamically generated -->
-            </div>
-        </div>
-
-        <!-- Publish Button -->
-        <div class="admin-footer">
-            <button class="btn-publish" id="publishBtn">PUBLISH LIVE</button>
-            <button class="btn-secondary" id="logoutBtn">Logout</button>
-        </div>
-
-        <!-- Status Message -->
-        <div id="statusMessage" class="status-message"></div>
+      </div>
     </div>
 
-    <script src="app.js"></script>
+    <div class="publish-row">
+      <button class="btn primary block" id="btnPublish" type="button">
+        PUBLISH LIVE
+      </button>
+      <button class="btn block" id="btnAddRow" type="button">
+        Add New Date Row
+      </button>
+    </div>
+
+    <div class="layout">
+      <aside class="card sidebar">
+        <div class="tabs">
+          <button class="tab active" data-tab="tab-results" type="button">
+            Live Results Management <small>Editable</small>
+          </button>
+          <button class="tab" data-tab="tab-website" type="button">
+            Website Header Text <small>Marquee</small>
+          </button>
+          <button class="tab" data-tab="tab-logo" type="button">
+            Logo / Icon Upload <small>Update</small>
+          </button>
+          <button class="tab" data-tab="tab-menu" type="button">
+            Menu / Link Management <small>Buttons</small>
+          </button>
+          <button class="tab" data-tab="tab-theme" type="button">
+            Theme Settings <small>Accent</small>
+          </button>
+        </div>
+      </aside>
+
+      <section class="card content" id="mainContent">
+        <div id="tab-results" class="tab-pane">
+          <div class="section-title">
+            <div>
+              <h2>Live Results Management</h2>
+              <p>Blue time-header layout with editable cells.</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table id="resultsTable">
+              <thead>
+                <tr id="tableHeaderRow"></tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-website" class="tab-pane hidden">
+          <div class="section-title">
+            <div>
+              <h2>Website Header Text</h2>
+              <p>Change central Bengali text and manage marquee messages.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Bengali Subtitle Text</label>
+              <input type="text" id="inpSubtitle" placeholder="লাইভ গেম রেজাল্ট এবং সেটিংস কন্ট্রোল প্যানেল" />
+            </div>
+
+            <div class="field">
+              <label>Marquee Text (One line)</label>
+              <input type="text" id="inpMarquee" placeholder="আজকের অফার, আপডেট এবং নতুন ফলাফল..." />
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-logo" class="tab-pane hidden">
+          <div class="section-title">
+            <div>
+              <h2>Logo / Icon Upload</h2>
+              <p>Update end-user header icon (image file).</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Upload Logo (PNG/JPG)</label>
+              <input type="file" id="fileLogo" accept="image/*" />
+            </div>
+            <div class="field">
+              <label>Preview Logo</label>
+              <div style="display:flex; align-items:center; justify-content:center; min-height:100px;">
+                <div id="logoPreviewBox" class="user-logo">BG</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-menu" class="tab-pane hidden">
+          <div class="section-title">
+            <div>
+              <h2>Menu / Link Management</h2>
+              <p>Manage existing buttons like Tips and Patti Chart.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Tips Button URL</label>
+              <input type="text" id="inpTipsUrl" placeholder="https://example.com/tips" />
+            </div>
+            <div class="field">
+              <label>Patti Chart Button URL</label>
+              <input type="text" id="inpPattiUrl" placeholder="https://example.com/patti-chart" />
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-theme" class="tab-pane hidden">
+          <div class="section-title">
+            <div>
+              <h2>Theme Settings</h2>
+              <p>Accent color for headers and borders.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Header Accent Color (Blue)</label>
+              <input type="text" id="inpAccent" placeholder="#1f5aa8" />
+            </div>
+            <div class="field">
+              <label>Gold Border Intensity</label>
+              <input type="number" id="inpGoldIntensity" min="10" max="100" value="45" />
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Admin Page Init
+    initAdminPage();
+  </script>
 </body>
 </html>
