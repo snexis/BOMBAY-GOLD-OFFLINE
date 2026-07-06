@@ -11,7 +11,6 @@
 
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <div class="wrap">
     <header class="site-header">
@@ -53,14 +52,8 @@
           <button class="tab" data-tab="tab-website" type="button">
             Website Header Text <small>Marquee</small>
           </button>
-          <button class="tab" data-tab="tab-logo" type="button">
-            Logo / Icon Upload <small>Update</small>
-          </button>
           <button class="tab" data-tab="tab-menu" type="button">
             Menu / Link Management <small>Buttons</small>
-          </button>
-          <button class="tab" data-tab="tab-theme" type="button">
-            Theme Settings <small>Accent</small>
           </button>
         </div>
       </aside>
@@ -73,9 +66,8 @@
               <p>Blue time-header layout with editable cells.</p>
             </div>
           </div>
-
           <div class="table-wrap">
-            <table id="resultsTable">
+            <table>
               <thead>
                 <tr id="tableHeaderRow"></tr>
               </thead>
@@ -91,38 +83,14 @@
               <p>Change central Bengali text and manage marquee messages.</p>
             </div>
           </div>
-
           <div class="form-grid">
             <div class="field">
               <label>Bengali Subtitle Text</label>
               <input type="text" id="inpSubtitle" placeholder="লাইভ গেম রেজাল্ট এবং সেটিংস কন্ট্রোল প্যানেল" />
             </div>
-
             <div class="field">
               <label>Marquee Text (One line)</label>
               <input type="text" id="inpMarquee" placeholder="আজকের অফার, আপডেট এবং নতুন ফলাফল..." />
-            </div>
-          </div>
-        </div>
-
-        <div id="tab-logo" class="tab-pane hidden">
-          <div class="section-title">
-            <div>
-              <h2>Logo / Icon Upload</h2>
-              <p>Update end-user header icon (image file).</p>
-            </div>
-          </div>
-
-          <div class="form-grid">
-            <div class="field">
-              <label>Upload Logo (PNG/JPG)</label>
-              <input type="file" id="fileLogo" accept="image/*" />
-            </div>
-            <div class="field">
-              <label>Preview Logo</label>
-              <div style="display:flex; align-items:center; justify-content:center; min-height:100px;">
-                <div id="logoPreviewBox" class="user-logo">BG</div>
-              </div>
             </div>
           </div>
         </div>
@@ -134,7 +102,6 @@
               <p>Manage existing buttons like Tips and Patti Chart.</p>
             </div>
           </div>
-
           <div class="form-grid">
             <div class="field">
               <label>Tips Button URL</label>
@@ -146,36 +113,119 @@
             </div>
           </div>
         </div>
-
-        <div id="tab-theme" class="tab-pane hidden">
-          <div class="section-title">
-            <div>
-              <h2>Theme Settings</h2>
-              <p>Accent color for headers and borders.</p>
-            </div>
-          </div>
-
-          <div class="form-grid">
-            <div class="field">
-              <label>Header Accent Color (Blue)</label>
-              <input type="text" id="inpAccent" placeholder="#1f5aa8" />
-            </div>
-            <div class="field">
-              <label>Gold Border Intensity</label>
-              <input type="number" id="inpGoldIntensity" min="10" max="100" value="45" />
-            </div>
-          </div>
-        </div>
       </section>
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="app.js"></script>
-  <script>
-    // Admin Page Init
-    initAdminPage();
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
+      authDomain: "live-result-b9155.firebaseapp.com",
+      projectId: "live-result-b9155",
+      storageBucket: "live-result-b9155.firebasestorage.app",
+      messagingSenderId: "495121483481",
+      appId: "1:495121483481:web:8e8bf65c71ea3d31ec60c8",
+      measurementId: "G-DFDW40QF87",
+      databaseURL: "https://live-result-b9155-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const TIME_SLOTS = ["10:20 AM","11:50 AM","01:10 PM","02:40 PM","04:05 PM","05:35 PM"];
+    let localRows = [];
+
+    // ট্যাব সুইচ করার মেকানিজম
+    const tabs = document.querySelectorAll(".tab");
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            tabs.forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            document.querySelectorAll(".tab-pane").forEach(p => p.classList.add("hidden"));
+            document.getElementById(tab.getAttribute("data-tab")).classList.remove("hidden");
+        });
+    });
+
+    // টেবিল হেডার রেন্ডার
+    const headerRow = document.getElementById("tableHeaderRow");
+    headerRow.innerHTML = "<th>DATE</th>";
+    TIME_SLOTS.forEach(slot => { headerRow.innerHTML += `<th>${slot}</th>`; });
+
+    // ফায়ারবেস থেকে এক্সিস্টিং ডাটা লোড করা
+    get(ref(db, "liveData")).then((snapshot) => {
+        const data = snapshot.val();
+        if(data) {
+            if(data.rows) { localRows = data.rows; renderAdminRows(); }
+            if(data.settings) {
+                document.getElementById("inpSubtitle").value = data.settings.subtitle || "";
+                document.getElementById("inpMarquee").value = data.settings.marquee || "";
+                document.getElementById("inpTipsUrl").value = data.settings.tipsUrl || "";
+                document.getElementById("inpPattiUrl").value = data.settings.pattiUrl || "";
+            }
+        }
+    });
+
+    window.updateDate = function(index, val) { localRows[index].date = val; }
+    window.updateCell = function(rowIndex, slot, field, val) {
+        if(!localRows[rowIndex].slots[slot]) localRows[rowIndex].slots[slot] = {a:"", b:"", d1:"", d2:""};
+        localRows[rowIndex].slots[slot][field] = val;
+    }
+
+    document.getElementById("btnAddRow").addEventListener("click", () => {
+        const today = new Date().toISOString().split('T')[0];
+        let newRow = { date: today, slots: {} };
+        TIME_SLOTS.forEach(slot => { newRow.slots[slot] = { a: "", b: "", d1: "", d2: "" }; });
+        localRows.unshift(newRow);
+        renderAdminRows();
+    });
+
+    function renderAdminRows() {
+        const body = document.getElementById("tableBody");
+        body.innerHTML = "";
+        localRows.forEach((row, rowIndex) => {
+            let tr = `<tr><td><input type="date" class="date-input" value="${row.date}" onchange="updateDate(${rowIndex}, this.value)"></td>`;
+            TIME_SLOTS.forEach(slot => {
+                const slotData = row.slots[slot] || {a:"", b:"", d1:"", d2:""};
+                tr += `<td>
+                    <div><input type="text" placeholder="Num A" class="cell-input-box" value="${slotData.a}" oninput="updateCell(${rowIndex}, '${slot}', 'a', this.value)"></div>
+                    <div><input type="text" placeholder="Num B" class="cell-input-box" value="${slotData.b}" oninput="updateCell(${rowIndex}, '${slot}', 'b', this.value)"></div>
+                    <div>
+                       <input type="text" placeholder="D1" style="width:28px;" class="cell-input-box" value="${slotData.d1}" oninput="updateCell(${rowIndex}, '${slot}', 'd1', this.value)">
+                       <input type="text" placeholder="D2" style="width:28px;" class="cell-input-box" value="${slotData.d2}" oninput="updateCell(${rowIndex}, '${slot}', 'd2', this.value)">
+                    </div>
+                </td>`;
+            });
+            tr += `</tr>`;
+            body.innerHTML += tr;
+        });
+    }
+
+    document.getElementById("btnPublish").addEventListener("click", () => {
+        const toastTitle = document.getElementById("toastTitle");
+        const toastMsg = document.getElementById("toastMsg");
+        toastTitle.textContent = "Publishing...";
+
+        const settings = {
+            subtitle: document.getElementById("inpSubtitle").value,
+            marquee: document.getElementById("inpMarquee").value,
+            tipsUrl: document.getElementById("inpTipsUrl").value,
+            pattiUrl: document.getElementById("inpPattiUrl").value
+        };
+
+        set(ref(db, "liveData"), { rows: localRows, settings: settings }).then(() => {
+            toastTitle.textContent = "Live & Active";
+            toastMsg.textContent = "সব ভিজিটরের ফোনে ইনস্ট্যান্টলি আপডেট হয়ে গেছে!";
+            setTimeout(() => {
+                toastTitle.textContent = "Ready";
+                toastMsg.textContent = "Make changes then click PUBLISH LIVE.";
+            }, 3000);
+        }).catch(err => {
+            toastTitle.textContent = "Error!";
+            toastMsg.textContent = err.message;
+        });
+    });
   </script>
 </body>
 </html>
