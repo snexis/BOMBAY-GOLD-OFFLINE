@@ -1,49 +1,1815 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bombay Gold - Live Results</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BOMBAY GOLD Admin</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1:#f7f5ef;
+      --bg2:#ffffff;
+      --panel:#ffffffcc;
+      --stroke: rgba(140,108,25,.35);
+      --stroke2: rgba(25,78,157,.30);
+
+      --gold1:#d7b15c;
+      --gold2:#f0d68a;
+      --gold3:#8b6b15;
+
+      --blue:#1f5aa8; /* header row */
+      --blue2:#2a78d0;
+
+      --text:#141316;
+      --muted: rgba(20,19,22,.68);
+
+      --success:#1f9d55;
+      --danger:#d93025;
+
+      --shadow: 0 18px 50px rgba(0,0,0,.10);
+      --shadow2: 0 10px 30px rgba(0,0,0,.08);
+
+      --radius: 16px;
+      --radius2: 12px;
+
+      --ease: cubic-bezier(.2,.9,.2,1);
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      font-family: "Montserrat", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 450px at 15% -10%, rgba(215,177,92,.20), transparent 60%),
+        radial-gradient(700px 420px at 95% 10%, rgba(31,90,168,.16), transparent 55%),
+        radial-gradient(800px 450px at 50% 120%, rgba(240,214,138,.14), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
+
+    /* Subtle texture */
+    body:before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background:
+        repeating-linear-gradient( 0deg, rgba(0,0,0,.02), rgba(0,0,0,.02) 1px, transparent 1px, transparent 7px);
+      mix-blend-mode:multiply;
+      opacity:.40;
+    }
+
+    .wrap{
+      position:relative;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 22px 16px 28px;
+    }
+
+    header.site-header{
+      text-align:center;
+      padding: 18px 12px 14px;
+      border: 2px solid rgba(215,177,92,.55);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.55));
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(8px);
+    }
+
+    .brand-title{
+      font-weight: 900;
+      letter-spacing: .16em;
+      font-size: clamp(28px, 4vw, 46px);
+      margin: 0;
+      line-height:1;
+      color: var(--gold3);
+      text-shadow:
+        0 1px 0 rgba(255,255,255,.6),
+        0 10px 25px rgba(215,177,92,.25);
+      position:relative;
+      display:inline-block;
+    }
+
+    /* “Gold” shimmer */
+    .brand-title:after{
+      content:"";
+      position:absolute; inset:-8px -24px;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.9), transparent 40%),
+                  linear-gradient(120deg, rgba(255,255,255,.0), rgba(255,255,255,.45), rgba(255,255,255,0));
+      transform: translateX(-60%);
+      animation: shimmer 3.2s var(--ease) infinite;
+      opacity:.35;
+      pointer-events:none;
+      border-radius: 24px;
+    }
+
+    @keyframes shimmer{
+      0%{ transform: translateX(-60%); }
+      60%{ transform: translateX(60%); }
+      100%{ transform: translateX(60%); }
+    }
+
+    .brand-sub{
+      margin: 8px 0 0;
+      font-family: "Noto Sans Bengali", "Nirmala UI", system-ui, sans-serif;
+      font-size: clamp(14px, 2vw, 20px);
+      font-weight: 600;
+      color: rgba(20,19,22,.78);
+    }
+
+    .topbar{
+      display:flex;
+      gap:12px;
+      justify-content: space-between;
+      align-items:flex-start;
+      margin: 16px 0 14px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid rgba(140,108,25,.40);
+      background: rgba(255,255,255,.70);
+      padding: 10px 14px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 700;
+      color: rgba(20,19,22,.85);
+      transition: transform .12s var(--ease), box-shadow .12s var(--ease), background .2s var(--ease);
+      box-shadow: 0 10px 25px rgba(0,0,0,.06);
+      user-select:none;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.90);
+      box-shadow: 0 16px 35px rgba(0,0,0,.09);
+    }
+    .btn:active{ transform: translateY(0); }
+
+    .btn.primary{
+      border-color: rgba(215,177,92,.65);
+      background: linear-gradient(180deg, rgba(240,214,138,.95), rgba(215,177,92,.75));
+      color: #3a2a00;
+    }
+
+    .btn.blue{
+      border-color: rgba(31,90,168,.35);
+      background: linear-gradient(180deg, rgba(42,120,208,.18), rgba(31,90,168,.10));
+      color: rgba(15,45,92,.95);
+    }
+
+    .btn.danger{
+      border-color: rgba(217,48,37,.35);
+      background: rgba(217,48,37,.10);
+      color: rgba(136,10,0,.95);
+    }
+
+    .btn.block{
+      width:100%;
+      padding: 14px 14px;
+      border-radius: 18px;
+      font-size: 16px;
+    }
+
+    .publish-row{
+      display:grid;
+      grid-template-columns: 1.3fr .9fr;
+      gap: 12px;
+      margin: 10px 0 14px;
+      align-items:stretch;
+    }
+    @media (max-width: 980px){
+      .publish-row{ grid-template-columns: 1fr; }
+    }
+
+    .toast{
+      min-height: 44px;
+      border-radius: 14px;
+      padding: 10px 14px;
+      border: 1px solid rgba(140,108,25,.35);
+      background: rgba(255,255,255,.68);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,.06);
+    }
+    .toast strong{ color: rgba(20,19,22,.88); }
+    .toast small{ color: var(--muted); }
+    .toast .dot{
+      width: 10px; height:10px; border-radius:999px;
+      background: rgba(215,177,92,.6);
+      box-shadow: 0 0 0 5px rgba(215,177,92,.18);
+      flex: 0 0 auto;
+    }
+
+    .dot.success{ background: rgba(31,157,85,.8); box-shadow: 0 0 0 5px rgba(31,157,85,.18); }
+    .dot.danger{ background: rgba(217,48,37,.85); box-shadow: 0 0 0 5px rgba(217,48,37,.18); }
+
+    .layout{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+      align-items:start;
+      margin-top: 8px;
+    }
+    @media (max-width: 980px){
+      .layout{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(215,177,92,.35);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(8px);
+      overflow:hidden;
+    }
+
+    .sidebar{
+      position:sticky;
+      top: 14px;
+    }
+    @media (max-width: 980px){
+      .sidebar{ position:relative; top:auto; }
+    }
+
+    .tabs{
+      display:flex; flex-direction:column;
+      padding: 12px;
+      gap: 10px;
+    }
+
+    .tab{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(215,177,92,.25);
+      padding: 12px 12px;
+      background: rgba(255,255,255,.55);
+      cursor:pointer;
+      text-align:left;
+      font-weight: 800;
+      letter-spacing:.02em;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      transition: all .2s var(--ease);
+    }
+    .tab:hover{
+      background: rgba(255,255,255,.90);
+      transform: translateY(-1px);
+    }
+    .tab.active{
+      border-color: rgba(215,177,92,.55);
+      background: linear-gradient(180deg, rgba(240,214,138,.45), rgba(215,177,92,.20));
+    }
+    .tab small{
+      font-weight:700;
+      color: var(--muted);
+    }
+
+    .content{
+      padding: 14px;
+    }
+
+    /* Table */
+    .section-title{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .section-title h2{
+      margin:0;
+      font-size: 16px;
+      letter-spacing:.02em;
+    }
+    .section-title p{
+      margin:0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border-radius: 16px;
+      border:1px solid rgba(31,90,168,.22);
+      background: rgba(255,255,255,.65);
+    }
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      min-width: 920px;
+    }
+
+    thead th{
+      background: linear-gradient(180deg, rgba(31,90,168,.95), rgba(31,90,168,.78));
+      color:#fff;
+      font-size: 12px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      padding: 12px 10px;
+      position:sticky;
+      top:0;
+      z-index:2;
+      border-bottom: 1px solid rgba(255,255,255,.25);
+    }
+
+    tbody td, tbody th{
+      padding: 10px 8px;
+      border-bottom: 1px solid rgba(31,90,168,.10);
+      font-size: 13px;
+      white-space:nowrap;
+      vertical-align: middle;
+    }
+
+    tbody tr:hover td{
+      background: rgba(31,90,168,.04);
+    }
+
+    .date-col{
+      font-weight: 800;
+      color: rgba(20,19,22,.85);
+      background: rgba(255,255,255,.75);
+      position:sticky;
+      left:0;
+      z-index:1;
+      border-right: 1px solid rgba(31,90,168,.10);
+      min-width: 160px;
+    }
+
+    .cell{
+      width: 92px;
+      text-align:center;
+    }
+
+    input.cell-input{
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(31,90,168,.18);
+      background: rgba(255,255,255,.85);
+      color: rgba(10,10,10,.90);
+      outline:none;
+      transition: box-shadow .15s var(--ease), border-color .15s var(--ease), transform .15s var(--ease);
+    }
+    input.cell-input:focus{
+      border-color: rgba(215,177,92,.70);
+      box-shadow: 0 0 0 4px rgba(215,177,92,.20);
+      transform: translateY(-1px);
+    }
+
+    .row-actions{
+      text-align:right;
+      min-width: 86px;
+      padding-right: 12px !important;
+    }
+
+    .icon-btn{
+      width: 34px; height: 34px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 12px;
+      cursor:pointer;
+      border: 1px solid rgba(140,108,25,.30);
+      background: rgba(255,255,255,.70);
+      transition: transform .12s var(--ease), background .2s var(--ease);
+    }
+    .icon-btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.95);
+    }
+
+    .pencil{
+      width: 16px; height:16px;
+      color: rgba(20,19,22,.85);
+    }
+
+    .read-only{
+      border: 0;
+      background: transparent;
+      padding:0;
+      outline:none;
+      text-align:center;
+      width: 100%;
+      font: inherit;
+      color: rgba(20,19,22,.88);
+    }
+
+    .muted-hint{
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.5;
+      margin-top: 10px;
+    }
+
+    .actions-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap:wrap;
+    }
+
+    /* Forms */
+    .form-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 980px){
+      .form-grid{ grid-template-columns: 1fr; }
+    }
+
+    label{
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(20,19,22,.75);
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .tip{
+      width: 18px; height: 18px;
+      border-radius: 999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid rgba(215,177,92,.55);
+      color: rgba(58,42,0,.95);
+      font-weight: 900;
+      font-size: 12px;
+      cursor: help;
+      background: rgba(240,214,138,.35);
+    }
+
+    .field{
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(31,90,168,.18);
+      background: rgba(255,255,255,.65);
+    }
+
+    .field input[type="text"], .field input[type="number"]{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(31,90,168,.18);
+      background: rgba(255,255,255,.90);
+      outline:none;
+      font-size: 14px;
+      transition: box-shadow .15s var(--ease), border-color .15s var(--ease);
+    }
+    .field input[type="text"]:focus, .field input[type="number"]:focus{
+      border-color: rgba(215,177,92,.70);
+      box-shadow: 0 0 0 4px rgba(215,177,92,.18);
+    }
+
+    .field input[type="file"]{
+      width:100%;
+      padding: 10px 10px;
+      border-radius: 14px;
+      border: 1px dashed rgba(31,90,168,.25);
+      background: rgba(255,255,255,.70);
+    }
+
+    .marquee-box{
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(31,90,168,.18);
+      background: rgba(255,255,255,.65);
+    }
+    textarea{
+      width:100%;
+      min-height: 92px;
+      resize: vertical;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(31,90,168,.18);
+      background: rgba(255,255,255,.90);
+      outline:none;
+      font-size: 14px;
+    }
+    textarea:focus{
+      border-color: rgba(215,177,92,.70);
+      box-shadow: 0 0 0 4px rgba(215,177,92,.18);
+    }
+
+    /* Dashboard */
+    .dash{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .stat{
+      grid-column: span 4;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(215,177,92,.30);
+      background: rgba(255,255,255,.70);
+    }
+    @media (max-width: 980px){ .stat{ grid-column: span 12; } }
+    .stat .k{
+      font-size: 12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color: var(--muted);
+      font-weight: 900;
+    }
+    .stat .v{
+      margin-top: 6px;
+      font-size: 26px;
+      font-weight: 900;
+      color: rgba(20,19,22,.92);
+    }
+
+    .preview-mini{
+      margin-top: 12px;
+      overflow:auto;
+      border-radius: 16px;
+      border:1px solid rgba(31,90,168,.18);
+      background: rgba(255,255,255,.65);
+    }
+
+    .preview-mini table{ min-width: 720px; }
+    .mini-head th{ position:sticky; top:0; z-index:2; }
+
+    /* Preview (User-facing) */
+    .preview-panel{
+      padding: 14px;
+    }
+    .user-header{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap:wrap;
+    }
+    .user-logo{
+      width: 54px; height: 54px;
+      border-radius: 16px;
+      border: 1px solid rgba(215,177,92,.45);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.80), transparent 60%),
+        linear-gradient(135deg, rgba(240,214,138,.90), rgba(215,177,92,.45));
+      box-shadow: 0 12px 30px rgba(215,177,92,.18);
+      display:flex; align-items:center; justify-content:center;
+      color: rgba(58,42,0,.95);
+      font-weight: 1000;
+      letter-spacing:.08em;
+    }
+    .user-title{
+      text-align:center;
+      font-weight: 1000;
+      letter-spacing:.18em;
+      font-size: 20px;
+      color: rgba(58,42,0,.95);
+      margin:0;
+    }
+    .user-sub{
+      margin: 4px 0 0;
+      font-family: "Noto Sans Bengali", "Nirmala UI", system-ui, sans-serif;
+      font-weight: 700;
+      color: rgba(20,19,22,.78);
+      text-align:center;
+    }
+
+    .live-marquee{
+      margin: 10px 0 14px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border:1px solid rgba(215,177,92,.30);
+      background: rgba(240,214,138,.18);
+      overflow:hidden;
+    }
+    .live-marquee .track{
+      display:inline-block;
+      white-space:nowrap;
+      animation: marquee 14s linear infinite;
+      font-weight: 800;
+      color: rgba(58,42,0,.95);
+    }
+    @keyframes marquee{
+      from{ transform: translateX(0); }
+      to{ transform: translateX(-50%); }
+    }
+
+    .user-table-wrap{
+      overflow:auto;
+      border-radius: 16px;
+      border:1px solid rgba(31,90,168,.18);
+      background: rgba(255,255,255,.65);
+    }
+    .footer-note{
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.5;
+    }
+
+    /* subtle loader */
+    .spinner{
+      width:18px;height:18px;border-radius:999px;
+      border:2px solid rgba(255,255,255,.55);
+      border-top-color: rgba(58,42,0,.95);
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin{ to{ transform: rotate(360deg);} }
+
+    .hidden{ display:none !important; }
+  </style>
 </head>
+
 <body>
-    <!-- Header Section -->
-    <div class="header-container">
-        <h1 class="main-title">BOMBAY GOLD</h1>
-        <p class="bengali-subtitle">লাইভ গেম রেজাল্ট সবথেকে প্রথম পাওয়ার জন্য ভিজিট করুন এই সাইট এ।</p>
-        
-        <!-- Marquee/Announcement Section -->
-        <div class="marquee-container">
-            <div class="marquee-text" id="marqueeText">
-                Welcome to Bombay Gold - Get live results first!
+  <div class="wrap">
+    <header class="site-header">
+      <h1 class="brand-title" id="siteTitle">BOMBAY GOLD</h1>
+      <div class="brand-sub" id="siteSubtitle">লাইভ গেম রেজাল্ট এবং সেটিংস কন্ট্রোল প্যানেল</div>
+    </header>
+
+    <div class="topbar">
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn blue" id="btnOpenPreview" type="button" title="Quickly view what end-users see">
+          Preview Live Site
+        </button>
+      </div>
+
+      <div class="toast" id="publishToast" role="status" aria-live="polite">
+        <span class="dot" id="toastDot"></span>
+        <div style="display:flex; flex-direction:column; gap:2px;">
+          <strong id="toastTitle">Ready</strong>
+          <small id="toastMsg">Make changes then click PUBLISH LIVE.</small>
+        </div>
+        <button class="btn" id="btnFetchLive" type="button" style="box-shadow:none; padding:9px 12px;" title="Fetch latest live results">
+          Refresh Live
+        </button>
+      </div>
+    </div>
+
+    <div class="publish-row">
+      <button class="btn primary block" id="btnPublish" type="button" title="Saves to server and updates user-facing pages without reload">
+        PUBLISH LIVE
+      </button>
+      <button class="btn block" id="btnAddRow" type="button" title="Add a new date row with time slots">
+        Add New Date Row
+      </button>
+    </div>
+
+    <div class="layout">
+      <!-- Sidebar Tabs -->
+      <aside class="card sidebar">
+        <div class="tabs">
+          <button class="tab active" data-tab="tab-results" type="button">
+            Live Results Management <small>Editable</small>
+          </button>
+          <button class="tab" data-tab="tab-website" type="button">
+            Website Header Text <small>Marquee</small>
+          </button>
+          <button class="tab" data-tab="tab-logo" type="button">
+            Logo / Icon Upload <small>Update</small>
+          </button>
+          <button class="tab" data-tab="tab-menu" type="button">
+            Menu / Link Management <small>Buttons</small>
+          </button>
+          <button class="tab" data-tab="tab-theme" type="button">
+            Theme Settings <small>Accent</small>
+          </button>
+          <button class="tab" data-tab="tab-preview" type="button">
+            User-Facing Preview <small>Live</small>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Content Area -->
+      <section class="card content" id="mainContent">
+        <!-- TAB: Dashboard -->
+        <div id="tab-dashboard" class="tab-pane">
+          <div class="section-title">
+            <div>
+              <h2>Dashboard Overview</h2>
+              <p>Live metrics + latest results preview.</p>
             </div>
-        </div>
-    </div>
+          </div>
 
-    <!-- Navigation Buttons -->
-    <div class="button-container">
-        <button class="nav-button" id="tipsBtn">Tips</button>
-        <button class="nav-button" id="pattiChartBtn">Patti Chart</button>
-    </div>
-
-    <!-- Results Display Section -->
-    <div class="results-container">
-        <div id="resultsTableContainer">
-            <!-- Tables will be dynamically inserted here -->
-        </div>
-    </div>
-
-    <!-- Hidden Modal for Tips and Patti Chart -->
-    <div id="modal" class="modal hidden">
-        <div class="modal-content">
-            <button class="close-btn" id="closeModal">&times;</button>
-            <h2 id="modalTitle">Tips</h2>
-            <div id="modalBody">
-                <!-- Content will be inserted dynamically -->
+          <div class="dash">
+            <div class="stat">
+              <div class="k">Total Games Managed</div>
+              <div class="v" id="mTotalGames">—</div>
             </div>
-        </div>
-    </div>
+            <div class="stat">
+              <div class="k">Current Active Users</div>
+              <div class="v" id="mActiveUsers">—</div>
+            </div>
+            <div class="stat">
+              <div class="k">Latest Live Publish</div>
+              <div class="v" id="mLastPublish">—</div>
+            </div>
+          </div>
 
-    <script src="app.js"></script>
+          <div class="section-title" style="margin-top:8px;">
+            <div>
+              <h2>Most Recent Results</h2>
+              <p>Auto-updates after publish (no refresh).</p>
+            </div>
+          </div>
+
+          <div class="preview-mini" aria-label="Recent results preview">
+            <table>
+              <thead class="mini-head">
+                <tr id="miniHeaderRow"></tr>
+              </thead>
+              <tbody id="miniPreviewBody"></tbody>
+            </table>
+          </div>
+
+          <div class="footer-note">
+            Tip: Click the pencil icon on a row to edit. Then fill time slots and publish.
+          </div>
+        </div>
+
+        <!-- TAB: Results Management -->
+        <div id="tab-results" class="tab-pane hidden">
+          <div class="section-title">
+            <div>
+              <h2>Live Results Management</h2>
+              <p>Blue time-header layout with editable cells (numbers + single digits).</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table id="resultsTable">
+              <thead>
+                <tr id="tableHeaderRow"></tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="actions-row">
+            <div class="muted-hint" style="margin:0;">
+              **Editing:** Click <span style="display:inline-flex; align-items:center; gap:6px;"><span style="font-weight:900;">Edit</span> <span aria-hidden="true">✎</span></span> then type values.
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn blue" id="btnAddRow2" type="button" title="Add a new empty date row">
+                Add New Date Row
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Website Header Text -->
+        <div id="tab-website" class="tab-pane hidden">
+          <div class="section-title">
+            <div>
+              <h2>Website Header Text</h2>
+              <p>Change central Bengali text and manage marquee messages.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>
+                Bengali Subtitle Text
+                <span class="tip" title="This is the line under 'BOMBAY GOLD' on the end-user site">?</span>
+              </label>
+              <input type="text" id="inpSubtitle" placeholder="লাইভ গেম রেজাল্ট এবং সেটিংস কন্ট্রোল প্যানেল" />
+            </div>
+
+            <div class="field">
+              <label>
+                Marquee Text (One line)
+                <span class="tip" title="Shown as live scrolling banner">?</span>
+              </label>
+              <input type="text" id="inpMarquee" placeholder="আজকের অফার, আপডেট এবং নতুন ফলাফল..." />
+            </div>
+          </div>
+
+          <div style="height:12px;"></div>
+
+          <div class="marquee-box">
+            <label>
+              Advanced Marquee (Multiple lines)
+              <span class="tip" title="Optional: add more messages. Empty lines are ignored.">?</span>
+            </label>
+            <textarea id="inpMarqueeMulti" placeholder="লাইন ১&#10;লাইন ২&#10;লাইন ৩"></textarea>
+            <div class="actions-row" style="margin-top:12px;">
+              <button class="btn blue" id="btnApplyHeaderText" type="button" title="Apply text instantly to preview">
+                Apply to Preview
+              </button>
+              <button class="btn" id="btnSaveHeaderText" type="button" title="Save settings via publish">
+                Save with Next Publish
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Logo Upload -->
+        <div id="tab-logo" class="tab-pane hidden">
+          <div class="section-title">
+            <div>
+              <h2>Logo / Icon Upload</h2>
+              <p>Update end-user header icon (image file).</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>
+                Upload Logo (PNG/JPG/SVG)
+                <span class="tip" title="This replaces the default Bombay Gold icon on the user-facing site">?</span>
+              </label>
+              <input type="file" id="fileLogo" accept="image/*" />
+              <div class="muted-hint" style="margin-top:10px;">
+                Selected file preview updates instantly. Publish saves it to the server.
+              </div>
+            </div>
+
+            <div class="field">
+              <label>
+                Preview Logo
+                <span class="tip" title="End-user header icon preview">?</span>
+              </label>
+              <div style="display:flex; align-items:center; justify-content:center; min-height:160px;">
+                <div id="logoPreviewBox" class="user-logo" aria-label="logo preview">BG</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Menu / Links -->
+        <div id="tab-menu" class="tab-pane hidden">
+          <div class="section-title">
+            <div>
+              <h2>Menu / Link Management</h2>
+              <p>Manage existing buttons like Tips and Patti Chart.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>
+                Tips Button URL
+                <span class="tip" title="Where 'Tips' goes on the end-user site">?</span>
+              </label>
+              <input type="text" id="inpTipsUrl" placeholder="https://example.com/tips" />
+            </div>
+
+            <div class="field">
+              <label>
+                Patti Chart Button URL
+                <span class="tip" title="Where 'Patti Chart' goes on the end-user site">?</span>
+              </label>
+              <input type="text" id="inpPattiUrl" placeholder="https://example.com/patti-chart" />
+            </div>
+
+            <div class="field">
+              <label>
+                Other Link 1
+                <span class="tip" title="Optional extra menu item">?</span>
+              </label>
+              <input type="text" id="inpLink1" placeholder="https://example.com/page1" />
+            </div>
+
+            <div class="field">
+              <label>
+                Other Link 2
+                <span class="tip" title="Optional extra menu item">?</span>
+              </label>
+              <input type="text" id="inpLink2" placeholder="https://example.com/page2" />
+            </div>
+          </div>
+
+          <div class="actions-row" style="margin-top:14px;">
+            <button class="btn blue" id="btnApplyMenu" type="button">
+              Apply to Preview
+            </button>
+            <button class="btn" id="btnResetDemoMenu" type="button" title="Resets inputs to current live values">
+              Reset from Live
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB: Theme Settings -->
+        <div id="tab-theme" class="tab-pane hidden">
+          <div class="section-title">
+            <div>
+              <h2>Theme Settings</h2>
+              <p>Accent color for headers and borders.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>
+                Header Accent Color (Blue)
+                <span class="tip" title="Changes the blue time-header row">?</span>
+              </label>
+              <input type="text" id="inpAccent" placeholder="#1f5aa8 or rgb(...)" />
+              <div class="muted-hint" style="margin-top:10px;">
+                Example: <code style="background:rgba(0,0,0,.06); padding:2px 6px; border-radius:10px;">#1f5aa8</code>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>
+                Gold Border Intensity
+                <span class="tip" title="Controls golden border strength">?</span>
+              </label>
+              <input type="number" id="inpGoldIntensity" min="10" max="100" value="45" />
+              <div class="muted-hint" style="margin-top:10px;">Publish to apply globally (preview updates instantly).</div>
+            </div>
+          </div>
+
+          <div class="actions-row" style="margin-top:14px;">
+            <button class="btn blue" id="btnApplyTheme" type="button">
+              Apply to Preview
+            </button>
+            <button class="btn" id="btnRestoreTheme" type="button" title="Reset theme to live settings">
+              Restore from Live
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB: Preview -->
+        <div id="tab-preview" class="tab-pane hidden">
+          <div class="section-title">
+            <div>
+              <h2>User-Facing Preview</h2>
+              <p>What players will see (updates after publish).</p>
+            </div>
+          </div>
+
+          <div class="preview-panel card" style="box-shadow:none; border-radius:16px; background: rgba(255,255,255,.60);">
+            <div class="user-header">
+              <div id="userLogo" class="user-logo">BG</div>
+              <div>
+                <p class="user-title" id="userTitle">BOMBAY GOLD</p>
+                <div class="user-sub" id="userSubtitle">লাইভ গেম রেজাল্ট এবং সেটিংস কন্ট্রোল প্যানেল</div>
+              </div>
+            </div>
+
+            <div class="live-marquee" id="userMarqueeBox" aria-label="live marquee">
+              <span class="track" id="userMarqueeTrack">আপডেট আসছে...</span>
+            </div>
+
+            <div class="user-table-wrap">
+              <table id="userTable">
+                <thead>
+                  <tr id="userHeaderRow"></tr>
+                </thead>
+                <tbody id="userTableBody"></tbody>
+              </table>
+            </div>
+
+            <div class="footer-note">
+              Menu Links: <span id="userMenuPreview" style="font-weight:900;"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Hidden demo dashboard toggle -->
+        <div class="muted-hint" id="autoHint">
+          Use the sidebar tabs to customize header, logo, menu, and theme.
+        </div>
+
+      </section>
+    </div>
+  </div>
+
+  <!-- Pencil Icon SVG -->
+  <svg class="hidden" width="0" height="0" aria-hidden="true">
+    <symbol id="symPencil" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm2.92 2.83H5v-.92l9.06-9.06.92.92L5.92 20.08ZM20.71 7.04a1.003 1.003 0 0 0 0-1.42L18.37 3.29a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.83Z"/>
+    </symbol>
+  </svg>
+
+  <script>
+    // ---------- Config: endpoints ----------
+    const ENDPOINT = {
+      publish: "/api/publish",
+      live: "/api/live",
+    };
+
+    // ---------- Time slots (example matching your "10:20 AM, 11:50 AM, etc.") ----------
+    // Change these if your platform uses different times.
+    const TIME_SLOTS = ["10:20 AM","11:50 AM","01:10 PM","02:40 PM","04:05 PM","05:35 PM"];
+
+    // For cell typing rules: first numeric cell + second numeric cell + single-digit cells.
+    // This matches the common “two numbers + digits” pattern (example like 168, 778 and digits 5,2).
+    const ROW_SCHEMA = {
+      numberAKey: "a",
+      numberBKey: "b",
+      digitsKeys: ["d1","d2"] // each time slot will store 2 single digits
+    };
+
+    // ---------- State ----------
+    const state = {
+      // rows: [{ date:"2026-07-07", slots: { "10:20 AM": {a:"168", b:"778", d1:"5", d2:"2"}, ... }, _editing:false }]
+      rows: [],
+      liveSettings: {
+        subtitle: "লাইভ গেম রেজাল্ট এবং সেটিংস কন্ট্রোল প্যানেল",
+        marquee: "আপডেট আসছে...",
+        marqueeMulti: "",
+        logoDataUrl: null,
+        tipsUrl: "",
+        pattiUrl: "",
+        link1: "",
+        link2: "",
+        accent: "#1f5aa8",
+        goldIntensity: 45
+      },
+      ui: {
+        currentlyEditingRowIndex: null
+      },
+      metrics: {
+        totalGames: 0,
+        activeUsers: 0,
+        lastPublish: "—"
+      }
+    };
+
+    // ---------- Helpers ----------
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+    function safeText(v){ return (v ?? "").toString(); }
+
+    function buildHeaderRow(tr, includeActions=true){
+      tr.innerHTML = "";
+      const thDate = document.createElement("th");
+      thDate.textContent = "DATE";
+      tr.appendChild(thDate);
+
+      TIME_SLOTS.forEach(t => {
+        const th = document.createElement("th");
+        th.textContent = t;
+        th.style.minWidth = "170px";
+        tr.appendChild(th);
+      });
+
+      if(includeActions){
+        const thA = document.createElement("th");
+        thA.textContent = "";
+        thA.style.width = "90px";
+        tr.appendChild(thA);
+      }
+    }
+
+    function createSlotGroup(slotObj){
+      // slotObj: {a,b,d1,d2}
+      const wrap = document.createElement("div");
+      wrap.style.display = "grid";
+      wrap.style.gridTemplateColumns = "1fr 1fr";
+      wrap.style.gap = "6px";
+      wrap.style.alignItems = "center";
+      wrap.style.justifyItems = "center";
+
+      const topLeft = document.createElement("input");
+      topLeft.type = "text";
+      topLeft.className = "cell-input";
+      topLeft.dataset.field = "a";
+      topLeft.value = slotObj?.a ?? "";
+
+      const topRight = document.createElement("input");
+      topRight.type = "text";
+      topRight.className = "cell-input";
+      topRight.dataset.field = "b";
+      topRight.value = slotObj?.b ?? "";
+
+      const bottomWrap = document.createElement("div");
+      bottomWrap.style.gridColumn = "1 / -1";
+      bottomWrap.style.display = "flex";
+      bottomWrap.style.gap = "8px";
+      bottomWrap.style.justifyContent = "center";
+
+      const d1 = document.createElement("input");
+      d1.type = "text";
+      d1.className = "cell-input";
+      d1.style.width = "42px";
+      d1.inputMode = "numeric";
+      d1.maxLength = 1;
+      d1.dataset.field = "d1";
+      d1.value = slotObj?.d1 ?? "";
+
+      const d2 = document.createElement("input");
+      d2.type = "text";
+      d2.className = "cell-input";
+      d2.style.width = "42px";
+      d2.inputMode = "numeric";
+      d2.maxLength = 1;
+      d2.dataset.field = "d2";
+      d2.value = slotObj?.d2 ?? "";
+
+      bottomWrap.appendChild(d1);
+      bottomWrap.appendChild(d2);
+
+      wrap.appendChild(topLeft);
+      wrap.appendChild(topRight);
+      wrap.appendChild(bottomWrap);
+
+      return wrap;
+    }
+
+    function createReadGroup(slotObj){
+      const wrap = document.createElement("div");
+      wrap.style.display = "flex";
+      wrap.style.flexDirection = "column";
+      wrap.style.gap = "4px";
+      wrap.style.alignItems = "center";
+      wrap.style.justifyContent = "center";
+
+      const line1 = document.createElement("div");
+      line1.style.display = "flex";
+      line1.style.gap = "10px";
+      line1.style.justifyContent = "center";
+      line1.style.alignItems = "center";
+
+      const a = document.createElement("span");
+      a.textContent = safeText(slotObj?.a ?? "");
+      a.style.fontWeight = "900";
+      a.style.color = "rgba(20,19,22,.86)";
+
+      const b = document.createElement("span");
+      b.textContent = safeText(slotObj?.b ?? "");
+      b.style.fontWeight = "900";
+      b.style.color = "rgba(20,19,22,.86)";
+
+      line1.appendChild(a);
+      line1.appendChild(b);
+
+      const line2 = document.createElement("div");
+      line2.style.display = "flex";
+      line2.style.gap = "12px";
+      line2.style.justifyContent = "center";
+      line2.style.alignItems = "center";
+      line2.style.color = "rgba(20,19,22,.70)";
+      line2.style.fontWeight = "800";
+
+      const d1 = document.createElement("span");
+      d1.textContent = safeText(slotObj?.d1 ?? "");
+
+      const d2 = document.createElement("span");
+      d2.textContent = safeText(slotObj?.d2 ?? "");
+
+      line2.appendChild(d1);
+      line2.appendChild(d2);
+
+      wrap.appendChild(line1);
+      wrap.appendChild(line2);
+
+      return wrap;
+    }
+
+    function defaultSlot(){
+      return { a:"", b:"", d1:"", d2:"" };
+    }
+
+    function defaultRow(dateStr){
+      const slots = {};
+      TIME_SLOTS.forEach(t => slots[t] = defaultSlot());
+      return { date: dateStr, slots, _editing:false };
+    }
+
+    function rowToPayload(row){
+      // Keep as simple as possible for server
+      return {
+        date: row.date,
+        slots: row.slots
+      };
+    }
+
+    function setAccent(accent){
+      if(!accent) return;
+      // Update blue header
+      document.documentElement.style.setProperty("--blue", accent);
+      document.documentElement.style.setProperty("--blue2", accent);
+      // Update header row gradients inline via CSS var
+    }
+
+    function applyGoldIntensity(intensity){
+      // intensity in 10..100; map to alpha
+      const a = Math.max(0.15, Math.min(0.75, intensity / 100 * 0.65));
+      document.documentElement.style.setProperty("--stroke", `rgba(140,108,25,${a})`);
+    }
+
+    // ---------- Build Tables ----------
+    function renderResultsTable(){
+      const theadRow = $("#tableHeaderRow");
+      theadRow.innerHTML = "";
+      // Build header: DATE + each time slot + actions
+      const tr = theadRow;
+      buildHeaderRow(tr, true);
+
+      const body = $("#tableBody");
+      body.innerHTML = "";
+
+      state.rows.forEach((row, idx) => {
+        const tr = document.createElement("tr");
+
+        const thDate = document.createElement("th");
+        thDate.className = "date-col";
+        thDate.textContent = row.date || "—";
+        tr.appendChild(thDate);
+
+        TIME_SLOTS.forEach((t) => {
+          const td = document.createElement("td");
+          td.className = "cell";
+          td.style.minWidth = "170px";
+
+          if(row._editing){
+            const group = createSlotGroup(row.slots[t] || defaultSlot());
+            group.querySelectorAll("input.cell-input").forEach(inp => inp.disabled = false);
+            td.appendChild(group);
+          }else{
+            const group = createReadGroup(row.slots[t] || defaultSlot());
+            td.appendChild(group);
+          }
+
+          tr.appendChild(td);
+        });
+
+        const tdAct = document.createElement("td");
+        tdAct.className = "row-actions";
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "icon-btn";
+        btn.title = "Edit row";
+        btn.setAttribute("aria-label","Edit row");
+
+        btn.innerHTML = `
+          <svg class="pencil" viewBox="0 0 24 24"><use href="#symPencil"></use></svg>
+        `;
+
+        btn.addEventListener("click", () => {
+          // Toggle editing: only one at a time
+          state.rows.forEach(r => r._editing = false);
+          row._editing = true;
+          state.ui.currentlyEditingRowIndex = idx;
+          renderResultsTable();
+        });
+
+        tdAct.appendChild(btn);
+        tr.appendChild(tdAct);
+
+        body.appendChild(tr);
+      });
+    }
+
+    function renderUserPreview(){
+      // Header
+      const headerTr = $("#userHeaderRow");
+      headerTr.innerHTML = "";
+      // DATE + each time slot (single grouped view)
+      const thDate = document.createElement("th");
+      thDate.textContent = "DATE";
+      headerTr.appendChild(thDate);
+
+      TIME_SLOTS.forEach(t => {
+        const th = document.createElement("th");
+        th.textContent = t;
+        headerTr.appendChild(th);
+      });
+
+      // Build body: show up to 3 latest rows
+      const body = $("#userTableBody");
+      body.innerHTML = "";
+      const rows = [...state.rows].slice(-3).reverse(); // latest first
+      rows.forEach(row => {
+        const tr = document.createElement("tr");
+
+        const thD = document.createElement("th");
+        thD.className = "date-col";
+        thD.textContent = row.date || "—";
+        tr.appendChild(thD);
+
+        TIME_SLOTS.forEach(t => {
+          const td = document.createElement("td");
+          td.style.textAlign = "center";
+          td.style.minWidth = "140px";
+
+          const slot = row.slots[t] || defaultSlot();
+          // Compact display: "a/b" and digits under
+          td.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+              <div style="font-weight:900; color: rgba(20,19,22,.88);">${safeText(slot.a) || "—"} / ${safeText(slot.b) || "—"}</div>
+              <div style="font-weight:900; color: rgba(20,19,22,.65);">${safeText(slot.d1) || "—"} ${safeText(slot.d2) || "—"}</div>
+            </div>
+          `;
+          tr.appendChild(td);
+        });
+
+        body.appendChild(tr);
+      });
+
+      // Top texts + marquee + logo
+      $("#userSubtitle").textContent = state.liveSettings.subtitle || "";
+      $("#userMarqueeTrack").textContent = buildMarqueeText();
+      $("#userTitle").textContent = "BOMBAY GOLD";
+
+      // Menu preview
+      const menuParts = [];
+      if(state.liveSettings.tipsUrl) menuParts.push("Tips");
+      if(state.liveSettings.pattiUrl) menuParts.push("Patti Chart");
+      if(state.liveSettings.link1) menuParts.push("Link 1");
+      if(state.liveSettings.link2) menuParts.push("Link 2");
+      $("#userMenuPreview").textContent = menuParts.join(" • ") || "—";
+
+      // Logo
+      const logoBox = $("#userLogo");
+      if(state.liveSettings.logoDataUrl){
+        logoBox.style.background = "transparent";
+        logoBox.innerHTML = `<img alt="logo" src="${state.liveSettings.logoDataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" />`;
+      }else{
+        logoBox.style.background = "";
+        logoBox.innerHTML = "BG";
+      }
+
+      // Metrics placeholders will be updated separately
+    }
+
+    function buildMarqueeText(){
+      const single = (state.liveSettings.marquee || "").trim();
+      const multi = (state.liveSettings.marqueeMulti || "").split("\n").map(s=>s.trim()).filter(Boolean);
+      const combined = [];
+      if(single) combined.push(single);
+      if(multi.length) combined.push(...multi);
+      if(!combined.length) combined.push("আপডেট আসছে...");
+      // duplicate for smooth marquee
+      return (combined.join(" • ") + " • " + combined.join(" • "));
+    }
+
+    function renderMiniPreview(){
+      const headerTr = $("#miniHeaderRow");
+      headerTr.innerHTML = "";
+      // DATE + each time slot + actions not needed
+      const thDate = document.createElement("th");
+      thDate.textContent = "DATE";
+      headerTr.appendChild(thDate);
+
+      TIME_SLOTS.forEach(t => {
+        const th = document.createElement("th");
+        th.textContent = t;
+        headerTr.appendChild(th);
+      });
+
+      const body = $("#miniPreviewBody");
+      body.innerHTML = "";
+
+      const rows = [...state.rows].slice(-2).reverse();
+      rows.forEach(row => {
+        const tr = document.createElement("tr");
+
+        const tdD = document.createElement("td");
+        tdD.className = "date-col";
+        tdD.textContent = row.date || "—";
+        tr.appendChild(tdD);
+
+        TIME_SLOTS.forEach(t => {
+          const td = document.createElement("td");
+          td.style.textAlign = "center";
+
+          const slot = row.slots[t] || defaultSlot();
+          td.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:3px;">
+              <div style="font-weight:900;">${safeText(slot.a) || "—"} / ${safeText(slot.b) || "—"}</div>
+              <div style="font-weight:800; color: rgba(20,19,22,.65);">${safeText(slot.d1) || "—"} ${safeText(slot.d2) || "—"}</div>
+            </div>
+          `;
+          tr.appendChild(td);
+        });
+
+        body.appendChild(tr);
+      });
+    }
+
+    // ---------- Edit-in-memory helpers ----------
+    function syncEditingRowFromInputs(){
+      const idx = state.ui.currentlyEditingRowIndex;
+      if(idx === null || idx === undefined) return;
+
+      const row = state.rows[idx];
+      // We re-render during toggle, so we capture values by reading DOM inputs in the editing row
+      const tbody = $("#tableBody");
+      const tr = tbody.children[idx];
+      if(!tr) return;
+
+      // Find each time cell by column order: date + TIME_SLOTS * (group) + actions
+      // Our DOM: inputs with data-field (a,b,d1,d2) inside each time td.
+      TIME_SLOTS.forEach((t, timeIndex) => {
+        const td = tr.children[1 + timeIndex]; // 0=date, 1..time slots
+        const inputs = td.querySelectorAll("input.cell-input");
+        inputs.forEach(inp => {
+          const key = inp.dataset.field;
+          if(key) row.slots[t][key] = inp.value.trim();
+        });
+      });
+    }
+
+    // ---------- Add Row ----------
+    function addNewDateRow(dateStr=null){
+      const today = new Date();
+      const y = today.getFullYear();
+      const m = String(today.getMonth()+1).padStart(2,"0");
+      const d = String(today.getDate()).padStart(2,"0");
+      const defaultDate = `${y}-${m}-${d}`;
+
+      const date = dateStr || defaultDate;
+      const row = defaultRow(date);
+
+      // If the date already exists, just append unique time slots blank? We'll create a new row anyway.
+      state.rows.push(row);
+      state.ui.currentlyEditingRowIndex = null;
+
+      renderResultsTable();
+    }
+
+    // ---------- AJAX ----------
+    async function ajaxJSON(url, method, body){
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type":"application/json" },
+        body: body ? JSON.stringify(body) : undefined
+      });
+      if(!res.ok){
+        const txt = await res.text().catch(()=> "");
+        throw new Error(txt || ("Request failed: " + res.status));
+      }
+      return await res.json().catch(()=> ({}));
+    }
+
+    async function publishLive(){
+      // Sync editing row before publish
+      syncEditingRowFromInputs();
+
+      // Build payload
+      const payload = {
+        settings: state.liveSettings,
+        rows: state.rows.map(row => rowToPayload(row)),
+        publishedAt: new Date().toISOString()
+      };
+
+      setPublishUI("Publishing...", "working", true);
+
+      try{
+        await ajaxJSON(ENDPOINT.publish, "POST", payload);
+
+        // Immediately update preview (no reload)
+        // Option A: assume server saved exactly our data:
+        state.metrics.lastPublish = new Date().toLocaleString();
+        // refresh mini + user preview
+        renderResultsTable();
+        renderMiniPreview();
+        renderUserPreview();
+
+        setPublishUI("Publish successful", "success", false);
+        $("#tab-preview").classList.remove("hidden"); // keep preview visible if open
+        $("#mLastPublish").textContent = state.metrics.lastPublish;
+
+      }catch(err){
+        setPublishUI("Publish failed", "danger", false);
+        $("#toastMsg").textContent = err?.message || "Unknown error";
+      }
+    }
+
+    function setPublishUI(title, kind, working){
+      $("#toastTitle").textContent = title;
+      $("#toastMsg").textContent = working ? "Saving on server and updating user preview..." : (kind==="success" ? "Your changes are live." : "Try again.");
+      const dot = $("#toastDot");
+      dot.classList.remove("success","danger");
+      if(kind==="success") dot.classList.add("success");
+      if(kind==="danger") dot.classList.add("danger");
+
+      $("#btnPublish").disabled = !!working;
+      $("#btnPublish").style.opacity = working ? .7 : 1;
+      $("#btnPublish").style.cursor = working ? "not-allowed" : "pointer";
+      $("#btnPublish").innerHTML = working ? `<span class="spinner" aria-hidden="true" style="display:inline-block; margin-right:10px;"></span>PUBLISH LIVE` : "PUBLISH LIVE";
+    }
+
+    async function fetchLive(){
+      setPublishUI("Refreshing...", "working", true);
+      try{
+        const data = await ajaxJSON(ENDPOINT.live, "GET");
+
+        // Expected response shape (example):
+        // { settings:{...}, rows:[...], metrics:{...} }
+        if(data.settings) state.liveSettings = { ...state.liveSettings, ...data.settings };
+        if(Array.isArray(data.rows)) state.rows = data.rows;
+        if(data.metrics){
+          state.metrics.totalGames = data.metrics.totalGames ?? state.metrics.totalGames;
+          state.metrics.activeUsers = data.metrics.activeUsers ?? state.metrics.activeUsers;
+          state.metrics.lastPublish = data.metrics.lastPublish ?? state.metrics.lastPublish;
+        }else{
+          // fallback if server doesn't send metrics
+          state.metrics.lastPublish = new Date().toLocaleString();
+        }
+
+        // Apply theme
+        applyGoldIntensity(state.liveSettings.goldIntensity ?? 45);
+        setAccent(state.liveSettings.accent ?? "#1f5aa8");
+
+        // Fill inputs
+        syncSettingsInputsFromState();
+
+        // Render
+        renderResultsTable();
+        renderMiniPreview();
+        renderUserPreview();
+
+        // Dashboard metrics
+        $("#mTotalGames").textContent = state.metrics.totalGames ?? "—";
+        $("#mActiveUsers").textContent = state.metrics.activeUsers ?? "—";
+        $("#mLastPublish").textContent = state.metrics.lastPublish ?? "—";
+
+        $("#toastMsg").textContent = "Latest live results loaded.";
+        $("#toastTitle").textContent = "Live updated";
+        $("#toastDot").classList.remove("success","danger");
+
+        $("#btnPublish").disabled = false;
+        $("#btnPublish").style.opacity = 1;
+        $("#btnPublish").innerHTML = "PUBLISH LIVE";
+
+      }catch(err){
+        setPublishUI("Refresh failed", "danger", false);
+        $("#toastMsg").textContent = err?.message || "Unknown error";
+      }
+    }
+
+    // ---------- Tabs ----------
+    function setActiveTab(tabId){
+      $$(".tab").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === tabId);
+      });
+      $$(".tab-pane").forEach(p => p.classList.add("hidden"));
+      const pane = $("#"+tabId);
+      if(pane) pane.classList.remove("hidden");
+
+      // Special: if user opens results, ensure table is correct
+      if(tabId === "tab-results") renderResultsTable();
+      if(tabId === "tab-preview") renderUserPreview();
+      if(tabId === "tab-dashboard"){
+        $("#tab-dashboard").classList.remove("hidden");
+        $("#autoHint").classList.add("hidden");
+      }
+    }
+
+    // ---------- Settings Inputs ----------
+    function syncSettingsInputsFromState(){
+      $("#inpSubtitle").value = state.liveSettings.subtitle || "লাইভ গেম রেজাল্ট এবং সেটিংস কন্ট্রোল প্যানেল";
+      $("#inpMarquee").value = state.liveSettings.marquee || "";
+      $("#inpMarqueeMulti").value = state.liveSettings.marqueeMulti || "";
+
+      $("#inpTipsUrl").value = state.liveSettings.tipsUrl || "";
+      $("#inpPattiUrl").value = state.liveSettings.pattiUrl || "";
+      $("#inpLink1").value = state.liveSettings.link1 || "";
+      $("#inpLink2").value = state.liveSettings.link2 || "";
+
+      $("#inpAccent").value = state.liveSettings.accent || "#1f5aa8";
+      $("#inpGoldIntensity").value = state.liveSettings.goldIntensity ?? 45;
+
+      // Logo preview from dataUrl
+      if(state.liveSettings.logoDataUrl){
+        $("#logoPreviewBox").style.background = "transparent";
+        $("#logoPreviewBox").innerHTML = `<img alt="logo preview" src="${state.liveSettings.logoDataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" />`;
+      }else{
+        $("#logoPreviewBox").style.background = "";
+        $("#logoPreviewBox").textContent = "BG";
+      }
+    }
+
+    // ---------- Seed Demo Data ----------
+    function seedDemo(){
+      // Create 2-3 rows with values resembling examples: 168, 778 and digits 5,2
+      state.rows = [
+        defaultRow("2026-07-05"),
+        defaultRow("2026-07-06"),
+        defaultRow("2026-07-07"),
+      ];
+      const sampleA = ["168", "220", "305"];
+      const sampleB = ["778", "910", "642"];
+      const sampleD = [
+        ["5","2"],
+        ["7","1"],
+        ["9","4"]
+      ];
+      state.rows.forEach((row, rIdx) => {
+        TIME_SLOTS.forEach((t, i) => {
+          const j = (rIdx + i) % sampleA.length;
+          row.slots[t].a = sampleA[j];
+          row.slots[t].b = sampleB[j];
+          row.slots[t].d1 = sampleD[j][0];
+          row.slots[t].d2 = sampleD[j][1];
+        });
+      });
+
+      state.liveSettings = {
+        ...state.liveSettings,
+        subtitle: "লাইভ গেম রেজাল্ট এবং সেটিংস কন্ট্রোল প্যানেল",
+        marquee: "আজকের নতুন ফলাফল আপডেট হলো — লাইভ থাকুন!",
+        marqueeMulti: "টিপস: দ্রুত ফলাফল দেখতে 'Tips' দেখুন\nপাটি চার্ট: সম্ভাবনা বোঝার জন্য দেখুন",
+        logoDataUrl: null,
+        tipsUrl: "https://example.com/tips",
+        pattiUrl: "https://example.com/patti-chart",
+        link1: "",
+        link2: "",
+        accent: "#1f5aa8",
+        goldIntensity: 45
+      };
+
+      // Metrics demo
+      state.metrics = { totalGames: 38, activeUsers: 124, lastPublish: "—" };
+
+      applyGoldIntensity(state.liveSettings.goldIntensity);
+      setAccent(state.liveSettings.accent);
+
+      syncSettingsInputsFromState();
+    }
+
+    // ---------- File Upload ----------
+    $("#fileLogo").addEventListener("change", () => {
+      const f = $("#fileLogo").files?.[0];
+      if(!f) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.liveSettings.logoDataUrl = reader.result;
+        $("#logoPreviewBox").style.background = "transparent";
+        $("#logoPreviewBox").innerHTML = `<img alt="logo preview" src="${state.liveSettings.logoDataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" />`;
+        renderUserPreview();
+      };
+      reader.readAsDataURL(f);
+    });
+
+    // ---------- Events ----------
+    // Tabs clicks
+    $$(".tab").forEach(btn => {
+      btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
+    });
+
+    // Add row
+    function handleAddRow(){
+      addNewDateRow();
+      // auto-open results tab
+      setActiveTab("tab-results");
+    }
+    $("#btnAddRow").addEventListener("click", handleAddRow);
+    $("#btnAddRow2").addEventListener("click", handleAddRow);
+
+    // Publish
+    $("#btnPublish").addEventListener("click", publishLive);
+
+    // Fetch live
+    $("#btnFetchLive").addEventListener("click", fetchLive);
+
+    // Preview button
+    $("#btnOpenPreview").addEventListener("click", () => {
+      setActiveTab("tab-preview");
+      renderUserPreview();
+    });
+
+    // Apply settings to preview
+    $("#btnApplyHeaderText").addEventListener("click", () => {
+      state.liveSettings.subtitle = $("#inpSubtitle").value.trim();
+      state.liveSettings.marquee = $("#inpMarquee").value.trim();
+      state.liveSettings.marqueeMulti = $("#inpMarqueeMulti").value;
+      renderUserPreview();
+      $("#toastTitle").textContent = "Preview updated";
+      $("#toastMsg").textContent = "Header text + marquee applied to preview.";
+      $("#toastDot").classList.remove("success","danger");
+    });
+
+    $("#btnSaveHeaderText").addEventListener("click", () => {
+      // This just stages; actual persistence happens on publish.
+      state.liveSettings.subtitle = $("#inpSubtitle").value.trim();
+      state.liveSettings.marquee = $("#inpMarquee").value.trim();
+      state.liveSettings.marqueeMulti = $("#inpMarqueeMulti").value;
+      $("#toastTitle").textContent = "Staged for next publish";
+      $("#toastMsg").textContent = "Click PUBLISH LIVE to save on server.";
+      $("#toastDot").classList.remove("success","danger");
+    });
+
+    // Apply menu
+    $("#btnApplyMenu").addEventListener("click", () => {
+      state.liveSettings.tipsUrl = $("#inpTipsUrl").value.trim();
+      state.liveSettings.pattiUrl = $("#inpPattiUrl").value.trim();
+      state.liveSettings.link1 = $("#inpLink1").value.trim();
+      state.liveSettings.link2 = $("#inpLink2").value.trim();
+      renderUserPreview();
+      $("#toastTitle").textContent = "Preview updated";
+      $("#toastMsg").textContent = "Menu links applied to preview.";
+      $("#toastDot").classList.remove("success","danger");
+    });
+
+    $("#btnResetDemoMenu").addEventListener("click", () => {
+      syncSettingsInputsFromState();
+      $("#toastTitle").textContent = "Reset from live";
+      $("#toastMsg").textContent = "Inputs refreshed.";
+      $("#toastDot").classList.remove("success","danger");
+    });
+
+    // Theme apply
+    $("#btnApplyTheme").addEventListener("click", () => {
+      const accent = $("#inpAccent").value.trim() || "#1f5aa8";
+      const goldIntensity = Number($("#inpGoldIntensity").value || 45);
+
+      state.liveSettings.accent = accent;
+      state.liveSettings.goldIntensity = goldIntensity;
+
+      applyGoldIntensity(goldIntensity);
+      setAccent(accent);
+
+      // Re-render tables (header uses CSS var)
+      renderResultsTable();
+      renderMiniPreview();
+      renderUserPreview();
+
+      $("#toastTitle").textContent = "Theme applied to preview";
+      $("#toastMsg").textContent = "Accent and gold border updated.";
+      $("#toastDot").classList.remove("success","danger");
+    });
+
+    $("#btnRestoreTheme").addEventListener("click", () => {
+      $("#inpAccent").value = state.liveSettings.accent || "#1f5aa8";
+      $("#inpGoldIntensity").value = state.liveSettings.goldIntensity ?? 45;
+
+      applyGoldIntensity(state.liveSettings.goldIntensity ?? 45);
+      setAccent(state.liveSettings.accent || "#1f5aa8");
+
+      renderResultsTable();
+      renderMiniPreview();
+      renderUserPreview();
+
+      $("#toastTitle").textContent = "Theme restored";
+      $("#toastMsg").textContent = "Using current live settings.";
+      $("#toastDot").classList.remove("success","danger");
+    });
+
+    // Keyboard: save on Ctrl+Enter (optional convenience)
+    document.addEventListener("keydown", (e) => {
+      if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
+        publishLive();
+      }
+    });
+
+    // ---------- Init ----------
+    function init(){
+      seedDemo();
+
+      // Build initial mini header/body
+      // Dashboard header columns (mini)
+      const miniHeaderRow = $("#miniHeaderRow");
+      miniHeaderRow.innerHTML = "";
+      const thDate = document.createElement("th");
+      thDate.textContent = "DATE";
+      miniHeaderRow.appendChild(thDate);
+      TIME_SLOTS.forEach(t => {
+        const th = document.createElement("th");
+        th.textContent = t;
+        miniHeaderRow.appendChild(th);
+      });
+
+      renderResultsTable();
+      renderMiniPreview();
+      renderUserPreview();
+
+      // Set dashboard metrics
+      $("#mTotalGames").textContent = state.metrics.totalGames ?? "—";
+      $("#mActiveUsers").textContent = state.metrics.activeUsers ?? "—";
+      $("#mLastPublish").textContent = state.metrics.lastPublish ?? "—";
+
+      // Default tab: results management (as per your request to start)
+      setActiveTab("tab-results");
+
+      // Apply initial header subtitle
+      $("#siteSubtitle").textContent = state.liveSettings.subtitle;
+      // Stage settings inputs
+      syncSettingsInputsFromState();
+      // If you want to load real live data immediately, uncomment:
+      // fetchLive();
+      // Also update subtitle on top header from settings:
+      $("#siteSubtitle").textContent = state.liveSettings.subtitle || $("#siteSubtitle").textContent;
+      $("#siteTitle").textContent = "BOMBAY GOLD";
+    }
+
+    init();
+  </script>
 </body>
 </html>
