@@ -1,384 +1,49 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Panel (Starter)</title>
-  <style>
-    :root{
-      --bg: #0b1220;
-      --card: rgba(255,255,255,.06);
-      --card2: rgba(255,255,255,.10);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.65);
-      --line: rgba(255,255,255,.10);
-      --brand: #6d5efc;
-      --brand2:#22c55e;
-      --warn:#f59e0b;
-      --danger:#ef4444;
-      --shadow: 0 20px 60px rgba(0,0,0,.45);
-      --radius: 18px;
-    }
-
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background:
-        radial-gradient(900px 500px at 20% -10%, rgba(109,94,252,.35), transparent 60%),
-        radial-gradient(700px 450px at 90% 10%, rgba(34,197,94,.22), transparent 55%),
-        radial-gradient(800px 500px at 50% 120%, rgba(245,158,11,.16), transparent 55%),
-        var(--bg);
-      color: var(--text);
-      min-height:100vh;
-    }
-
-    .app{
-      display:grid;
-      grid-template-columns: 280px 1fr;
-      gap: 18px;
-      padding: 18px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    /* Sidebar */
-    .sidebar{
-      position: sticky;
-      top: 18px;
-      height: calc(100vh - 36px);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px;
-      overflow: auto;
-    }
-
-    .brand{
-      display:flex; align-items:center; gap:12px;
-      padding: 10px 10px 14px;
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 14px;
-    }
-    .logo{
-      width: 40px; height: 40px; border-radius: 12px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 60%),
-                  linear-gradient(135deg, var(--brand), #2dd4bf);
-      border: 1px solid rgba(255,255,255,.18);
-    }
-    .brand h1{
-      font-size: 14px; margin:0;
-      letter-spacing:.4px;
-      text-transform: uppercase;
-    }
-    .brand p{
-      margin:0; font-size:12px; color: var(--muted);
-    }
-
-    nav a{
-      display:flex; align-items:center; gap:10px;
-      padding: 10px 10px;
-      border-radius: 12px;
-      color: var(--muted);
-      text-decoration:none;
-      border: 1px solid transparent;
-      transition: 160ms ease;
-      margin: 6px 0;
-    }
-    nav a:hover{
-      color: var(--text);
-      background: rgba(255,255,255,.06);
-      border-color: rgba(255,255,255,.10);
-      transform: translateY(-1px);
-    }
-    nav a.active{
-      color: var(--text);
-      background: rgba(109,94,252,.16);
-      border-color: rgba(109,94,252,.35);
-    }
-
-    .dot{
-      width: 10px; height: 10px; border-radius: 999px;
-      background: rgba(255,255,255,.25);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.06);
-    }
-    .dot.brand{ background: var(--brand); box-shadow: 0 0 0 4px rgba(109,94,252,.18); }
-    .dot.green{ background: var(--brand2); box-shadow: 0 0 0 4px rgba(34,197,94,.18); }
-    .dot.warn{ background: var(--warn); box-shadow: 0 0 0 4px rgba(245,158,11,.18); }
-    .dot.danger{ background: var(--danger); box-shadow: 0 0 0 4px rgba(239,68,68,.18); }
-
-    /* Main */
-    .main{
-      display:flex;
-      flex-direction: column;
-      gap: 18px;
-      min-width: 0;
-    }
-
-    .topbar{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .search{
-      display:flex; align-items:center; gap:10px;
-      flex: 1;
-      min-width: 220px;
-    }
-    .search input{
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-      color: var(--text);
-      outline: none;
-    }
-    .search input::placeholder{ color: rgba(255,255,255,.45); }
-
-    .btn{
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 14px;
-      cursor:pointer;
-      transition: 160ms ease;
-      white-space: nowrap;
-    }
-    .btn:hover{
-      transform: translateY(-1px);
-      background: rgba(255,255,255,.10);
-    }
-    .btn.primary{
-      border-color: rgba(109,94,252,.45);
-      background: rgba(109,94,252,.20);
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 14px;
-    }
-
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px;
-      min-width:0;
-    }
-
-    .stat{ grid-column: span 4; }
-    .tableCard{ grid-column: span 12; }
-
-    .card h2{
-      margin:0 0 10px;
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 600;
-      letter-spacing: .3px;
-      text-transform: uppercase;
-    }
-
-    .value{
-      font-size: 26px;
-      font-weight: 760;
-      margin: 0 0 6px;
-    }
-    .sub{
-      color: var(--muted);
-      margin:0;
-      font-size: 13px;
-    }
-
-    .pillRow{ display:flex; gap:8px; flex-wrap:wrap; margin-top: 10px; }
-    .pill{
-      font-size:12px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--muted);
-    }
-    .pill.good{ border-color: rgba(34,197,94,.35); color: rgba(170,255,210,.9); background: rgba(34,197,94,.12); }
-    .pill.warn{ border-color: rgba(245,158,11,.40); color: rgba(255,220,160,.95); background: rgba(245,158,11,.14); }
-    .pill.bad{ border-color: rgba(239,68,68,.35); color: rgba(255,190,190,.95); background: rgba(239,68,68,.14); }
-
-    table{
-      width:100%;
-      border-collapse: collapse;
-      overflow:hidden;
-      border-radius: 14px;
-    }
-    th, td{
-      padding: 12px 10px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      text-align:left;
-      font-size: 13px;
-    }
-    th{
-      color: var(--muted);
-      font-weight: 650;
-      letter-spacing: .2px;
-      text-transform: uppercase;
-      font-size: 12px;
-    }
-    tr:hover td{
-      background: rgba(255,255,255,.04);
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--muted);
-      font-size: 12px;
-      white-space: nowrap;
-    }
-    .badge i{ width:8px; height:8px; border-radius:999px; display:inline-block; }
-
-    .badge.good{ border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.12); color: rgba(170,255,210,.95); }
-    .badge.good i{ background: var(--brand2); }
-    .badge.warn{ border-color: rgba(245,158,11,.40); background: rgba(245,158,11,.14); color: rgba(255,220,160,.95); }
-    .badge.warn i{ background: var(--warn); }
-    .badge.bad{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.14); color: rgba(255,190,190,.95); }
-    .badge.bad i{ background: var(--danger); }
-
-    /* Responsive */
-    @media (max-width: 980px){
-      .app{ grid-template-columns: 1fr; }
-      .sidebar{ height: auto; position: relative; }
-      .stat{ grid-column: span 12; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bombay Gold - Live Results</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="logo"></div>
-        <div>
-          <h1>Admin Dashboard</h1>
-          <p>Control panel</p>
+    <!-- Header Section -->
+    <div class="header-container">
+        <h1 class="main-title">BOMBAY GOLD</h1>
+        <p class="bengali-subtitle">লাইভ গেম রেজাল্ট সবথেকে প্রথম পাওয়ার জন্য ভিজিট করুন এই সাইট এ।</p>
+        
+        <!-- Marquee/Announcement Section -->
+        <div class="marquee-container">
+            <div class="marquee-text" id="marqueeText">
+                Welcome to Bombay Gold - Get live results first!
+            </div>
         </div>
-      </div>
+    </div>
 
-      <nav>
-        <a class="active" href="#">
-          <span class="dot brand"></span> Overview
-        </a>
-        <a href="#">
-          <span class="dot green"></span> Users
-        </a>
-        <a href="#">
-          <span class="dot warn"></span> Orders
-        </a>
-        <a href="#">
-          <span class="dot danger"></span> Support
-        </a>
-      </nav>
+    <!-- Navigation Buttons -->
+    <div class="button-container">
+        <button class="nav-button" id="tipsBtn">Tips</button>
+        <button class="nav-button" id="pattiChartBtn">Patti Chart</button>
+    </div>
 
-      <div style="margin-top:14px;color:rgba(255,255,255,.55);font-size:12px;line-height:1.5;padding:0 10px;">
-        Tip: Replace the table rows with your data.
-        This is a frontend-only starter.
-      </div>
-    </aside>
-
-    <main class="main">
-      <header class="topbar">
-        <div class="search">
-          <input type="search" placeholder="Search users, orders, tickets..." />
+    <!-- Results Display Section -->
+    <div class="results-container">
+        <div id="resultsTableContainer">
+            <!-- Tables will be dynamically inserted here -->
         </div>
-        <button class="btn" type="button">Notifications</button>
-        <button class="btn primary" type="button">Create</button>
-      </header>
+    </div>
 
-      <section class="grid">
-        <div class="card stat">
-          <h2>Total Revenue</h2>
-          <p class="value">$128,440</p>
-          <p class="sub">+12% this month</p>
-          <div class="pillRow">
-            <span class="pill good">Active</span>
-            <span class="pill">Stable</span>
-          </div>
+    <!-- Hidden Modal for Tips and Patti Chart -->
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">&times;</button>
+            <h2 id="modalTitle">Tips</h2>
+            <div id="modalBody">
+                <!-- Content will be inserted dynamically -->
+            </div>
         </div>
+    </div>
 
-        <div class="card stat">
-          <h2>New Users</h2>
-          <p class="value">1,240</p>
-          <p class="sub">+6% growth</p>
-          <div class="pillRow">
-            <span class="pill good">Verified</span>
-            <span class="pill warn">Pending</span>
-          </div>
-        </div>
-
-        <div class="card stat">
-          <h2>Open Tickets</h2>
-          <p class="value">37</p>
-          <p class="sub">Needs attention</p>
-          <div class="pillRow">
-            <span class="pill bad">Urgent</span>
-            <span class="pill warn">In progress</span>
-          </div>
-        </div>
-
-        <div class="card tableCard">
-          <h2>Recent Activity</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Owner</th>
-                <th>Status</th>
-                <th>Updated</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Order #10492</td>
-                <td>Ayesha</td>
-                <td>
-                  <span class="badge good"><i></i> Completed</span>
-                </td>
-                <td>2 hours ago</td>
-              </tr>
-              <tr>
-                <td>Ticket #7781</td>
-                <td>Michael</td>
-                <td>
-                  <span class="badge warn"><i></i> In progress</span>
-                </td>
-                <td>Yesterday</td>
-              </tr>
-              <tr>
-                <td>User Signup</td>
-                <td>Samira</td>
-                <td>
-                  <span class="badge bad"><i></i> Action required</span>
-                </td>
-                <td>3 days ago</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </main>
-  </div>
+    <script src="app.js"></script>
 </body>
 </html>
