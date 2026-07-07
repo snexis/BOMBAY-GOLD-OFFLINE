@@ -1,225 +1,143 @@
-// =================================================================
-// ১. এখানে আপনার ফায়ারবেস কনফিগারেশন বসাবেন (যা আপনি এর পর পাঠাচ্ছেন)
-// =================================================================
+// ১. আপনার ফায়ারবেস কনফিগারেশন কোড নিচে বসান (Replace করুন)
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com", // এটি অত্যন্ত জরুরি লাইভ রিফ্রেশ ছাড়া চলার জন্য
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+    apiKey: "YOUR_API_KEY_HERE",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 
-// Initialize Firebase
+// ফায়ারবেস ইনিশিয়ালাইজ করুন
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
-const db = firebase.database();
+const database = firebase.database();
 
-// গেমের নির্ধারিত টাইম স্লট
-const TIME_SLOTS = ["10:20 AM","11:50 AM","01:10 PM","02:40 PM","04:05 PM","05:35 PM"];
+// নির্ধারিত টাইম স্লটসমূহ (ইমেজের সাথে হুবহু মিল রেখে)
+const timeSlots = ["10:20 AM", "11:50 AM", "01:20 PM", "02:50 PM", "04:20 PM", "05:50 PM", "07:20 PM"];
 
-// =================================================================
-// ২. মেইন পেজ বা ইউজার পেজ লজিক (index.html)
-// =================================================================
-function initUserPage() {
-    renderUserHeaders();
-    
-    // ফায়ারবেস থেকে রিয়েল-টাইম ডাটা শোনা (Listen) - কোনো রিফ্রেশ ছাড়াই অটো চেঞ্জ হবে!
-    db.ref("liveData").on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            // সেটিংস আপডেট
+document.addEventListener("DOMContentLoaded", function () {
+    const resultsContainer = document.getElementById("results-container");
+    const adminInputsBody = document.getElementById("admin-inputs-body");
+    const btnPublish = document.getElementById("btn-publish");
+
+    // --- ব্যবহারকারী পেজ লজিক (index.html) ---
+    if (resultsContainer) {
+        // ফায়ারবেস থেকে রিয়েল-টাইম ডাটা শোনা (কোনো রিফ্রেশ লাগবে না)
+        database.ref("game_results").on("value", (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                resultsContainer.innerHTML = '<div class="loading-text">কোনো লাইভ রেজাল্ট পাওয়া যায়নি।</div>';
+                return;
+            }
+
+            // হেডার টেক্সট ও লিংক আপডেট
             if(data.settings) {
-                document.getElementById("userSubtitle").textContent = data.settings.subtitle || "";
-                document.getElementById("userMarqueeTrack").textContent = data.settings.marquee || "";
-                if(data.settings.logoText) document.getElementById("userLogo").textContent = data.settings.logoText;
-                
-                // বোতাম বা মেনু লিঙ্ক জেনারেট করা
-                renderMenuButtons(data.settings);
+                if(data.settings.subtitle) document.getElementById("site-subtitle").textContent = data.settings.subtitle;
+                if(data.settings.marquee) document.getElementById("site-marquee").textContent = data.settings.marquee;
+                if(data.settings.tipsUrl) document.getElementById("link-tips").href = data.settings.tipsUrl;
+                if(data.settings.pattiUrl) document.getElementById("link-patti").href = data.settings.pattiUrl;
             }
-            // টেবিলের রেজাল্ট আপডেট
-            if(data.rows) {
-                renderUserRows(data.rows);
-            }
-        }
-    });
-}
 
-function renderUserHeaders() {
-    const headerRow = document.getElementById("userHeaderRow");
-    headerRow.innerHTML = "<th>DATE</th>";
-    TIME_SLOTS.forEach(slot => {
-        headerRow.innerHTML += `<th>${slot}</th>`;
-    });
-}
+            // টেবিল তৈরি করা
+            resultsContainer.innerHTML = "";
+            const records = data.records || {};
+            // তারিখ অনুযায়ী সাজানো (নতুন তারিখ উপরে থাকবে)
+            const sortedDates = Object.keys(records).sort((a, b) => new Date(b) - new Date(a));
 
-function renderUserRows(rows) {
-    const body = document.getElementById("userTableBody");
-    body.innerHTML = "";
-    rows.forEach(row => {
-        let tr = `<tr><td><strong>${row.date}</strong></td>`;
-        TIME_SLOTS.forEach(slot => {
-            const slotData = row.slots ? row.slots[slot] : null;
-            const a = slotData ? (slotData.a || "—") : "—";
-            const b = slotData ? (slotData.b || "—") : "—";
-            const d1 = slotData ? (slotData.d1 || "—") : "—";
-            const d2 = slotData ? (slotData.d2 || "—") : "—";
-            
-            tr += `<td>
-                <div style="font-weight:bold; color:#1f5aa8;">${a} | ${b}</div>
-                <div style="font-size:12px; color:#8b6b15;">(${d1}, ${d2})</div>
-            </td>`;
+            sortedDates.forEach(dateKey => {
+                const dayData = records[dateKey];
+                // তারিখ ফরম্যাট পরিবর্তন (YYYY-MM-DD থেকে DD/MM/YYYY)
+                const dateParts = dateKey.split("-");
+                const displayDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : dateKey;
+
+                let tableHtml = `
+                    <div class="results-table-block">
+                        <div class="date-header">${displayDate}</div>
+                        <div style="overflow-x: auto;">
+                            <table class="results-grid-table">
+                                header_row
+                                body_row
+                            </table>
+                        </div>
+                    </div>
+                `;
+
+                let headerRow = "<thead><tr>" + timeSlots.map(t => `<th>${t}</th>`).join("") + "</tr></thead>";
+                let bodyRow = "<tbody><tr>" + timeSlots.map(t => {
+                    let patti = (dayData[t] && dayData[t].patti) ? dayData[t].patti : "-";
+                    let single = (dayData[t] && dayData[t].single) ? dayData[t].single : "-";
+                    return `<td><span class="patti-row-text">${patti}</span><span class="single-row-text">${single}</span></td>`;
+                }).join("") + "</tr></tbody>";
+
+                tableHtml = tableHtml.replace("header_row", headerRow).replace("body_row", bodyRow);
+                resultsContainer.innerHTML += tableHtml;
+            });
         });
-        tr += "</tr>";
-        body.innerHTML += tr;
-    });
-}
-
-function renderMenuButtons(settings) {
-    const container = document.getElementById("menuButtonsRow");
-    container.innerHTML = "";
-    if(settings.tipsUrl) {
-        container.innerHTML += `<a href="${settings.tipsUrl}" target="_blank" class="btn primary" style="text-decoration:none;">Tips</a>`;
     }
-    if(settings.pattiUrl) {
-        container.innerHTML += `<a href="${settings.pattiUrl}" target="_blank" class="btn blue" style="text-decoration:none;">Patti Chart</a>`;
-    }
-}
 
-// =================================================================
-// ৩. অ্যাডমিন প্যানেল লজিক (admin.html)
-// =================================================================
-let localRows = [];
-
-function initAdminPage() {
-    setupTabs();
-    renderAdminHeaders();
-
-    // ডাটাবেস থেকে বর্তমান ডাটা এক্সেস করে অ্যাডমিন ফর্ম ফিলাপ করা
-    db.ref("liveData").once("value", (snapshot) => {
-        const data = snapshot.val();
-        if(data) {
-            if(data.rows) {
-                localRows = data.rows;
-                renderAdminRows();
-            }
-            if(data.settings) {
-                document.getElementById("inpSubtitle").value = data.settings.subtitle || "";
-                document.getElementById("inpMarquee").value = data.settings.marquee || "";
-                document.getElementById("inpTipsUrl").value = data.settings.tipsUrl || "";
-                document.getElementById("inpPattiUrl").value = data.settings.pattiUrl || "";
-            }
-        }
-    });
-
-    // নতুন রো বা ডেট যুক্ত করার বোতাম
-    document.getElementById("btnAddRow").addEventListener("click", addNewRow);
-    
-    // পাবলিশ লাইভ বোতাম অ্যাকশন (ফায়ারবেসে ডাটা পাঠাবে)
-    document.getElementById("btnPublish").addEventListener("click", publishDataLive);
-}
-
-function setupTabs() {
-    const tabs = document.querySelectorAll(".tab");
-    tabs.forEach(tab => {
-        tab.addEventListener("click", () => {
-            tabs.forEach(t => t.classList.remove("active"));
-            tab.classList.add("active");
-            
-            const panes = document.querySelectorAll(".tab-pane");
-            panes.forEach(p => p.classList.add("hidden"));
-            
-            const target = tab.getAttribute("data-tab");
-            document.getElementById(target).classList.remove("hidden");
+    // --- অ্যাডমিন প্যানেল লজিক (admin.html) ---
+    if (adminInputsBody && btnPublish) {
+        // ইনপুট রো বা সারিগুলো তৈরি করা
+        timeSlots.forEach(time => {
+            const tr = document.createElement("tr");
+            tr.setAttribute("data-time", time);
+            tr.innerHTML = `
+                <td><strong>${time}</strong></td>
+                <td><input type="text" maxlength="3" class="input-patti" placeholder="-"></td>
+                <td><input type="text" maxlength="1" class="input-single" placeholder="-"></td>
+            `;
+            adminInputsBody.appendChild(tr);
         });
-    });
-}
 
-function renderAdminHeaders() {
-    const headerRow = document.getElementById("tableHeaderRow");
-    headerRow.innerHTML = "<th>DATE</th>";
-    TIME_SLOTS.forEach(slot => {
-        headerRow.innerHTML += `<th>${slot}</th>`;
-    });
-}
+        const dateInput = document.getElementById("result-date");
+        // আজকে দিনটি ডিফল্ট সেট করা
+        dateInput.value = new Date().toISOString().split('T')[0];
 
-function addNewRow() {
-    const today = new Date().toISOString().split('T')[0];
-    let newRow = { date: today, slots: {} };
-    TIME_SLOTS.forEach(slot => {
-        newRow.slots[slot] = { a: "", b: "", d1: "", d2: "" };
-    });
-    localRows.unshift(newRow); // নতুন ডেট সবার উপরে আসবে
-    renderAdminRows();
-}
-
-function renderAdminRows() {
-    const body = document.getElementById("tableBody");
-    body.innerHTML = "";
-    
-    localRows.forEach((row, rowIndex) => {
-        let tr = `<tr>`;
-        tr += `<td><input type="date" class="date-input" value="${row.date}" onchange="updateDate(${rowIndex}, this.value)"></td>`;
-        
-        TIME_SLOTS.forEach(slot => {
-            const slotData = row.slots[slot] || {a:"", b:"", d1:"", d2:""};
-            tr += `<td>
-                <div><input type="text" placeholder="Num A" class="cell-input-box" value="${slotData.a}" oninput="updateCell(${rowIndex}, '${slot}', 'a', this.value)"></div>
-                <div><input type="text" placeholder="Num B" class="cell-input-box" value="${slotData.b}" oninput="updateCell(${rowIndex}, '${slot}', 'b', this.value)"></div>
-                <div>
-                   <input type="text" placeholder="D1" style="width:28px;" class="cell-input-box" value="${slotData.d1}" oninput="updateCell(${rowIndex}, '${slot}', 'd1', this.value)">
-                   <input type="text" placeholder="D2" style="width:28px;" class="cell-input-box" value="${slotData.d2}" oninput="updateCell(${rowIndex}, '${slot}', 'd2', this.value)">
-                </div>
-            </td>`;
+        // তারিখ পরিবর্তন করলে ফায়ারবেস থেকে আগের ডাটা থাকলে ইনপুটে বসবে
+        dateInput.addEventListener("change", () => {
+            const selectedDate = dateInput.value;
+            database.ref(`game_results/records/${selectedDate}`).once("value", (snapshot) => {
+                const dayData = snapshot.val() || {};
+                document.querySelectorAll("#admin-inputs-body tr").forEach(row => {
+                    const time = row.getAttribute("data-time");
+                    row.querySelector(".input-patti").value = (dayData[time] && dayData[time].patti && dayData[time].patti !== "-") ? dayData[time].patti : "";
+                    row.querySelector(".input-single").value = (dayData[time] && dayData[time].single && dayData[time].single !== "-") ? dayData[time].single : "";
+                });
+            });
         });
-        
-        tr += `</tr>`;
-        body.innerHTML += tr;
-    });
-}
+        dateInput.dispatchEvent(new Event("change"));
 
-function updateDate(index, value) {
-    localRows[index].date = value;
-}
+        // পাবলিশ লাইভ বাটনে ক্লিক অ্যাকশন
+        btnPublish.addEventListener("click", () => {
+            const selectedDate = dateInput.value;
+            if(!selectedDate) return alert("তারিখ সিলেক্ট করুন!");
 
-function updateCell(rowIndex, slot, field, value) {
-    if(!localRows[rowIndex].slots[slot]) {
-        localRows[rowIndex].slots[slot] = {a:"", b:"", d1:"", d2:""};
+            let recordsUpdate = {};
+            document.querySelectorAll("#admin-inputs-body tr").forEach(row => {
+                const time = row.getAttribute("data-time");
+                const patti = row.querySelector(".input-patti").value.trim() || "-";
+                const single = row.querySelector(".input-single").value.trim() || "-";
+                recordsUpdate[time] = { patti, single };
+            });
+
+            const settings = {
+                subtitle: document.getElementById("input-subtitle").value.trim(),
+                marquee: document.getElementById("input-marquee").value.trim(),
+                tipsUrl: document.getElementById("input-tips-url").value.trim() || "#",
+                pattiUrl: document.getElementById("input-patti-url").value.trim() || "#"
+            };
+
+            // ফায়ারবেস ডাটাবেসে সেভ করা
+            database.ref(`game_results/records/${selectedDate}`).set(recordsUpdate);
+            database.ref(`game_results/settings`).set(settings).then(() => {
+                const statusMsg = document.getElementById("status-message");
+                statusMsg.textContent = "সফলভাবে ইন্টারনেটে লাইভ করা হয়েছে!";
+                statusMsg.className = "status-msg status-success";
+                setTimeout(() => statusMsg.style.display = "none", 4000);
+            });
+        });
     }
-    localRows[rowIndex].slots[slot][field] = value;
-}
-
-// এই ফাংশনটি পুরো ডাটাকে ফায়ারবেস রিয়েলটাইম ডাটাবেসে সেভ করে দেয়
-function publishDataLive() {
-    const toast = document.getElementById("publishToast");
-    const toastTitle = document.getElementById("toastTitle");
-    const toastMsg = document.getElementById("toastMsg");
-    
-    toastTitle.textContent = "Publishing...";
-    
-    const settings = {
-        subtitle: document.getElementById("inpSubtitle").value,
-        marquee: document.getElementById("inpMarquee").value,
-        tipsUrl: document.getElementById("inpTipsUrl").value,
-        pattiUrl: document.getElementById("inpPattiUrl").value,
-        logoText: "BG"
-    };
-    
-    // ফায়ারবেস পুশ
-    db.ref("liveData").set({
-        rows: localRows,
-        settings: settings
-    }).then(() => {
-        toastTitle.textContent = "Live & Active";
-        toastMsg.textContent = "পুরো পৃথিবীতে আপনার সাইট রিফ্রেশ ছাড়া সাথে সাথে আপডেট হয়ে গেছে!";
-        setTimeout(() => {
-            toastTitle.textContent = "Ready";
-            toastMsg.textContent = "Make changes then click PUBLISH LIVE.";
-        }, 4000);
-    }).catch((error) => {
-        toastTitle.textContent = "Error!";
-        toastMsg.textContent = error.message;
-    });
-}
+});
