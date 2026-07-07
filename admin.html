@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOMBAY GOLD - Admin Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="admin-body">
     <div class="container admin-container">
@@ -30,16 +30,17 @@
                         </tr>
                     </thead>
                     <tbody id="admin-inputs-body">
-                        </tbody>
+                        <!-- জাভাস্ক্রিপ্ট থেকে লোড হবে -->
+                    </tbody>
                 </table>
             </div>
         </div>
 
         <div class="admin-box">
-            <h2>Website Header & Link Management (লেখা ও লিংক পরিবর্তন)</h2>
+            <h2>Website Header & Link Management</h2>
             <div class="form-group">
                 <label>বাংলা সাবটাইটেল টেক্সট:</label>
-                <input type="text" id="input-subtitle" value="লাইভ গেম রেজাল্ট সবথেকে প্রথম পাওয়ার জন্য ভিজিট করুন এই সাইট এ।">
+                <input type="text" id="input-subtitle" value="লাইভ গেম রেজাল্ট সবথেকে প্রথম পাওয়ার জন্য ভিジット করুন এই সাইট এ।">
             </div>
             <div class="form-group">
                 <label>চলন্ত লেখা (Marquee Text):</label>
@@ -56,14 +57,12 @@
         </div>
 
         <div class="admin-actions">
-            <button type="button" id="btn-publish" class="btn-publish">PUBLISH LIVE (ওয়েবসাইটে লাইভ করুন)</button>
+            <button type="button" id="btn-publish" class="btn-publish">PUBLISH LIVE</button>
         </div>
         
         <div id="status-message" class="status-msg"></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
