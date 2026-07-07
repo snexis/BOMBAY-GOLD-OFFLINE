@@ -8,16 +8,19 @@
 </head>
 <body class="admin-body">
 
-    <div id="admin-auth-screen">
-        নেভিগেশন লক! অ্যাডমিন পাসওয়ার্ড দিন:
-        <input type="password" id="admin-password" placeholder="পাসওয়ার্ড লিখুন (যেমন: 1234)" style="width:100%; padding:10px; margin:15px 0; border:1px solid #ccc; text-align:center;">
+    <div id="admin-auth-screen" class="auth-wrapper">
+        <h2 style="margin-bottom: 15px; font-size: 20px; color: #333;">Security Navigation Lock</h2>
+        <p style="margin-bottom: 15px; font-size: 14px; color: #666;">কন্ট্রোল প্যানেলে প্রবেশ করতে সঠিক পাসওয়ার্ড দিন:</p>
+        <div class="form-group">
+            <input type="password" id="admin-password" placeholder="পাসওয়ার্ড লিখুন" style="text-align: center;">
+        </div>
         <button id="btn-login" class="btn-publish">লগইন করুন</button>
     </div>
 
-    <div id="admin-main-content" class="container">
+    <div id="admin-main-content" class="container" style="display: none;">
         <header class="main-header">
             <h1 class="logo-text">BOMBAY GOLD - CONTROL PANEL</h1>
-            <p class="bengali-notice">এডভান্সড সেটিংস এবং লাইভ রেজাল্ট ম্যানেজমেন্ট</p>
+            <p id="admin-role-badge" style="display: inline-block; background: #ffd700; color: #111; padding: 3px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; margin-top: 5px;">ROLE: ADMIN</p>
         </header>
 
         <div class="admin-box">
@@ -31,7 +34,7 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th style="width: 40%;">Time Slot</th>
+                            <th style="width: 40%;">Time Slot (টাইম পরিবর্তনযোগ্য)</th>
                             <th style="width: 30%;">৩ সংখ্যার পাত্তি (Patti)</th>
                             <th style="width: 30%;">১ সংখ্যার সিঙ্গেল (Single)</th>
                         </tr>
@@ -42,15 +45,15 @@
             </div>
         </div>
 
-        <div class="admin-box">
-            <h2>Website Smart Settings & Customization</h2>
+        <div id="master-settings-box" class="admin-box" style="display: none;">
+            <h2 style="border-bottom: 2px solid #ffd700;">★ Website Smart Settings & Customization (Master Only)</h2>
             <div class="form-group">
                 <label>জরুরি লাল নোটিফিকেশন বার (ফাঁকা রাখলে মেইন পেজে হাইড থাকবে):</label>
                 <input type="text" id="input-alert" placeholder="যেমন: আজকে উৎসবের জন্য বিকেল ৫ টার খেলা বন্ধ থাকবে।">
             </div>
             <div class="form-group">
-                <label>ব্যাকগ্রাউন্ড ইমেজের অনলাইন লিঙ্ক (URL) (ফাঁকা রাখলে ডিফল্ট কালার থাকবে):</label>
-                <input type="url" id="input-bg-url" placeholder="যেমন: https://site.com/bg-image.jpg">
+                <label>ব্যাকগ্রাউন্ড ইমেজের অনলাইন লিঙ্ক (Image URL):</label>
+                <input type="url" id="input-bg-url" placeholder="যেমন: https://images.unsplash.com/photo-1518770660439-4636190af475">
             </div>
             <div class="form-group">
                 <label>বাংলা সাবটাইটেল টেক্সট:</label>
