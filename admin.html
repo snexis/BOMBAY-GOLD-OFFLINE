@@ -7,10 +7,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="admin-body">
-    <div class="container admin-container">
+    <div class="container">
         <header class="main-header">
-            <h1 class="logo-text">BOMBAY GOLD</h1>
-            <p class="bengali-notice">লাইভ গেম রেজাল্ট এবং সেটিংস কন্ট্রোল প্যানেল</p>
+            <h1 class="logo-text">BOMBAY GOLD - ADMIN</h1>
         </header>
 
         <div class="admin-box">
@@ -30,8 +29,7 @@
                         </tr>
                     </thead>
                     <tbody id="admin-inputs-body">
-                        <!-- জাভাস্ক্রিপ্ট থেকে লোড হবে -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
@@ -40,26 +38,23 @@
             <h2>Website Header & Link Management</h2>
             <div class="form-group">
                 <label>বাংলা সাবটাইটেল টেক্সট:</label>
-                <input type="text" id="input-subtitle" value="লাইভ গেম রেজাল্ট সবথেকে প্রথম পাওয়ার জন্য ভিジット করুন এই সাইট এ।">
+                <input type="text" id="input-subtitle" value="লাইভ গেম রেজাল্ট সবথেকে প্রথম পাওয়ার জন্য ভিজিট করুন এই সাইট এ।">
             </div>
             <div class="form-group">
                 <label>চলন্ত লেখা (Marquee Text):</label>
                 <input type="text" id="input-marquee" value="আজকের অফার আপডেট এর জন্য অপেক্ষা করুন...">
             </div>
             <div class="form-group">
-                <label>Tips Button URL (লিংক):</label>
+                <label>Tips Button URL:</label>
                 <input type="url" id="input-tips-url" placeholder="https://example.com/tips">
             </div>
             <div class="form-group">
-                <label>Patti Chart Button URL (লিংক):</label>
+                <label>Patti Chart Button URL:</label>
                 <input type="url" id="input-patti-url" placeholder="https://example.com/patti">
             </div>
         </div>
 
-        <div class="admin-actions">
-            <button type="button" id="btn-publish" class="btn-publish">PUBLISH LIVE</button>
-        </div>
-        
+        <button type="button" id="btn-publish" class="btn-publish">PUBLISH LIVE</button>
         <div id="status-message" class="status-msg"></div>
     </div>
 
