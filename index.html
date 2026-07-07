@@ -8,11 +8,16 @@
 </head>
 <body>
     <div class="container">
+        <!-- জরুরি লাল নোটিফিকেশন বার (ডাটা থাকলে শো করবে, না থাকলে অটো হাইড) -->
+        <div id="custom-alert-bar" class="custom-alert-bar"></div>
+
         <header class="main-header">
+            <!-- LIVE ব্লিংকিং আইকন -->
+            <div class="live-badge">● LIVE</div>
             <h1 class="logo-text">BOMBAY GOLD</h1>
-            <p id="site-subtitle" class="bengali-notice">লাইভ গেম রেজাল্ট সবথেকে প্রথম পাওয়ার জন্য ভিজিট করুন এই সাইট এ।</p>
+            <p id="site-subtitle" class="subtitle-text">লাইভ গেম রেজাল্ট সবথেকে প্রথম পাওয়ার জন্য ভিজিট করুন এই সাইট এ।</p>
             <div class="marquee-container">
-                <marquee id="site-marquee" scrollamount="5">আজকের LIVE আপডেট এর জন্য অপেক্ষা করুন...</marquee>
+                <marquee id="site-marquee" scrollamount="5">আজকের লাইভ আপডেট এর জন্য অপেক্ষা করুন...</marquee>
             </div>
         </header>
 
@@ -26,6 +31,7 @@
             <h3>Game Results in All West Bengal</h3>
         </div>
 
+        <!-- রেজাল্ট কন্টেইনার (এখানে কখনো লুপ আটকে থাকবে না) -->
         <div id="results-container">
             <div class="loading-text">ফলাফল লোড হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।</div>
         </div>
