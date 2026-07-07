@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
-// আপনার ফায়ারবেস কনফিগারেশন
 const firebaseConfig = {
     apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
     authDomain: "live-result-b9155.firebaseapp.com",
@@ -16,15 +15,23 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// আপনার প্রথম ইমেজের মূল ৭টি টাইম স্লট
-const defaultTimeSlots = ["10:20 AM", "11:50 AM", "01:20 PM", "02:50 PM", "04:20 PM", "05:50 PM", "07:20 PM"];
+// আপনার ইমেজের প্রধান ৮টি টাইম স্লট (অফিসিয়াল সিরিয়াল)
+const defaultTimeSlots = ["10:20 AM", "11:50 AM", "01:20 PM", "02:50 PM", "04:20 PM", "05:50 PM", "07:20 PM", "08:50 PM"];
+
+// কারেন্ট ডেট স্ট্রিং জেনারেটর (YYYY-MM-DD ফরম্যাট)
+const getLocalDateString = (dateObj) => {
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
 document.addEventListener("DOMContentLoaded", function () {
     const resultsContainer = document.getElementById("results-container");
     const adminInputsBody = document.getElementById("admin-inputs-body");
     const btnPublish = document.getElementById("btn-publish");
 
-    // --- ১. ইউজার পেজ লজিক (index.html) ---
+    // --- ১. ভিজিটর ফ্রন্টএন্ড পেজ (index.html) ---
     if (resultsContainer) {
         onValue(ref(database, "game_results"), (snapshot) => {
             const data = snapshot.val();
@@ -33,7 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // সেটিংস টেক্সট ও লিংক আপডেট
             if(data.settings) {
                 if(data.settings.subtitle) document.getElementById("site-subtitle").textContent = data.settings.subtitle;
                 if(data.settings.marquee) document.getElementById("site-marquee").textContent = data.settings.marquee;
@@ -44,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
             resultsContainer.innerHTML = "";
             const records = data.records || {};
             
-            // সবথেকে নতুন তারিখগুলো উপরে দেখানোর জন্য সর্টিং
+            // সব তারিখ ক্রমানুসারে সাজানো (নতুন তারিখ সবার উপরে থাকবে)
             const sortedDates = Object.keys(records).sort((a, b) => new Date(b) - new Date(a));
 
             if(sortedDates.length === 0) {
@@ -54,12 +60,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             sortedDates.forEach(dateKey => {
                 const dayData = records[dateKey];
-                
-                // ডাটাবেসের YYYY-MM-DD ফরম্যাটকে ইমেজের মতো DD/MM/YYYY করা হলো
                 const dateParts = dateKey.split("-");
                 const displayDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : dateKey;
-
-                // ডাটাবেসে যদি কাস্টম টাইম স্লট সেভ থাকে তবে সেটা নেবে, নয়তো ডিফল্ট নেবে
                 const activeSlots = dayData._slotsOrder ? dayData._slotsOrder : defaultTimeSlots;
 
                 let tableHtml = `
@@ -88,19 +90,17 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- ২. অ্যাডমিন প্যানেল লজিক (admin.html) ---
+    // --- ২. অ্যাডমিন ব্যাকএন্ড প্যানেল (admin.html) ---
     if (adminInputsBody && btnPublish) {
         
-        // ফায়ারবেস থেকে নির্দিষ্ট তারিখের ডাটা লোড করার ফাংশন
         const loadExistingData = () => {
             const selectedDate = dateInput.value;
             if(!selectedDate) return;
 
             get(ref(database, `game_results/records/${selectedDate}`)).then((snapshot) => {
                 const dayData = snapshot.val() || {};
-                adminInputsBody.innerHTML = ""; // আগের রো ক্লিয়ার করুন
+                adminInputsBody.innerHTML = ""; 
 
-                // ডাটাবেসে কাস্টম টাইম থাকলে সেটা লোড হবে, না থাকলে ডিফল্ট ৭টি স্লট তৈরি হবে
                 const activeSlots = dayData._slotsOrder ? dayData._slotsOrder : defaultTimeSlots;
 
                 activeSlots.forEach(time => {
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
-                        <td><input type="text" class="input-time" value="${time}" placeholder="যেমন: 10:20 AM"></td>
+                        <td><input type="text" class="input-time" value="${time}"></td>
                         <td><input type="text" class="input-patti" value="${pattiVal}" placeholder="পাত্তি"></td>
                         <td><input type="text" class="input-single" value="${singleVal}" placeholder="সিঙ্গেল"></td>
                     `;
@@ -120,16 +120,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const dateInput = document.getElementById("result-date");
         
-        // রাত ১২টার ফিক্স: পেজ খুললে স্বয়ংক্রিয়ভাবে গতকালকের তারিখ সেট হবে যাতে আগের রেজাল্ট এডিট করা যায় সহজে
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        dateInput.value = yesterday.toISOString().split('T')[0];
+        // ডিফল্টভাবে আজকের বর্তমান ডেট সিলেক্ট থাকবে (রাত ১২টা পার হলে অটোমেটিক নতুন ডেট সেট হবে)
+        dateInput.value = getLocalDateString(new Date());
 
-        // তারিখ পরিবর্তন করলে ডাটা অটো লোড হবে
         dateInput.addEventListener("change", loadExistingData);
         loadExistingData();
 
-        // পাবলিশ বাটন ক্লিক লজিক
+        // পাবলিশ অ্যাকশন (কোনো পেজ রিফ্রেশ ছাড়া ব্যাকগ্রাউন্ডে মসৃণভাবে ডাটা পাঠাবে)
         btnPublish.addEventListener("click", () => {
             const selectedDate = dateInput.value;
             if(!selectedDate) return alert("দয়া করে তারিখ সিলেক্ট করুন!");
@@ -148,7 +145,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            // টাইম স্লটের সিরিয়াল মনে রাখার জন্য বিশেষ ট্র্যাক
             recordsUpdate["_slotsOrder"] = slotsOrder;
 
             const settings = {
@@ -158,13 +154,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 pattiUrl: document.getElementById("input-patti-url").value.trim() || "#"
             };
 
-            set(ref(database, `game_results/records/${selectedDate}`), recordsUpdate);
-            set(ref(database, `game_results/settings`), settings).then(() => {
+            // ডাটাবেসে সেভ লজিক
+            Promise.all([
+                set(ref(database, `game_results/records/${selectedDate}`), recordsUpdate),
+                set(ref(database, `game_results/settings`), settings)
+            ]).then(() => {
                 const statusMsg = document.getElementById("status-message");
-                statusMsg.textContent = "সফলভাবে ফায়ারবেসে রেজাল্ট ও টাইম লাইভ করা হয়েছে!";
+                statusMsg.textContent = "ডাটাবেস সফলভাবে আপডেট হয়েছে!";
                 statusMsg.className = "status-msg status-success";
-                setTimeout(() => statusMsg.style.display = "none", 4000);
-            }).catch(err => alert("Error: " + err.message));
+                
+                // বাটন ক্লিক এনিমেশন শেষ করে নোটিফিকেশন হাইড করা
+                setTimeout(() => {
+                    statusMsg.style.display = "none";
+                }, 3000);
+            }).catch(err => alert("ফায়ারবেস কানেকশন ত্রুটি: " + err.message));
         });
     }
 });
