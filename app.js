@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
 
+// ফায়ারবেস কনফিগারেশন
 const firebaseConfig = {
     apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
     authDomain: "live-result-b9155.firebaseapp.com",
@@ -15,7 +16,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-const defaultTimeSlots = ["10:20 AM", "11:50 AM", "01:20 PM", "02:50 PM", "04:20 PM", "05:50 PM", "07:20 PM", "08:50 PM"];
+// ফিউচার প্রুফ: টাইম স্লট বা ডেটা অবজেক্ট সহজেই মডিফাই বা এক্সটেন্ড করা যাবে এখান থেকে
+const coreAppConfig = {
+    timeSlots: ["10:20 AM", "11:50 AM", "01:20 PM", "02:50 PM", "04:20 PM", "05:50 PM", "07:20 PM", "08:50 PM"],
+    dbRootNode: "game_results"
+};
 
 const getLocalDateString = (dateObj) => {
     const year = dateObj.getFullYear();
@@ -29,49 +34,58 @@ document.addEventListener("DOMContentLoaded", function () {
     const adminInputsBody = document.getElementById("admin-inputs-body");
     const btnPublish = document.getElementById("btn-publish");
 
-    // বর্তমান ইউজারের রোল ট্র্যাক করার ভেরিয়েবল
     let currentUserRole = "guest"; 
 
-    // --- ১. ইউজার মেইন সাইট ভিউ লজিক (index.html) ---
+    // --- ১. ভিজিটর মেইন পেজ ভিউ ইঞ্জিন (index.html) ---
     if (resultsContainer) {
-        onValue(ref(database, "game_results"), (snapshot) => {
+        onValue(ref(database, coreAppConfig.dbRootNode), (snapshot) => {
             const data = snapshot.val();
-            if (!data) {
-                resultsContainer.innerHTML = '<div class="loading-text">কোনো লাইভ রেজাল্ট পাওয়া যায়নি।</div>';
+            
+            // রাত ১২টার ফিক্স: ডাটাবেস ফাঁকা থাকলেও স্ক্রিন আটকে থাকবে না, নোটিশ বা ওল্ড ডাটা ট্র্যাকার চলবে
+            if (!data || !data.records) {
+                resultsContainer.innerHTML = '<div class="loading-text">কোনো লাইভ রেজাল্ট ডাটাবেসে পাওয়া যায়নি।</div>';
                 return;
             }
 
-            if(data.settings) {
-                if(data.settings.subtitle) document.getElementById("site-subtitle").textContent = data.settings.subtitle;
-                if(data.settings.marquee) document.getElementById("site-marquee").textContent = data.settings.marquee;
-                if(data.settings.tipsUrl) document.getElementById("link-tips").href = data.settings.tipsUrl;
-                if(data.settings.pattiUrl) document.getElementById("link-patti").href = data.settings.pattiUrl;
+            // গ্লোবাল স্মার্ট ওয়েবসাইট সেটিংস লোড করা
+            if (data.settings) {
+                if (data.settings.subtitle) document.getElementById("site-subtitle").textContent = data.settings.subtitle;
+                if (data.settings.marquee) document.getElementById("site-marquee").textContent = data.settings.marquee;
+                if (data.settings.tipsUrl) document.getElementById("link-tips").href = data.settings.tipsUrl;
+                if (data.settings.pattiUrl) document.getElementById("link-patti").href = data.settings.pattiUrl;
                 
                 const alertBar = document.getElementById("custom-alert-bar");
-                if(data.settings.customAlert && data.settings.customAlert.trim() !== "") {
+                if (data.settings.customAlert && data.settings.customAlert.trim() !== "") {
                     alertBar.textContent = data.settings.customAlert;
                     alertBar.style.display = "block";
                 } else {
                     alertBar.style.display = "none";
                 }
 
-                if(data.settings.bgUrl && data.settings.bgUrl.trim() !== "") {
-                    document.body.style.backgroundImage = `url('${data.settings.bgUrl}')`;
+                // লাইভ ব্যাকগ্রাউন্ড ইমেজ চেঞ্জার ইঞ্জিন
+                if (data.settings.bgUrl && data.settings.bgUrl.trim() !== "") {
+                    document.body.style.setProperty("background-image", `url('${data.settings.bgUrl}')`, "important");
                 } else {
                     document.body.style.backgroundImage = "none";
-                    document.body.style.backgroundColor = "#f4f6f9";
                 }
             }
 
             resultsContainer.innerHTML = "";
-            const records = data.records || {};
+            const records = data.records;
+            
+            // ক্রনোলজিক্যাল সর্টিং লজিক (নতুন তারিখ সবসময় থাকবে সবার ওপরে, পুরোনো ডাটা কখনো ডিলিট বা হাইড হবে না)
             const sortedDates = Object.keys(records).sort((a, b) => new Date(b) - new Date(a));
+
+            if (sortedDates.length === 0) {
+                resultsContainer.innerHTML = '<div class="loading-text">কোনো রেজাল্ট রেকর্ড হিস্ট্রি পাওয়া যায়নি।</div>';
+                return;
+            }
 
             sortedDates.forEach(dateKey => {
                 const dayData = records[dateKey];
                 const dateParts = dateKey.split("-");
                 const displayDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : dateKey;
-                const activeSlots = dayData._slotsOrder ? dayData._slotsOrder : defaultTimeSlots;
+                const activeSlots = coreAppConfig.timeSlots;
 
                 let tableHtml = `
                     <div class="results-table-block">
@@ -99,9 +113,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- ২. অ্যাডমিন প্যানেল কন্ট্রোল লজিক (admin.html) ---
+    // --- ২. ডবল সিকিউরিটি অ্যাডমিন কন্ট্রোল ইঞ্জিন (admin.html) ---
     if (adminInputsBody && btnPublish) {
         const btnLogin = document.getElementById("btn-login");
+        const btnLogout = document.getElementById("btn-logout");
         const passInput = document.getElementById("admin-password");
         const authScreen = document.getElementById("admin-auth-screen");
         const mainContent = document.getElementById("admin-main-content");
@@ -109,34 +124,43 @@ document.addEventListener("DOMContentLoaded", function () {
         const masterSettingsBox = document.getElementById("master-settings-box");
         const roleBadge = document.getElementById("admin-role-badge");
 
-        // মাস্টার ও জেনারেল অ্যাডমিন লগইন সিস্টেম
+        // লগইন ফাংশনালিটি
         if (btnLogin) {
             btnLogin.addEventListener("click", () => {
                 const password = passInput.value.trim();
-
                 if (password === "7777") { 
-                    // মাস্টার অ্যাডমিন লগইন
                     currentUserRole = "master";
                     authScreen.style.display = "none";
                     mainContent.style.display = "block";
-                    masterSettingsBox.style.display = "block"; // সেটিংস ওপেন হবে
+                    masterSettingsBox.style.display = "block"; // মাস্টার সেটিংস অন
                     roleBadge.textContent = "★ ROLE: MASTER ADMIN";
-                    roleBadge.style.background = "#ffd700";
-                    roleBadge.style.color = "#111";
+                    roleBadge.className = "role-badge";
+                    roleBadge.style.background = "#fffbeb";
+                    roleBadge.style.color = "#b78103";
                     loadExistingData();
                 } else if (password === "1234") { 
-                    // সাধারণ স্টাফ অ্যাডমিন লগইন
                     currentUserRole = "staff";
                     authScreen.style.display = "none";
                     mainContent.style.display = "block";
-                    masterSettingsBox.style.display = "none"; // সেটিংস হাইড থাকবে
-                    roleBadge.textContent = "● ROLE: STAFF ADMIN (Results Only)";
-                    roleBadge.style.background = "#e2e8f0";
-                    roleBadge.style.color = "#4a5568";
+                    masterSettingsBox.style.display = "none";  // স্টাফের জন্য হাইড
+                    roleBadge.textContent = "● ROLE: STAFF (Results Only)";
+                    roleBadge.className = "role-badge";
+                    roleBadge.style.background = "#f1f5f9";
+                    roleBadge.style.color = "#475569";
                     loadExistingData();
                 } else {
-                    alert("ভুল পাসওয়ার্ড! আবার সঠিক পাসওয়ার্ড দিন।");
+                    alert("ভুল পাসওয়ার্ড! সঠিক কোড দিন।");
                 }
+            });
+        }
+
+        // লগআউট ফাংশনালিটি
+        if (btnLogout) {
+            btnLogout.addEventListener("click", () => {
+                currentUserRole = "guest";
+                passInput.value = "";
+                mainContent.style.display = "none";
+                authScreen.style.display = "block";
             });
         }
 
@@ -144,13 +168,13 @@ document.addEventListener("DOMContentLoaded", function () {
             const selectedDate = dateInput.value;
             if (!selectedDate) return;
 
-            get(ref(database, `game_results`)).then((snapshot) => {
+            get(ref(database, coreAppConfig.dbRootNode)).then((snapshot) => {
                 const globalData = snapshot.val() || {};
                 const records = globalData.records || {};
                 const dayData = records[selectedDate] || {};
                 
                 adminInputsBody.innerHTML = ""; 
-                const activeSlots = dayData._slotsOrder ? dayData._slotsOrder : defaultTimeSlots;
+                const activeSlots = coreAppConfig.timeSlots;
 
                 activeSlots.forEach(time => {
                     const pattiVal = (dayData[time] && dayData[time].patti && dayData[time].patti !== "-") ? dayData[time].patti : "";
@@ -158,14 +182,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
-                        <td><input type="text" class="input-time" value="${time}"></td>
+                        <td><input type="text" class="input-time" value="${time}" readonly style="background:#f1f5f9; color:#475569; border:none; font-size:12px;"></td>
                         <td><input type="text" class="input-patti" value="${pattiVal}" placeholder="-"></td>
                         <td><input type="text" class="input-single" value="${singleVal}" placeholder="-"></td>
                     `;
                     adminInputsBody.appendChild(tr);
                 });
 
-                // ওল্ড সেটিংস ডাটা ইনপুট বক্সে রিলোড করা (শুধুমাত্র ইনপুট ভ্যালু ধরে রাখার জন্য)
                 if (globalData.settings) {
                     document.getElementById("input-subtitle").value = globalData.settings.subtitle || "";
                     document.getElementById("input-marquee").value = globalData.settings.marquee || "";
@@ -177,36 +200,32 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         };
 
+        // কারেন্ট ডেট রোটেশন ইনিশিয়েট
         dateInput.value = getLocalDateString(new Date());
+        loadExistingData();
         dateInput.addEventListener("change", loadExistingData);
 
-        // পাবলিশ বাটন লজিক (রোল অনুযায়ী ডাটা সেভ করবে)
+        // লাইভ পাবলিশ মেকানিজম ও সাকসেস মেসেজ ট্র্যাকার
         btnPublish.addEventListener("click", () => {
             const selectedDate = dateInput.value;
             if (!selectedDate) return alert("দয়া করে তারিখ সিলেক্ট করুন!");
 
             let recordsUpdate = {};
-            let slotsOrder = [];
-
             document.querySelectorAll("#admin-inputs-body tr").forEach(row => {
                 const time = row.querySelector(".input-time").value.trim();
                 const patti = row.querySelector(".input-patti").value.trim() || "-";
                 const single = row.querySelector(".input-single").value.trim() || "-";
                 
                 if (time) {
-                    slotsOrder.push(time);
                     recordsUpdate[time] = { patti, single };
                 }
             });
 
-            recordsUpdate["_slotsOrder"] = slotsOrder;
-
-            // ১. রেজাল্ট সেভ করার পারমিশন সবারই আছে
             const savePromises = [
-                set(ref(database, `game_results/records/${selectedDate}`), recordsUpdate)
+                set(ref(database, `${coreAppConfig.dbRootNode}/records/${selectedDate}`), recordsUpdate)
             ];
 
-            // ২. যদি মাস্টার অ্যাডমিন লগইন করে, তবেই কেবল ওয়েবসাইট সেটিংস আপডেট হবে
+            // ডবল সিকিউরিটি চেইন ভ্যালিডেশন
             if (currentUserRole === "master") {
                 const settings = {
                     subtitle: document.getElementById("input-subtitle").value.trim(),
@@ -216,14 +235,20 @@ document.addEventListener("DOMContentLoaded", function () {
                     customAlert: document.getElementById("input-alert").value.trim(),
                     bgUrl: document.getElementById("input-bg-url").value.trim()
                 };
-                savePromises.push(set(ref(database, `game_results/settings`), settings));
+                savePromises.push(set(ref(database, `${coreAppConfig.dbRootNode}/settings`), settings));
             }
 
             Promise.all(savePromises).then(() => {
                 const statusMsg = document.getElementById("status-message");
-                statusMsg.textContent = currentUserRole === "master" ? "রেজাল্ট ও ওয়েবসাইট সেটিংস সফলভাবে সেভ হয়েছে!" : "রেজাল্ট সফলভাবে লাইভ করা হয়েছে! (সেটিংস অপরিবর্তিত)";
+                statusMsg.textContent = "✓ Live Update Successful!";
                 statusMsg.className = "status-msg status-success";
-                setTimeout(() => { statusMsg.style.display = "none"; }, 3000);
+                
+                // স্ক্রোল করে মেসেজ বক্সে নিয়ে যাওয়া যাতে ইউজার দেখতে পায়
+                statusMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                setTimeout(() => { 
+                    statusMsg.style.display = "none"; 
+                }, 3000);
             }).catch(err => alert("ফায়ারবেস ত্রুটি: " + err.message));
         });
     }
