@@ -16,7 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// ফিউচার প্রুফ: টাইম স্লট বা ডেটা অবজেক্ট সহজেই মডিফাই বা এক্সটেন্ড করা যাবে এখান থেকে
+// ফিউচার প্রুফ কনফিগারেশন: গেম স্লট বা রুট নোড সহজেই এখান থেকে বদলানো যাবে
 const coreAppConfig = {
     timeSlots: ["10:20 AM", "11:50 AM", "01:20 PM", "02:50 PM", "04:20 PM", "05:50 PM", "07:20 PM", "08:50 PM"],
     dbRootNode: "game_results"
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
         onValue(ref(database, coreAppConfig.dbRootNode), (snapshot) => {
             const data = snapshot.val();
             
-            // রাত ১২টার ফিক্স: ডাটাবেস ফাঁকা থাকলেও স্ক্রিন আটকে থাকবে না, নোটিশ বা ওল্ড ডাটা ট্র্যাকার চলবে
+            // রাত ১২টার ফিক্স: ডাটাবেস ফাঁকা থাকলেও স্ক্রিন আটকে থাকবে না
             if (!data || !data.records) {
                 resultsContainer.innerHTML = '<div class="loading-text">কোনো লাইভ রেজাল্ট ডাটাবেসে পাওয়া যায়নি।</div>';
                 return;
@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
             resultsContainer.innerHTML = "";
             const records = data.records;
             
-            // ক্রনোলজিক্যাল সর্টিং লজিক (নতুন তারিখ সবসময় থাকবে সবার ওপরে, পুরোনো ডাটা কখনো ডিলিট বা হাইড হবে না)
+            // ক্রনোলজিক্যাল সর্টিং: নতুন তারিখ সবসময় ওপরে থাকবে, পুরোনো ডাটা কখনোই হাইড হবে না
             const sortedDates = Object.keys(records).sort((a, b) => new Date(b) - new Date(a));
 
             if (sortedDates.length === 0) {
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     currentUserRole = "master";
                     authScreen.style.display = "none";
                     mainContent.style.display = "block";
-                    masterSettingsBox.style.display = "block"; // মাস্টার সেটিংস অন
+                    masterSettingsBox.style.display = "block"; 
                     roleBadge.textContent = "★ ROLE: MASTER ADMIN";
                     roleBadge.className = "role-badge";
                     roleBadge.style.background = "#fffbeb";
@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     currentUserRole = "staff";
                     authScreen.style.display = "none";
                     mainContent.style.display = "block";
-                    masterSettingsBox.style.display = "none";  // স্টাফের জন্য হাইড
+                    masterSettingsBox.style.display = "none";  
                     roleBadge.textContent = "● ROLE: STAFF (Results Only)";
                     roleBadge.className = "role-badge";
                     roleBadge.style.background = "#f1f5f9";
@@ -200,12 +200,12 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         };
 
-        // কারেন্ট ডেট রোটেশন ইনিশিয়েট
+        // আজকের তারিখ সিলেক্ট করা
         dateInput.value = getLocalDateString(new Date());
         loadExistingData();
         dateInput.addEventListener("change", loadExistingData);
 
-        // লাইভ পাবলিশ মেকানিজম ও সাকসেস মেসেজ ট্র্যাকার
+        // লাইভ পাবলিশ এবং সাকসেস মেসেজ ফিক্সড লজিক
         btnPublish.addEventListener("click", () => {
             const selectedDate = dateInput.value;
             if (!selectedDate) return alert("দয়া করে তারিখ সিলেক্ট করুন!");
@@ -225,7 +225,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 set(ref(database, `${coreAppConfig.dbRootNode}/records/${selectedDate}`), recordsUpdate)
             ];
 
-            // ডবল সিকিউরিটি চেইন ভ্যালিডেশন
             if (currentUserRole === "master") {
                 const settings = {
                     subtitle: document.getElementById("input-subtitle").value.trim(),
@@ -241,13 +240,12 @@ document.addEventListener("DOMContentLoaded", function () {
             Promise.all(savePromises).then(() => {
                 const statusMsg = document.getElementById("status-message");
                 statusMsg.textContent = "✓ Live Update Successful!";
-                statusMsg.className = "status-msg status-success";
+                statusMsg.className = "status-msg status-success"; // মেসেজ শো করাবে
                 
-                // স্ক্রোল করে মেসেজ বক্সে নিয়ে যাওয়া যাতে ইউজার দেখতে পায়
                 statusMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 
                 setTimeout(() => { 
-                    statusMsg.style.display = "none"; 
+                    statusMsg.className = "status-msg"; // ৩ সেকেন্ড পর হাইড করবে (টাইপো ফিক্সড)
                 }, 3000);
             }).catch(err => alert("ফায়ারবেস ত্রুটি: " + err.message));
         });
