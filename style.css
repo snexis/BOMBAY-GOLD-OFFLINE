@@ -1,4 +1,6 @@
-/* ইউনিভার্সাল গ্লোবাল রিসেট */
+/*
+🌟 ⚡ [RING: UNIVERSAL GLOBAL RESET & BASE SETTINGS] ⚡ 🌟
+*/
 * {
     margin: 0;
     padding: 0;
@@ -7,7 +9,7 @@
 }
 
 body {
-    background-color: #0b132b; /* ব্যাকগ্রাউন্ড ইমেজ লোড হওয়ার আগের ডিফল্ট ডার্ক কালার */
+    background-color: #0b132b; /* ব্যাকগ্রাউন্ড ইমেজ লোড হওয়ার আগের ডিফল্ট ডার্ক কালার */
     background-size: cover !important;
     background-position: center center !important;
     background-attachment: fixed !important;
@@ -17,7 +19,7 @@ body {
     transition: background-image 0.5s ease-in-out;
 }
 
-/* মেইন প্যানেল: প্রিমিয়াম গ্লাস-ট্রান্সপারেন্ট ব্লার ইফেক্ট */
+/* মেইন প্যানেল: প্রিমিয়াম গ্লাস-ট্রান্সপারেন্ট ব্লার ইফেক্ট */
 .main-glass-panel {
     background: rgba(255, 255, 255, 0.88) !important;
     backdrop-filter: blur(10px) !important;
@@ -34,6 +36,9 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
 }
 
+/*
+📢 🌟 [RING: PREMIUM ALERTS & MARQUEE DESIGN] 🌟 📢
+*/
 .custom-alert-bar {
     background-color: #e53935;
     color: white;
@@ -47,52 +52,6 @@ body {
     display: none;
 }
 
-.main-header {
-    text-align: center;
-    margin-bottom: 15px;
-    background: linear-gradient(135deg, #0f4c81, #1f78c1);
-    color: white;
-    padding: 22px 12px;
-    border-radius: 10px;
-    position: relative;
-    box-shadow: 0 4px 15px rgba(15,76,129,0.25);
-}
-
-.logo-text {
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-    text-shadow: 0 2px 5px rgba(0,0,0,0.25);
-}
-
-/* ডাইনামিক লাইভ ও অফ ইন্ডিকেটর ব্যাজ */
-.live-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    color: white;
-    padding: 5px 12px;
-    border-radius: 30px;
-    font-size: 11px;
-    font-weight: bold;
-    background: #22c55e;
-    letter-spacing: 0.5px;
-}
-
-/* ওয়েবসাইট বন্ধ থাকলে ইন্ডিকেটর রেড ব্লিংক করার অ্যানিমেশন ক্লাস */
-@keyframes indicatorRedBlink {
-    0% { opacity: 1; box-shadow: 0 0 12px #ef4444; }
-    50% { opacity: 0.2; box-shadow: none; }
-    100% { opacity: 1; box-shadow: 0 0 12px #ef4444; }
-}
-
-.subtitle-text {
-    font-size: 14px;
-    margin-top: 8px;
-    opacity: 0.95;
-    font-weight: 500;
-}
-
 .marquee-container {
     margin-top: 12px;
     background: rgba(0, 0, 0, 0.3);
@@ -101,6 +60,170 @@ body {
     font-size: 14px;
 }
 
+.marquee-wrapper {
+    background: rgba(0, 0, 0, 0.45);
+    padding: 6px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    color: #fef08a;
+    font-weight: bold;
+    max-width: 90%;
+}
+
+/*
+👑 🌟 [RING: PREMIUM GOLDEN HEADER & BRANDING ANIMATIONS] 🌟 👑
+*/
+.main-header-banner {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid #fbbf24;
+    border-radius: 16px;
+    padding: 25px 15px;
+    text-align: center;
+    box-shadow: 0 8px 32px 0 rgba(251, 191, 36, 0.25);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ৩ডি এনিমেটেড ঘূর্ণায়মান লোগো */
+.logo-wrapper {
+    margin-bottom: 12px;
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+}
+
+.rotating-ai-logo {
+    width: 70px;
+    height: 70px;
+    filter: drop-shadow(0px 0px 10px rgba(251, 191, 36, 0.6));
+    animation: rotate3DLogo 6s linear infinite;
+}
+
+@keyframes rotate3DLogo {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+}
+
+/* সোনালী নিয়ন গ্লোয়িং টাইটেল */
+.premium-animated-title {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin: 8px 0;
+    background: linear-gradient(to right, #ffe066 0%, #f59e0b 50%, #ffe066 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shineText 3s linear infinite, pulseGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes shineText {
+    to { background-position: 200% center; }
+}
+
+@keyframes pulseGlow {
+    0% { filter: drop-shadow(0px 0px 3px rgba(245, 158, 11, 0.4)) drop-shadow(0px 2px 4px rgba(0,0,0,0.6)); }
+    100% { filter: drop-shadow(0px 0px 15px rgba(251, 224, 102, 0.8)) drop-shadow(0px 2px 4px rgba(0,0,0,0.6)); }
+}
+
+.premium-subtitle {
+    color: #cbd5e1;
+    font-size: 15px;
+    margin-top: 2px;
+    margin-bottom: 15px;
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+/*
+🟢 🔴 [RING: 100% FULL-PROOF LIVE & OFFLINE BADGE FLASH] 🔴 🟢
+*/
+.live-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 16px !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* মোড ১: যখন লাইভ থাকবে (উজ্জ্বল সবুজ এবং তীব্র নিয়ন গ্লো ব্লিঙ্ক) */
+#live-indicator {
+    background-color: #22c55e !important;
+    color: #ffffff !important;
+    animation: superGreenPulse 0.8s infinite alternate !important;
+}
+
+@keyframes superGreenPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 4px #22c55e, 0 0 8px #22c55e;
+    }
+    100% {
+        transform: scale(1.12);
+        box-shadow: 0 0 20px #22c55e, 0 0 35px #22c55e;
+    }
+}
+
+/* মোড ২: যখনই "OFF" বা "TODAY OFF" হবে (জাভাস্ক্রিপ্ট পুশ করা মাত্রই কাজ করবে) */
+#live-indicator[style*="rgb(239, 68, 68)"],
+#live-indicator[style*="#ef4444"],
+#live-indicator[style*="red"] {
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+    animation: superRedPulse 0.8s infinite alternate !important;
+}
+
+@keyframes superRedPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 4px #ef4444, 0 0 8px #ef4444;
+    }
+    100% {
+        transform: scale(1.12);
+        box-shadow: 0 0 20px #ef4444, 0 0 35px #ef4444;
+    }
+}
+
+/* টাইটেল রেইনবো গ্লো এনিমেশন */
+.section-title, #main-results-wrap .section-title, .admin-box .box-header {
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    text-align: center;
+    margin: 25px 0 15px 0;
+    text-transform: uppercase;
+    animation: premiumNeonRainbow 3s linear infinite alternate !important;
+}
+
+@keyframes premiumNeonRainbow {
+    0% {
+        color: #3b82f6;
+        text-shadow: 0 0 5px #3b82f6, 0 0 15px #3b82f6;
+    }
+    50% {
+        color: #e11d48;
+        text-shadow: 0 0 5px #e11d48, 0 0 15px #e11d48;
+    }
+    100% {
+        color: #f59e0b;
+        text-shadow: 0 0 5px #f59e0b, 0 0 15px #f59e0b;
+    }
+}
+
+/*
+🔗 🌟 [RING: NAVIGATION BUTTONS & LINKS] 🌟 🔗
+*/
 .nav-buttons {
     display: flex;
     gap: 12px;
@@ -128,17 +251,21 @@ body {
 .btn-patti { background-color: #26a9e0; }
 .btn-patti:hover { background-color: #1b82b0; transform: translateY(-2px); }
 
-.section-title { text-align: center; margin-bottom: 20px; }
-.section-title h2 { font-size: 22px; color: #111; font-weight: 700; }
-.section-title h3 { font-size: 14px; color: #555; font-weight: normal; margin-top: 4px; }
-
+/*
+📊 🌟 [RING: MOBILE & DESKTOP PERFECT TABLE RESPONSIVE FIXED] 🌟 📊
+*/
 .results-table-block {
-    margin-bottom: 22px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 8px;
-    overflow: hidden;
     background: #ffffff;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.results-table-block > div {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
 }
 
 .date-header {
@@ -151,15 +278,63 @@ body {
     letter-spacing: 0.5px;
 }
 
-.results-grid-table { width: 100%; border-collapse: collapse; text-align: center; }
-.results-grid-table th { background-color: #f8f9fa; color: #495057; font-size: 12px; font-weight: 600; padding: 12px 6px; border: 1px solid #edf2f7; }
-.results-grid-table td { padding: 12px 6px; border: 1px solid #edf2f7; background: #ffffff; }
+.results-grid-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.results-grid-table th, 
+.results-grid-table td {
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap; /* লেখা কখনো ভেঙে ২ লাইন হবে না */
+    padding: 12px 10px;
+    border: 1px solid #edf2f7;
+}
+
+.results-grid-table th {
+    background-color: #f8f9fa;
+    color: #495057;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.results-grid-table td {
+    background: #ffffff;
+}
 
 .patti-row-text { color: #2d3748; font-weight: 700; font-size: 15px; display: block; }
 .single-row-text { color: #1f78c1; font-weight: 800; font-size: 17px; display: block; margin-top: 3px; }
 
-/* --- অ্যাডমিন প্যানেল সিএসএস মডিউল --- */
+/* 💻 ডেস্কটপ বা বড় স্ক্রিনের জন্য লজিক */
+@media screen and (min-width: 769px) {
+    .results-grid-table {
+        table-layout: fixed; /* ডেস্কটপে সব কলাম সমান মাপে সুন্দর ছড়িয়ে থাকবে */
+    }
+}
+
+/* 📱 মোবাইল বা ছোট স্ক্রিনের জন্য স্পেশাল লজিক */
+@media screen and (max-width: 768px) {
+    .results-grid-table {
+        table-layout: auto; 
+        min-width: 600px;   /* টেবিলটিকে মিনিমাম ৬০০ পিক্সেল চওড়া রাখবে, যাতে কলামের ডিজাইন সোজা ও চওড়া থাকে */
+    }
+    
+    .results-grid-table th, 
+    .results-grid-table td {
+        padding: 10px 8px;   /* মোবাইলের জন্য পারফেক্ট গ্যাপ */
+        font-size: 13px;     /* মোবাইলে পড়ার মতো সুন্দর ফন্ট সাইজ */
+    }
+}
+
+/*
+🛠️ 🌟 [RING: SECURED ADMIN PANEL STYLES] 🌟 🛠️
+*/
 .admin-body { background-color: #f0f4f8; background-image: none !important; }
+
 .auth-wrapper {
     max-width: 380px;
     margin: 100px auto;
@@ -209,262 +384,44 @@ body {
 .status-error { display: block; background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
 .loading-text { text-align: center; padding: 40px; color: #64748b; font-size: 14px; font-weight: 500; }
-/* ====================================================
-   ★ প্রীমিয়াম সোনালী হেডার ব্যানার ও লোগো এনিমেশন ★
-   ==================================================== */
 
-.main-header-banner {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 2px solid #fbbf24;
-    border-radius: 16px;
-    padding: 25px 15px;
-    text-align: center;
-    box-shadow: 0 8px 32px 0 rgba(251, 191, 36, 0.25);
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
-}
-
-/* ৩ডি এনিমেটেড ঘূর্ণায়মান লোগো */
-.logo-wrapper {
-    margin-bottom: 12px;
-    perspective: 1000px;
+/* 🌟 স্টাফ ও মাস্টার সেটিংস-এর ডাইনামিক রো ক্লাস */
+.slot-row-item {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    background: #f8fafc;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
 }
-.rotating-ai-logo {
-    width: 70px;
-    height: 70px;
-    filter: drop-shadow(0px 0px 10px rgba(251, 191, 36, 0.6));
-    animation: rotate3DLogo 6s linear infinite;
+.slot-row-item input[type="text"] {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
 }
-
-@keyframes rotate3DLogo {
-    0% { transform: rotateY(0deg); }
-    100% { transform: rotateY(360deg); }
-}
-
-/* সোনালী নিয়ন গ্লোয়িং টাইটেল */
-.premium-animated-title {
-    font-size: 36px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    margin: 8px 0;
-    background: linear-gradient(to right, #ffe066 0%, #f59e0b 50%, #ffe066 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shineText 3s linear infinite, pulseGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes shineText {
-    to { background-position: 200% center; }
-}
-@keyframes pulseGlow {
-    0% { filter: drop-shadow(0px 0px 3px rgba(245, 158, 11, 0.4)) drop-shadow(0px 2px 4px rgba(0,0,0,0.6)); }
-    100% { filter: drop-shadow(0px 0px 15px rgba(251, 224, 102, 0.8)) drop-shadow(0px 2px 4px rgba(0,0,0,0.6)); }
-}
-
-/* সাবটাইটেল ও মারকিউ টেক্সট ডিজাইন */
-.premium-subtitle {
-    color: #cbd5e1;
-    font-size: 15px;
-    margin-top: 2px;
-    margin-bottom: 15px;
-    font-weight: 500;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-}
-
-.marquee-wrapper {
-    background: rgba(0, 0, 0, 0.45);
-    padding: 6px 15px;
-    border-radius: 20px;
-    display: inline-block;
-    border: 1px solid rgba(251, 191, 36, 0.35);
-    color: #fef08a;
+.btn-delete-slot {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
     font-weight: bold;
-    max-width: 90%;
+    font-size: 12px;
 }
+.btn-delete-slot:hover { background: #dc2626; }
 
-/* ====================================================
-   ★ মোবাইল ও ডেস্কটপ পারফেক্ট টেবিল রেসপন্সিভ ফিক্স ★
-   ==================================================== */
-
-/* মূল টেবিল ব্লক র‍্যাপার (যা স্ক্রোল করতে সাহায্য করবে) */
-.results-table-block {
-    background: #ffffff;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
+/* গ্রিন ফেড অন সাকসেস সাবমিট (স্টাফ প্যানেল) */
+.slot-row-completed {
+    background-color: #dcfce7 !important;
+    transition: background 0.4s ease;
 }
-
-/* টেবিল কন্টেইনারকে স্ক্রোলযোগ্য করা */
-.results-table-block > div {
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-}
-
-.results-grid-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0;
-    padding: 0;
-}
-
-.results-grid-table th, 
-.results-grid-table td {
-    text-align: center;
-    vertical-align: middle;
-    white-space: nowrap; /* লেখা কখনো ভেঙে ২ লাইন হবে না */
-    padding: 12px 10px;
-}
-
-/* 💻 ডেস্কটপ বা বড় স্ক্রিনের জন্য লজিক */
-@media screen and (min-width: 769px) {
-    .results-grid-table {
-        table-layout: fixed; /* ডেস্কটপে সব কলাম সমান মাপে সুন্দর ছড়িয়ে থাকবে */
-    }
-}
-
-/* 📱 মোবাইল বা ছোট স্ক্রিনের জন্য স্পেশাল লজিক */
-@media screen and (max-width: 768px) {
-    .results-grid-table {
-        table-layout: auto; /* মোবাইলে জোর করে ফিক্সড করবে না */
-        min-width: 600px;   /* টেবিলটিকে মিনিমাম ৬০০ পিক্সেল চওড়া রাখবে, যাতে কলামের ডিজাইন সোজা ও চওড়া থাকে */
-    }
-    
-    .results-grid-table th, 
-    .results-grid-table td {
-        padding: 10px 8px;   /* মোবাইলের জন্য পারফেক্ট গ্যাপ */
-        font-size: 13px;     /* মোবাইলে পড়ার মতো সুন্দর ফন্ট সাইজ */
-    }
-}
-/* ====================================================
-   ★ লাইভ ব্যাজ ও হেডার টেক্সট জমকালো এনিমেশন ফিক্স ★
-   ==================================================== */
-
-/* ১. লাইভ ব্যাজটিকে বড়, স্পষ্ট এবং ঘন ঘন ব্লিঙ্ক করানোর লজিক */
-.live-badge {
-    font-size: 16px !important;       /* লেখাটা বেশ বড় করা হলো */
-    padding: 8px 16px !important;     /* চারপাশের গ্যাপ বাড়িয়ে চওড়া করা হলো */
-    border-radius: 20px !important;
-    font-weight: 900 !important;      /* লেখাটা অনেক মোটা করা হলো */
-    letter-spacing: 1px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-}
-
-/* যখন স্ট্যাটাস LIVE থাকবে (সবুজ এবং চড়া গ্লো ব্লিঙ্ক) */
-#live-indicator {
-    background-color: #22c55e !important; /* একদম খাঁটি উজ্জ্বল সবুজ */
-    color: #ffffff !important;
-    animation: superGreenPulse 0.8s infinite alternate !important; /* খুব দ্রুত ও ঘন ঘন ধকধক করবে */
-}
-
-@keyframes superGreenPulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 4px #22c55e, 0 0 8px #22c55e;
-    }
-    100% {
-        transform: scale(1.12); /* সুন্দরভাবে একটু বড় হবে */
-        box-shadow: 0 0 20px #22c55e, 0 0 35px #22c55e; /* তীব্র সবুজ নিয়ন আলো ছড়াবে */
-    }
-}
-
-/* যখন স্ট্যাটাস OFF থাকবে (লাল ব্লিঙ্ক - জাভাস্ক্রিপ্ট যখন টেক্সট বদলাবে তখন এই স্টাইল কাজ করবে) */
-#live-indicator:contains("OFF"), 
-#live-indicator[style*="background: rgb(239, 68, 68)"],
-#live-indicator[style*="background-color: rgb(239, 68, 68)"] {
-    background-color: #ef4444 !important; /* উজ্জ্বল লাল */
-    animation: superRedPulse 0.8s infinite alternate !important;
-}
-
-/* ====================================================
-   ★ লাইভ ও অফলাইন ব্যাজের ১০০% ফুল-প্রুফ ডাইনামিক ফিক্স ★
-   ==================================================== */
-
-/* লাইভ ব্যাজের কমন বড়, মোটা এবং স্পষ্ট বেস ডিজাইন */
-.live-badge {
-    font-size: 16px !important;
-    padding: 8px 16px !important;
-    border-radius: 20px !important;
-    font-weight: 900 !important;
-    letter-spacing: 1px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-}
-
-/* 🟢 মোড ১: যখন লাইভ থাকবে (উজ্জ্বল সবুজ এবং তীব্র সবুজ গ্লো ব্লিঙ্ক) */
-#live-indicator {
-    background-color: #22c55e !important; /* খাঁটি সবুজ */
-    color: #ffffff !important;
-    animation: superGreenPulse 0.8s infinite alternate !important;
-}
-
-@keyframes superGreenPulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 4px #22c55e, 0 0 8px #22c55e;
-    }
-    100% {
-        transform: scale(1.12);
-        box-shadow: 0 0 20px #22c55e, 0 0 35px #22c55e;
-    }
-}
-
-/* 🔴 মোড ২: যখনই "OFF" বা "TODAY OFF" হবে বা জাভাস্ক্রিপ্ট লাল কালার পুশ করবে */
-/* জাভাস্ক্রিপ্ট যখনই ইনলাইন কালার পুশ করবে, ব্রাউজার এই লাল মোডটাকেই ট্রিগার করবে */
-#live-indicator[style*="rgb(239, 68, 68)"],
-#live-indicator[style*="#ef4444"],
-#live-indicator[style*="red"] {
-    background-color: #ef4444 !important; /* জোর করে সবুজ কেটে লাল করবে */
-    color: #ffffff !important;
-    animation: superRedPulse 0.8s infinite alternate !important; /* লাল ধকধক চালু */
-}
-
-@keyframes superRedPulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 4px #ef4444, 0 0 8px #ef4444;
-    }
-    100% {
-        transform: scale(1.12);
-        box-shadow: 0 0 20px #ef4444, 0 0 35px #ef4444; /* তীব্র লাল নিয়ন গ্লো */
-    }
-}
-
-
-/* ২. "Today's Live Game Results" লেখাটির নিয়ন কালার চেঞ্জিং এনিমেশন */
-.section-title, #main-results-wrap .section-title, .admin-box .box-header {
-    font-size: 26px !important;
-    font-weight: 800 !important;
-    text-align: center;
-    margin: 25px 0 15px 0;
-    text-transform: uppercase;
-    animation: premiumNeonRainbow 3s linear infinite alternate !important;
-}
-
-@keyframes premiumNeonRainbow {
-    0% {
-        color: #3b82f6;
-        text-shadow: 0 0 5px #3b82f6, 0 0 15px #3b82f6, 0 0 25px #3b82f6;
-    }
-    50% {
-        color: #e11d48;
-        text-shadow: 0 0 5px #e11d48, 0 0 15px #e11d48, 0 0 25px #e11d48;
-    }
-    100% {
-        color: #f59e0b;
-        text-shadow: 0 0 5px #f59e0b, 0 0 15px #f59e0b, 0 0 25px #f59e0b;
-    }
+.double-check-mark {
+    color: #16a34a;
+    font-weight: bold;
+    font-size: 14px;
+    margin-left: 5px;
 }
