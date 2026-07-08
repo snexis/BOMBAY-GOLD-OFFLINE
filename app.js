@@ -20,7 +20,7 @@ const CONFIG = {
     fallbackSlots: ["10:20 AM", "11:50 AM", "01:20 PM", "04:20 PM"]
 };
 
-let loginAttempts = 0; // ব্রুট-ফোর্স অ্যাটাক প্রতিরোধের ভেরিয়েবল
+let loginAttempts = 0;
 
 const getTodayDateStr = () => {
     const d = new Date();
@@ -33,8 +33,33 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnSaveSettings = document.getElementById("btn-save-settings");
     const dynamicSlotsList = document.getElementById("global-dynamic-slots-list");
     const btnAddSlotRow = document.getElementById("btn-add-new-slot-row");
+    
+    // স্টাফ পাসওয়ার্ড চেঞ্জের নতুন এলিমেন্ট
+    const staffPasswordContainer = document.getElementById("staff-password-change-container");
+    const inputStaffSelfPass = document.getElementById("input-staff-self-pass");
+    const btnSaveStaffSelfPass = document.getElementById("btn-save-staff-self-pass");
 
     let activeRole = "guest";
+
+    // --- ফাট ফাটাফাট ইনপুট রো তৈরি করার ইন্টারনাল ফাংশন ---
+    const createSlotInputRowHTML = (value = "") => {
+        if (!dynamicSlotsList) return;
+        const div = document.createElement("div");
+        div.className = "slot-row-item";
+        div.innerHTML = `
+            <input type="text" class="dynamic-slot-time-value" value="${value}" placeholder="যেমন: 10:20 AM বা 02:30 PM">
+            <button type="button" class="btn-delete-slot">Delete</button>
+        `;
+        div.querySelector(".btn-delete-slot").addEventListener("click", () => div.remove());
+        dynamicSlotsList.appendChild(div);
+    };
+
+    // আপনার ক্লিক না হওয়ার মূল বাগ ফিক্স (বাটনটি ক্লিক লিসেনারে সরাসরি বাইন্ড করা হলো)
+    if (btnAddSlotRow) {
+        btnAddSlotRow.onclick = function() {
+            createSlotInputRowHTML("");
+        };
+    }
 
     // ==================== [ মেইন ভিজিটর পেজ ইঞ্জিন (index.html) ] ====================
     if (resultsContainer) {
@@ -42,7 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const serverData = snapshot.val();
             if (!serverData) return;
 
-            // গ্লোবাল ডাইনামিক স্লট সেটআপ রিড করা
             let liveSlots = serverData.settings && serverData.settings.globalSlots ? serverData.settings.globalSlots : CONFIG.fallbackSlots;
 
             if (serverData.settings) {
@@ -127,49 +151,36 @@ document.addEventListener("DOMContentLoaded", function () {
             setTimeout(() => { statusMsg.className = "status-msg"; }, 3500);
         };
 
-        // মাস্টার প্যানেলে ইনপুট রো ইন্টারফেস জেনারেটর লজিক
-        const createSlotInputRowHTML = (value = "") => {
-            const div = document.createElement("div");
-            div.className = "slot-row-item";
-            div.innerHTML = `
-                <input type="text" class="dynamic-slot-time-value" value="${value}" placeholder="যেমন: 10:20 AM বা 02:30 PM">
-                <button type="button" class="btn-delete-slot">Delete</button>
-            `;
-            div.querySelector(".btn-delete-slot").addEventListener("click", () => div.remove());
-            dynamicSlotsList.appendChild(div);
-        };
-
-        if (btnAddSlotRow) {
-            btnAddSlotRow.addEventListener("click", () => createSlotInputRowHTML(""));
-        }
-
-        // সিকিউর লগইন সিস্টেম এবং রেট লিমিটার
+        // লগইন ও রোল অথেন্টিকেশন সিঙ্ক
         if (btnLogin) {
             btnLogin.addEventListener("click", () => {
                 if (loginAttempts >= 5) {
-                    alert("নিরাপত্তাজনিত কারণে এই ডিভাইসটি সাময়িকভাবে লক করা হয়েছে! ৫ মিনিটের পর চেষ্টা করুন।");
+                    alert("সিকিউরিটি লক! ৫ মিনিট পর চেষ্টা করুন।");
                     return;
                 }
 
-                const masterPass = passInput.value.trim();
-                if (!masterPass) return alert("পাসওয়ার্ড লিখুন!");
+                const entryPass = passInput.value.trim();
+                if (!entryPass) return alert("পাসওয়ার্ড লিখুন!");
 
                 get(ref(database, `${CONFIG.root}/passwords`)).then((snap) => {
-                    const dbPass = snap.val() || { master: "7777", staff: "1234" };
+                    const dbPass = snap.val() || { master: "1985", staff: "123@" };
 
-                    if (masterPass === dbPass.master) {
+                    if (entryPass === String(dbPass.master)) {
                         activeRole = "master";
                         authScreen.style.display = "none";
                         mainContent.style.display = "block";
                         masterSettingsBox.style.display = "block";
-                        roleBadge.textContent = "★ ROLE: MASTER MASTER";
+                        staffPasswordContainer.style.display = "none"; // মাস্টারের নিজের পাসওয়ার্ড চেঞ্জের ঘর লাগবে না
+                        roleBadge.textContent = "★ ROLE: MASTER ADMIN";
                         roleBadge.style.background = "#fffbeb"; roleBadge.style.color = "#b78103";
                         syncDashboardData();
-                    } else if (masterPass === dbPass.staff) {
+                    } else if (entryPass === String(dbPass.staff)) {
                         activeRole = "staff";
                         authScreen.style.display = "none";
                         mainContent.style.display = "block";
-                        masterSettingsBox.style.display = "none"; // স্টাফদের জন্য হাইড
+                        masterSettingsBox.style.display = "none";
+                        staffPasswordContainer.style.display = "flex"; // স্টাফের নিজের পাসওয়ার্ড বদলানোর ঘর ওপেন হবে
+                        inputStaffSelfPass.value = dbPass.staff;
                         roleBadge.textContent = "● ROLE: STAFF (Results Entry)";
                         roleBadge.style.background = "#f1f5f9"; roleBadge.style.color = "#475569";
                         syncDashboardData();
@@ -188,7 +199,19 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
 
-        // ডাটাবেস থেকে ডাইনামিক রো এবং এন্ট্রি টেবিল বিল্ডার লজিক
+        // স্টাফ প্যানেল থেকে নিজেই নিজের পাসওয়ার্ড চেঞ্জ করার বাটন লজিক
+        if (btnSaveStaffSelfPass) {
+            btnSaveStaffSelfPass.addEventListener("click", () => {
+                const newStaffPin = inputStaffSelfPass.value.trim();
+                if (!newStaffPin) return alert("পাসওয়ার্ড ফাঁকা রাখা যাবে না!");
+
+                set(ref(database, `${CONFIG.root}/passwords/staff`), newStaffPin).then(() => {
+                    showAlert("✓ আপনার স্টাফ লগইন পাসওয়ার্ডটি সফলভাবে পরিবর্তন করা হয়েছে!", true);
+                }).catch(err => showAlert("ত্রুটি: " + err.message, false));
+            });
+        }
+
+        // ডাটাবেস রিয়েল-টাইম রেন্ডারিং ও টেবিল জেনারেটর
         const syncDashboardData = () => {
             const selectedDate = dateInput.value;
             if (!selectedDate) return;
@@ -201,9 +224,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 let activeSlots = rootData.settings && rootData.settings.globalSlots ? rootData.settings.globalSlots : CONFIG.fallbackSlots;
 
                 adminInputsBody.innerHTML = "";
-                dynamicSlotsList.innerHTML = ""; // মাস্টার লিস্ট ক্লিয়ার করা
+                if (activeRole === "master") dynamicSlotsList.innerHTML = ""; 
 
-                // স্টাফ ও মাস্টারের জন্য লাইভ টেবিল জেনারেট করা
+                // স্টাফ ও মাস্টারের টেবিলে ডাইনামিক রো তৈরি
                 activeSlots.forEach((slotName) => {
                     const pattiVal = (currentDayData[slotName] && currentDayData[slotName].patti && currentDayData[slotName].patti !== "-") ? currentDayData[slotName].patti : "";
                     const singleVal = (currentDayData[slotName] && currentDayData[slotName].single && currentDayData[slotName].single !== "-") ? currentDayData[slotName].single : "";
@@ -216,12 +239,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         <td><button type="button" class="btn-cell-submit">Submit</button></td>
                     `;
 
-                    // প্রতিটি রো এর স্বাধীন বাটন লাইভ সিঙ্ক লজিক
+                    // রেজাল্ট সাবমিট ও ডাবল কনফার্মেশন প্রটেকশন লজিক
                     tr.querySelector(".btn-cell-submit").addEventListener("click", () => {
                         const finalPatti = tr.querySelector(".cell-patti").value.trim() || "-";
                         const finalSingle = tr.querySelector(".cell-single").value.trim() || "-";
 
-                        // টাইপিং মিস্টেক প্রটেকশন পপ-আপ লজিক
                         if (!confirm(`আপনি কি নিশ্চিত যে ${slotName} স্লটে [ পাত্তি: ${finalPatti}, সিঙ্গেল: ${finalSingle} ] পাবলিশ করতে চান?`)) {
                             return;
                         }
@@ -235,7 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     adminInputsBody.appendChild(tr);
                 });
 
-                // মাস্টার ইনপুট লিস্টের ডেটা রেন্ডার করা (মাস্টার শুধু দেখতে পাবে)
+                // মাস্টার সেটিংসের ডেটা ইনপুট বক্সে রেন্ডার করা
                 if (activeRole === "master") {
                     activeSlots.forEach(slot => createSlotInputRowHTML(slot));
 
@@ -249,8 +271,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         document.getElementById("input-bg-url").value = rootData.settings.bgUrl || "";
                     }
                     if (rootData.passwords) {
-                        document.getElementById("input-master-pass").value = rootData.passwords.master || "7777";
-                        document.getElementById("input-staff-pass").value = rootData.passwords.staff || "1234";
+                        document.getElementById("input-master-pass").value = rootData.passwords.master || "1985";
+                        document.getElementById("input-staff-pass").value = rootData.passwords.staff || "123@";
                     }
                 }
             });
@@ -259,7 +281,7 @@ document.addEventListener("DOMContentLoaded", function () {
         dateInput.value = getTodayDateStr();
         dateInput.addEventListener("change", syncDashboardData);
 
-        // ==================== [ ৩. মাস্টার সেভ অল কনফিগারেশন লজিক ] ====================
+        // ==================== [ ৩. মাস্টার অল-ইন-ওয়ান সেভ বাটন লজিক ] ====================
         if (btnSaveSettings) {
             btnSaveSettings.addEventListener("click", () => {
                 if (activeRole !== "master") return alert("অনুমতি নেই!");
@@ -289,12 +311,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     pattiUrl: document.getElementById("input-patti-url").value.trim() || "#",
                     customAlert: document.getElementById("input-alert").value.trim(),
                     bgUrl: document.getElementById("input-bg-url").value.trim(),
-                    globalSlots: freshSlotsArray // নতুন ডাইনামিক স্লট অ্যারে ডাটাবেসে সেভ হচ্ছে
+                    globalSlots: freshSlotsArray
                 };
 
                 const updatedPasswords = {
-                    master: document.getElementById("input-master-pass").value.trim() || "7777",
-                    staff: document.getElementById("input-staff-pass").value.trim() || "1234"
+                    master: document.getElementById("input-master-pass").value.trim() || "1985",
+                    staff: document.getElementById("input-staff-pass").value.trim() || "123@"
                 };
 
                 const packet = {};
