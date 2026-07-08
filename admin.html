@@ -18,14 +18,14 @@
 
     <div id="admin-auth-screen" class="auth-wrapper">
         <h2>Security Navigation Lock</h2>
-        <p>কন্ট্রোল প্যানেলে প্রবেশ করতে সঠিক পাসওয়ার্ড দিন:</p>
+        <p>কন্ট্রোল প্যানেলে প্রবেশ করতে সঠিক পাসওয়ার্ড দিন:</p>
         <div class="form-group">
-            <input type="password" id="admin-password" placeholder="পাসওয়ার্ড লিখুন" style="text-align: center;">
+            <input type="password" id="admin-password" placeholder="পাসওয়ার্ড লিখুন" style="text-align: center;">
         </div>
         <button id="btn-login" class="btn-publish">লগইন করুন</button>
     </div>
 
-    <div id="admin-main-content" class="container" style="display: none; background: #ffffff;">
+    <div id="admin-main-content" class="container main-glass-panel" style="display: none;">
         <header class="admin-header-bar">
             <div>
                 <h1 class="admin-logo">BOMBAY GOLD</h1>
@@ -38,7 +38,7 @@
 
         <div id="staff-password-change-container" class="staff-pass-box" style="display: none;">
             <div>
-                <h4 style="margin:0; color:#0d9488;">🔑 Change Your Staff Password (পাসওয়ার্ড পরিবর্তন)</h4>
+                <h4 style="margin:0; color:#0d9488;">🔑 Change Your Staff Password (পাসওয়ার্ড পরিবর্তন)</h4>
                 <p style="margin:5px 0 0 0; font-size:12px; color:#475569;">আপনার লগইন পিনটি পরিবর্তন করতে ডানপাশের বক্সে নতুন পিন লিখে সেভ করুন।</p>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
@@ -58,7 +58,7 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th style="width: 35%;">Time Slot (মাস্টার নিয়ন্ত্রিত)</th>
+                            <th style="width: 35%;">Time Slot (মাস্টার নিয়ন্ত্রিত)</th>
                             <th style="width: 25%;">৩ সংখ্যার পাত্তি (Patti)</th>
                             <th style="width: 20%;">১ সংখ্যার সিঙ্গেল (Single)</th>
                             <th style="width: 20%;">অ্যাকশন</th>
@@ -122,7 +122,7 @@
                         <input type="text" id="input-master-pass">
                     </div>
                     <div class="form-group">
-                        <label>Staff Password (এখানে স্টাফের নতুন সেট করা পাসওয়ার্ডও দেখাবে):</label>
+                        <label>Staff Password (এখানে স্টাফের নতুন সেট করা পাসওয়ার্ডও দেখাবে):</label>
                         <input type="text" id="input-staff-pass">
                     </div>
                 </div>
@@ -134,6 +134,7 @@
 
     <script type="module" src="app.js"></script>
     <script>
+        // সিকিউরিটি স্ক্রিপ্ট: রাইট-ক্লিক এবং ইনস্পেক্ট এলিমেন্ট লক
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.onkeydown = function(e) {
             if(e.keyCode == 123) return false;
