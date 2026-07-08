@@ -342,3 +342,40 @@ body {
         font-size: 13px;     /* মোবাইলে পড়ার মতো সুন্দর ফন্ট সাইজ */
     }
 }
+/* ====================================================
+   ★ লাইভ ব্যাজ ও হেডার টেক্সট এনিমেশন ফিক্স ★
+   ==================================================== */
+
+/* ১. গোল লাল লাইভ ব্যাজটাকে ব্লিঙ্ক/ধকধক করানোর এনিমেশন */
+.live-badge {
+    background-color: #ef4444 !important; /* উজ্জ্বল লাল রঙ */
+    color: white !important;
+    font-weight: bold;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    animation: livePulse 1.5s infinite alternate; /* অনবরত ধকধক করবে */
+}
+
+@keyframes livePulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+    }
+    100% {
+        transform: scale(1.08); /* হালকা একটু বড় হবে */
+        box-shadow: 0 0 12px 6px rgba(239, 68, 68, 0); /* চারপাশ দিয়ে লাল আলো ছড়াবে */
+    }
+}
+
+/* ২. "Today's Live Game Results" লেখাটাকে হালকা গ্লো করানোর এনিমেশন (অপশনাল) */
+.section-title h2, .results-table-block .date-header {
+    animation: textGlowPremium 2s ease-in-out infinite alternate;
+}
+
+@keyframes textGlowPremium {
+    0% {
+        text-shadow: 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+    100% {
+        text-shadow: 0 0 8px rgba(37, 99, 235, 0.6); /* হালকা স্মুথ ব্লু নিয়ন গ্লো */
+    }
+}
