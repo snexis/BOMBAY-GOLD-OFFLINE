@@ -8,31 +8,26 @@
 </head>
 <body class="admin-body">
 
-    <!-- সিকিউরিটি লগইন স্ক্রিন -->
     <div id="admin-auth-screen" class="auth-wrapper">
         <h2>Security Navigation Lock</h2>
-        <p>কন্ট্রোল প্যানেলে প্রবেশ করতে সঠিক পাসওয়ার্ড দিন:</p>
+        <p>কontrol প্যানেলে প্রবেশ করতে সঠিক পাসওয়ার্ড দিন:</p>
         <div class="form-group">
             <input type="password" id="admin-password" placeholder="পাসওয়ার্ড লিখুন" style="text-align: center;">
         </div>
         <button id="btn-login" class="btn-publish">লগইন করুন</button>
     </div>
 
-    <!-- মূল অ্যাডমিন ড্যাশবোর্ড (লগইন ছাড়া এটি দেখা যাবে না) -->
     <div id="admin-main-content" class="container" style="display: none;">
         <header class="admin-header-bar">
             <div>
                 <h1 class="admin-logo">BOMBAY GOLD</h1>
                 <span id="admin-role-badge" class="role-badge">ROLE: ADMIN</span>
             </div>
-            <!-- লগআউট বাটন -->
             <button id="btn-logout" class="btn-logout">Logout</button>
         </header>
 
-        <!-- সাকসেস মেসেজ অ্যালার্ট পপ-আপ -->
         <div id="status-message" class="status-msg"></div>
 
-        <!-- বক্স ১: রেজাল্ট ইনপুট (স্টাফ ও মাস্টার উভয়ের জন্য কম্প্যাক্ট ও স্লিক ডিজাইন) -->
         <div class="admin-box">
             <div class="box-header">Live Results & Time Customization</div>
             <div class="form-group" style="max-width: 250px; margin: 10px 0;">
@@ -50,17 +45,22 @@
                         </tr>
                     </thead>
                     <tbody id="admin-inputs-body">
-                        <!-- জাভাস্ক্রিপ্ট দিয়ে রো তৈরি হবে -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- বক্স ২: মাস্টার স্মার্ট সেটিংস (স্টাফ লগইন করলে এই সুন্দর বক্সটি পুরোপুরি হাইড থাকবে) -->
         <div id="master-settings-box" class="admin-box" style="display: none;">
-            <div class="box-header master-color">★ Website Smart Settings (Master Only)</div>
+            <div class="box-header master-color">★ Website Smart Settings & Passwords (Master Only)</div>
             
             <div class="admin-grid-inputs">
+                <div class="form-group">
+                    <label><b>Website Status (অন/অফ কন্ট্রোল):</b></label>
+                    <select id="input-live-status" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fffbeb; font-weight: bold;">
+                        <option value="live">🟢 LIVE NOW (সব চার্ট ও রেজাল্ট চালু থাকবে)</option>
+                        <option value="off">🔴 TODAY OFF (চার্ট গায়েব হবে, স্ক্রিন ব্ল্যাঙ্ক থাকবে)</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>জরুরি লাল নোটিফিকেশন বার:</label>
                     <input type="text" id="input-alert" placeholder="ফাঁকা রাখলে হাইড থাকবে">
@@ -86,9 +86,22 @@
                     <input type="url" id="input-patti-url">
                 </div>
             </div>
+
+            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #e2e8f0;">
+                <h4 style="margin: 0 0 10px 0; color: #1f78c1;">🔒 Live Security Password Manager</h4>
+                <div class="admin-grid-inputs">
+                    <div class="form-group">
+                        <label>Master Admin Password:</label>
+                        <input type="text" id="input-master-pass" placeholder="Default: 777#7">
+                    </div>
+                    <div class="form-group">
+                        <label>Staff Password (Results Only):</label>
+                        <input type="text" id="input-staff-pass" placeholder="Default: 12@34">
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- অ্যাকশন বাটন -->
         <button type="button" id="btn-publish" class="btn-publish" style="margin-top: 10px;">PUBLISH LIVE</button>
     </div>
 
