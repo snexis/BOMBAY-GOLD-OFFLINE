@@ -3,51 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOMBAY GOLD - Live Game Results</title>
-  <link rel="stylesheet" href="style.css?v=1.1">
+    <title>BOMBAY GOLD - Secure Enterprise Panel</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { user-select: none; -webkit-user-select: none; }
+        .slot-row-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; }
+        .slot-row-item input { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; }
+        .btn-delete-slot { background: #ef4444; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-add-slot { background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 15px; display: inline-block; }
+        .staff-pass-box { background: #f0fdfa; border: 1px solid #99f6e4; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    </style>
 </head>
-<body>
-    <div class="container main-glass-panel">
-        <div class="container">
-        <!-- জরুরি লাল নোটিফিকেশন বার (ডাটা থাকলে শো করবে, না থাকলে অটো হাইড) -->
-        <div id="custom-alert-bar" class="custom-alert-bar"></div>
+<body class="admin-body">
 
-        <div id="custom-alert-bar" class="custom-alert-bar"></div>
-<div class="main-header-banner">
-    <!-- লাইভ ইন্ডিকেটর ব্যাজ -->
-    <div id="live-indicator" class="live-badge" style="position: absolute; top: 15px; right: 15px; margin: 0;">• LIVE</div>
-
-    <!-- ৩ডি ঘূর্ণায়মান এনিমেটেড লোগো -->
-    <div class="logo-wrapper">
-        <img src="https://img.icons8.com/fluent/96/gold-bars.png" alt="Logo" class="rotating-ai-logo">
+    <div id="admin-auth-screen" class="auth-wrapper">
+        <h2>Security Navigation Lock</h2>
+        <p>কন্ট্রোল প্যানেলে প্রবেশ করতে সঠিক পাসওয়ার্ড দিন:</p>
+        <div class="form-group">
+            <input type="password" id="admin-password" placeholder="পাসওয়ার্ড লিখুন" style="text-align: center;">
+        </div>
+        <button id="btn-login" class="btn-publish">লগইন করুন</button>
     </div>
-    
-    <!-- কালারফুল ও এনিমেটেড টেক্সট -->
-    <h1 class="premium-animated-title">BOMBAY GOLD</h1>
-    <p class="premium-subtitle" id="site-subtitle">লাইভ গেম রেজাল্ট সবথেকে প্রথম পাওয়ার জন্য ভিজিট করুন...</p>
-    
-    <div class="marquee-wrapper">
-        <marquee id="site-marquee" scrollamount="5" style="margin: 0; padding: 0; vertical-align: middle;">আজকের লাইভ আপডেট এর জন্য অপেক্ষা করুন...</marquee>
-    </div>
-</div>
 
-        <div class="nav-buttons">
-            <a href="#" id="link-tips" class="btn btn-tips" target="_blank">Tips</a>
-            <a href="#" id="link-patti" class="btn btn-patti" target="_blank">Patti Chart</a>
+    <div id="admin-main-content" class="container main-glass-panel" style="display: none;">
+        <header class="admin-header-bar">
+            <div>
+                <h1 class="admin-logo">BOMBAY GOLD</h1>
+                <span id="admin-role-badge" class="role-badge">ROLE: GUEST</span>
+            </div>
+            <button id="btn-logout" class="btn-logout">Logout</button>
+        </header>
+
+        <div id="status-message" class="status-msg"></div>
+
+        <div id="staff-password-change-container" class="staff-pass-box" style="display: none;">
+            <div>
+                <h4 style="margin:0; color:#0d9488;">🔑 Change Your Staff Password (পাসওয়ার্ড পরিবর্তন)</h4>
+                <p style="margin:5px 0 0 0; font-size:12px; color:#475569;">আপনার লগইন পিনটি পরিবর্তন করতে ডানপাশের বক্সে নতুন পিন লিখে সেভ করুন।</p>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" id="input-staff-self-pass" placeholder="নতুন স্টাফ পিন লিখুন" style="padding: 8px; border: 1px solid #ccfbf1; border-radius: 6px; font-weight: bold; width: 180px; text-align: center;">
+                <button type="button" id="btn-save-staff-self-pass" style="background: #0d9488; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">Update Pin</button>
+            </div>
         </div>
 
-        <div id="main-results-wrap">
-            <div class="section-title">
-                <h2>Today's Live Game Results</h2>
-                <h3>Game Results in All West Bengal</h3>
+        <div class="admin-box">
+            <div class="box-header">Live Results Entry Panel</div>
+            <div class="form-group" style="max-width: 250px; margin: 10px 0;">
+                <label>তারিখ সিলেক্ট করুন (Date):</label>
+                <input type="date" id="result-date" required>
             </div>
 
-            <div id="results-container">
-                <div class="loading-text">ফলাফল লোড হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।</div>
+            <div style="overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 35%;">Time Slot (মাস্টার নিয়ন্ত্রিত)</th>
+                            <th style="width: 25%;">৩ সংখ্যার পাত্তি (Patti)</th>
+                            <th style="width: 20%;">১ সংখ্যার সিঙ্গেল (Single)</th>
+                            <th style="width: 20%;">অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-inputs-body">
+                        </tbody>
+                </table>
             </div>
+        </div>
+
+        <div id="master-settings-box" class="admin-box" style="display: none; border-top: 3px solid #ffb300;">
+            <div class="box-header master-color">★ Website Smart Settings & Dynamic Rows (Master Only)</div>
+            
+            <div class="admin-grid-inputs">
+                <div class="form-group">
+                    <label><b>Website Status (অন/অফ কন্ট্রোল):</b></label>
+                    <select id="input-live-status" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fffbeb; font-weight: bold;">
+                        <option value="live">🟢 LIVE NOW (সব চালু থাকবে)</option>
+                        <option value="off">🔴 TODAY OFF (স্ক্রিন ব্ল্যাঙ্ক থাকবে)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>জরুরি নোটিফিকেশন বার টেক্সট:</label>
+                    <input type="text" id="input-alert" placeholder="ফাঁকা রাখলে মেইন পেজে হাইড থাকবে">
+                </div>
+                <div class="form-group">
+                    <label>ব্যাকগ্রাউন্ড ইমেজ লিঙ্ক (URL):</label>
+                    <input type="url" id="input-bg-url">
+                </div>
+                <div class="form-group">
+                    <label>বাংলা সাবটাইটেল টেক্সট:</label>
+                    <input type="text" id="input-subtitle">
+                </div>
+                <div class="form-group">
+                    <label>চলন্ত লেখা (Marquee Text):</label>
+                    <input type="text" id="input-marquee">
+                </div>
+                <div class="form-group">
+                    <label>Tips Button URL:</label>
+                    <input type="url" id="input-tips-url">
+                </div>
+                <div class="form-group">
+                    <label>Patti Chart Button URL:</label>
+                    <input type="url" id="input-patti-url">
+                </div>
+            </div>
+
+            <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #bbf7d0;">
+                <h4 style="margin: 0 0 10px 0; color: #166534; font-size: 14px;">⏱ Un-limited Time Slots Management Panel</h4>
+                <button type="button" id="btn-add-new-slot-row" class="btn-add-slot">+ Add New Time Slot Row</button>
+                <div id="global-dynamic-slots-list">
+                    </div>
+            </div>
+
+            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #e2e8f0;">
+                <h4 style="margin: 0 0 10px 0; color: #1f78c1; font-size: 14px;">🔒 Security Password Manager</h4>
+                <div class="admin-grid-inputs">
+                    <div class="form-group">
+                        <label>Master Admin Password:</label>
+                        <input type="text" id="input-master-pass">
+                    </div>
+                    <div class="form-group">
+                        <label>Staff Password (এখানে স্টাফের নতুন সেট করা পাসওয়ার্ডও দেখাবে):</label>
+                        <input type="text" id="input-staff-pass">
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" id="btn-save-settings" class="btn-publish" style="margin-top: 15px; background-color: #2e7d32;">SAVE ALL MASTER CONFIGURATIONS</button>
         </div>
     </div>
 
     <script type="module" src="app.js"></script>
+    <script>
+        // সিকিউরিটি স্ক্রিপ্ট: রাইট-ক্লিক এবং ইনস্পেক্ট এলিমেন্ট লক
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        }
+    </script>
 </body>
 </html>
