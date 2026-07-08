@@ -386,9 +386,50 @@ body {
     animation: superRedPulse 0.8s infinite alternate !important;
 }
 
-/* অ্যাপের ভেতর থেকে আসা লাল রঙের ব্যাকগ্রাউন্ডকেও এনিমেট করার ডাইনামিক রুল */
+/* ====================================================
+   ★ লাইভ ও অফলাইন ব্যাজের ১০০% ডাইনামিক এনিমেশন ফিক্স ★
+   ==================================================== */
+
+/* লাইভ ব্যাজের কমন বড় এবং স্পষ্ট ডিজাইন */
+.live-badge {
+    font-size: 16px !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* 🟢 যখন লাইভ থাকবে (ডিফল্ট সবুজ এবং তীব্র সবুজ গ্লো ব্লিঙ্ক) */
+#live-indicator {
+    background-color: #22c55e !important; /* উজ্জ্বল সবুজ */
+    color: #ffffff !important;
+    animation: superGreenPulse 0.8s infinite alternate !important;
+}
+
+@keyframes superGreenPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 4px #22c55e, 0 0 8px #22c55e;
+    }
+    100% {
+        transform: scale(1.12);
+        box-shadow: 0 0 20px #22c55e, 0 0 35px #22c55e;
+    }
+}
+
+/* 🔴 জাভাস্ক্রিপ্ট যখনই এটাকে OFF করবে (তখন এই স্পেশাল রুলটি সবুজ রঙকে কেটে লাল করে দেবে) */
+#live-indicator[style*="background: rgb(23ef, 68, 68)"],
+#live-indicator[style*="background: #ef4444"],
+#live-indicator[style*="background-color"],
 .live-badge[style*="background"] {
-    animation: superRedPulse 0.8s infinite alternate !important;
+    background-color: #ef4444 !important; /* জোর করে লাল রঙ অ্যাপ্লাই হবে */
+    color: #ffffff !important;
+    animation: superRedPulse 0.8s infinite alternate !important; /* লাল ব্লিঙ্ক চালু হবে */
 }
 
 @keyframes superRedPulse {
@@ -398,34 +439,32 @@ body {
     }
     100% {
         transform: scale(1.12);
-        box-shadow: 0 0 20px #ef4444, 0 0 35px #ef4444; /* তীব্র লাল নিয়ন আলো ছড়াবে */
+        box-shadow: 0 0 20px #ef4444, 0 0 35px #ef4444;
     }
 }
 
 
 /* ২. "Today's Live Game Results" লেখাটির নিয়ন কালার চেঞ্জিং এনিমেশন */
 .section-title, #main-results-wrap .section-title, .admin-box .box-header {
-    font-size: 26px !important;      /* লেখাটা বড় করা হলো */
+    font-size: 26px !important;
     font-weight: 800 !important;
     text-align: center;
     margin: 25px 0 15px 0;
     text-transform: uppercase;
-    /* কালার চেঞ্জিং নিয়ন লাইট এনিমেশন */
     animation: premiumNeonRainbow 3s linear infinite alternate !important;
 }
 
 @keyframes premiumNeonRainbow {
     0% {
-        color: #3b82f6; /* রয়্যাল ব্লু */
+        color: #3b82f6;
         text-shadow: 0 0 5px #3b82f6, 0 0 15px #3b82f6, 0 0 25px #3b82f6;
     }
     50% {
-        color: #e11d48; /* নিয়ন গোলাপী/লাল */
+        color: #e11d48;
         text-shadow: 0 0 5px #e11d48, 0 0 15px #e11d48, 0 0 25px #e11d48;
     }
     100% {
-        color: #f59e0b; /* নিয়ন গোল্ডেন হলুদ */
+        color: #f59e0b;
         text-shadow: 0 0 5px #f59e0b, 0 0 15px #f59e0b, 0 0 25px #f59e0b;
     }
 }
-
