@@ -6,12 +6,12 @@
     <title>BOMBAY GOLD - Secure Enterprise Panel</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* এক্সট্রা প্রোটেকশন স্টাইল */
         body { user-select: none; -webkit-user-select: none; }
-        .slot-row-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; background: #fff; padding: 6px; border-radius: 6px; border: 1px solid #cbd5e1; }
-        .slot-row-item input { flex: 1; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; }
-        .btn-delete-slot { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-add-slot { background: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 15px; }
+        .slot-row-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; }
+        .slot-row-item input { flex: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: bold; }
+        .btn-delete-slot { background: #ef4444; color: white; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-add-slot { background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 15px; display: inline-block; }
+        .staff-pass-box { background: #f0fdfa; border: 1px solid #99f6e4; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
     </style>
 </head>
 <body class="admin-body">
@@ -36,8 +36,19 @@
 
         <div id="status-message" class="status-msg"></div>
 
+        <div id="staff-password-change-container" class="staff-pass-box" style="display: none;">
+            <div>
+                <h4 style="margin:0; color:#0d9488;">🔑 Change Your Staff Password (পাসওয়ার্ড পরিবর্তন)</h4>
+                <p style="margin:5px 0 0 0; font-size:12px; color:#475569;">আপনার লগইন পিনটি পরিবর্তন করতে ডানপাশের বক্সে নতুন পিন লিখে সেভ করুন।</p>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" id="input-staff-self-pass" placeholder="নতুন স্টাফ পিন লিখুন" style="padding: 8px; border: 1px solid #ccfbf1; border-radius: 6px; font-weight: bold; width: 180px; text-align: center;">
+                <button type="button" id="btn-save-staff-self-pass" style="background: #0d9488; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">Update Pin</button>
+            </div>
+        </div>
+
         <div class="admin-box">
-            <div class="box-header">Live Results Entry Panel (স্টাফ ও মাস্টার)</div>
+            <div class="box-header">Live Results Entry Panel</div>
             <div class="form-group" style="max-width: 250px; margin: 10px 0;">
                 <label>তারিখ সিলেক্ট করুন (Date):</label>
                 <input type="date" id="result-date" required>
@@ -111,7 +122,7 @@
                         <input type="text" id="input-master-pass">
                     </div>
                     <div class="form-group">
-                        <label>Staff Password:</label>
+                        <label>Staff Password (এখানে স্টাফের নতুন সেট করা পাসওয়ার্ডও দেখাবে):</label>
                         <input type="text" id="input-staff-pass">
                     </div>
                 </div>
@@ -123,14 +134,11 @@
 
     <script type="module" src="app.js"></script>
     <script>
-        // সাইবার সিকিউরিটি: রাইট ক্লিক এবং F12 / Inspect Element লক করার লজিক
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false; // F12 Lock
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Ctrl+Shift+I Lock
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+Shift+C Lock
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Ctrl+Shift+J Lock
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Ctrl+U (Source View) Lock
+            if(e.keyCode == 123) return false;
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
         }
     </script>
 </body>
