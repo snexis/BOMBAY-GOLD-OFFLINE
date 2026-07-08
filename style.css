@@ -287,3 +287,58 @@ body {
     font-weight: bold;
     max-width: 90%;
 }
+
+/* ====================================================
+   ★ মোবাইল ও ডেস্কটপ পারফেক্ট টেবিল রেসপন্সিভ ফিক্স ★
+   ==================================================== */
+
+/* মূল টেবিল ব্লক র‍্যাপার (যা স্ক্রোল করতে সাহায্য করবে) */
+.results-table-block {
+    background: #ffffff;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+/* টেবিল কন্টেইনারকে স্ক্রোলযোগ্য করা */
+.results-table-block > div {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+.results-grid-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+}
+
+.results-grid-table th, 
+.results-grid-table td {
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap; /* লেখা কখনো ভেঙে ২ লাইন হবে না */
+    padding: 12px 10px;
+}
+
+/* 💻 ডেস্কটপ বা বড় স্ক্রিনের জন্য লজিক */
+@media screen and (min-width: 769px) {
+    .results-grid-table {
+        table-layout: fixed; /* ডেস্কটপে সব কলাম সমান মাপে সুন্দর ছড়িয়ে থাকবে */
+    }
+}
+
+/* 📱 মোবাইল বা ছোট স্ক্রিনের জন্য স্পেশাল লজিক */
+@media screen and (max-width: 768px) {
+    .results-grid-table {
+        table-layout: auto; /* মোবাইলে জোর করে ফিক্সড করবে না */
+        min-width: 600px;   /* টেবিলটিকে মিনিমাম ৬০০ পিক্সেল চওড়া রাখবে, যাতে কলামের ডিজাইন সোজা ও চওড়া থাকে */
+    }
+    
+    .results-grid-table th, 
+    .results-grid-table td {
+        padding: 10px 8px;   /* মোবাইলের জন্য পারফেক্ট গ্যাপ */
+        font-size: 13px;     /* মোবাইলে পড়ার মতো সুন্দর ফন্ট সাইজ */
+    }
+}
