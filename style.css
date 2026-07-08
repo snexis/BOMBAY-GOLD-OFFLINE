@@ -209,3 +209,81 @@ body {
 .status-error { display: block; background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
 .loading-text { text-align: center; padding: 40px; color: #64748b; font-size: 14px; font-weight: 500; }
+/* ====================================================
+   ★ প্রীমিয়াম সোনালী হেডার ব্যানার ও লোগো এনিমেশন ★
+   ==================================================== */
+
+.main-header-banner {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid #fbbf24;
+    border-radius: 16px;
+    padding: 25px 15px;
+    text-align: center;
+    box-shadow: 0 8px 32px 0 rgba(251, 191, 36, 0.25);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ৩ডি এনিমেটেড ঘূর্ণায়মান লোগো */
+.logo-wrapper {
+    margin-bottom: 12px;
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+}
+.rotating-ai-logo {
+    width: 70px;
+    height: 70px;
+    filter: drop-shadow(0px 0px 10px rgba(251, 191, 36, 0.6));
+    animation: rotate3DLogo 6s linear infinite;
+}
+
+@keyframes rotate3DLogo {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+}
+
+/* সোনালী নিয়ন গ্লোয়িং টাইটেল */
+.premium-animated-title {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin: 8px 0;
+    background: linear-gradient(to right, #ffe066 0%, #f59e0b 50%, #ffe066 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shineText 3s linear infinite, pulseGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes shineText {
+    to { background-position: 200% center; }
+}
+@keyframes pulseGlow {
+    0% { filter: drop-shadow(0px 0px 3px rgba(245, 158, 11, 0.4)) drop-shadow(0px 2px 4px rgba(0,0,0,0.6)); }
+    100% { filter: drop-shadow(0px 0px 15px rgba(251, 224, 102, 0.8)) drop-shadow(0px 2px 4px rgba(0,0,0,0.6)); }
+}
+
+/* সাবটাইটেল ও মারকিউ টেক্সট ডিজাইন */
+.premium-subtitle {
+    color: #cbd5e1;
+    font-size: 15px;
+    margin-top: 2px;
+    margin-bottom: 15px;
+    font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+.marquee-wrapper {
+    background: rgba(0, 0, 0, 0.45);
+    padding: 6px 15px;
+    border-radius: 20px;
+    display: inline-block;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    color: #fef08a;
+    font-weight: bold;
+    max-width: 90%;
+}
