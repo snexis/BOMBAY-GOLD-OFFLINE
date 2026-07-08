@@ -245,23 +245,25 @@ const createSlotInputRowHTML = (value = "") => {
                         <td><button type="button" class="btn-cell-submit">Submit</button></td>
                     `;
 
-                    // রেজাল্ট সাবমিট ও ডাবল কনফার্মেশন প্রটেকশন লজিক
-                    tr.querySelector(".btn-cell-submit").addEventListener("click", () => {
-                        const finalPatti = tr.querySelector(".cell-patti").value.trim() || "-";
-                        const finalSingle = tr.querySelector(".cell-single").value.trim() || "-";
-
-                        if (!confirm(`আপনি কি নিশ্চিত যে ${slotName} স্লটে [ পাত্তি: ${finalPatti}, সিঙ্গেল: ${finalSingle} ] পাবলিশ করতে চান?`)) {
-                            return;
-                        }
-
-                        const rowPath = `${CONFIG.root}/records/${selectedDate}/${slotName}`;
-                        set(ref(database, rowPath), { patti: finalPatti, single: finalSingle }).then(() => {
-                            showAlert(`✓ ${slotName} এর রেজাল্ট সফলভাবে লাইভ সেভ হয়েছে!`, true);
-                        }).catch(err => showAlert("ত্রুটি: " + err.message, false));
-                    });
-
-                    adminInputsBody.appendChild(tr);
-                });
+                // --- রেজাল্ট সাবমিট ও ডাবল কনফার্মেশন প্রটেকশন লজিক ---
+tr.querySelector(".btn-cell-submit").addEventListener("click", () => {
+    const finalPatti = tr.querySelector(".cell-patti").value.trim() || "-";
+    const finalSingle = tr.querySelector(".cell-single").value.trim() || "-";
+    
+    if (!confirm(`আপনি কি নিশ্চিত যে ${slotName} স্লটে [ পাত্তি: ${finalPatti}, সিঙ্গেল: ${finalSingle} ] সাবমিট করবেন?`)) {
+        return;
+    }
+    
+    const rowPath = `${CONFIG.root}/records/${selectedDate}/${slotName}`;
+    set(ref(database, rowPath), { patti: finalPatti, single: finalSingle }).then(() => {
+        showAlert(`${slotName} এর রেজাল্ট সফলভাবে লাইভ সেভ হয়েছে`, true);
+        
+        // 🟢 ঠিক এইখানে সাকসেস কালার ও ডবল টিকের ফাংশনটি কল করে দিন
+        const submitBtn = tr.querySelector(".btn-cell-submit");
+        markSlotAsCompleted(tr, submitBtn);
+        
+    }).catch(err => showAlert("ত্রুটি: " + err.message, false));
+});
 
                 // মাস্টার সেটিংসের ডেটা ইনপুট বক্সে রেন্ডার করা
                 if (activeRole === "master") {
@@ -337,3 +339,14 @@ const createSlotInputRowHTML = (value = "") => {
         }
     }
 });
+// ফাইলের একদম শেষে বা যেকোনো ফাঁকা জায়গায় এটি জাস্ট রেখে দিন
+function markSlotAsCompleted(rowElement, submitButton) {
+    rowElement.classList.add('slot-row-completed');
+    
+    if (!submitButton.parentElement.querySelector('.double-check-mark')) {
+        const checkMark = document.createElement('span');
+        checkMark.className = 'double-check-mark';
+        checkMark.innerText = ' ✓✓';
+        submitButton.after(checkMark);
+    }
+}
