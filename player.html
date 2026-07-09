@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>Player Dashboard | BOMBAY-GOLD</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="login-section">
+        <h2>Player Login</h2>
+        <input type="text" id="player-id" placeholder="আইডি/নাম">
+        <input type="password" id="player-pin" placeholder="মোবাইলের শেষ ৪টি নম্বর">
+        <button id="login-btn">লগইন করুন</button>
+    </div>
+
+    <div id="dashboard-section" style="display:none;">
+        <div class="header">
+            <span id="welcome-player"></span>
+            <div class="balance-box">
+                <p>Play Balance: <span id="p-balance">0</span></p>
+                <p>Win Balance: <span id="w-balance">0</span></p>
+            </div>
+        </div>
+
+        <div class="game-form">
+            <select id="time-select">
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="12:00 PM">12:00 PM</option>
+            </select>
+            <input type="text" id="bet-type" placeholder="সিঙ্গেল বা পাতি">
+            <input type="number" id="bet-amount" placeholder="অ্যামাউন্ট">
+            <button id="submit-bet-btn">সাবমিট</button>
+        </div>
+
+        <div class="history-box">
+            <h3>আজকের খেলা:</h3>
+            <ul id="bet-history"></ul>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
