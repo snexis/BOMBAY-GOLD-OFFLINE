@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOMBAY GOLD - Live Results</title>
+    <style>
+        :root { 
+            --bg-dark: #07090e; 
+            --panel-bg: #111622; 
+            --gold-main: #fbbf24; 
+            --neon-green: #10b981; 
+            --neon-red: #f43f5e;
+            --text-light: #f3f4f6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        
+        body { 
+            background: var(--bg-dark); 
+            color: var(--text-light); 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+        
+        .main-wrapper { 
+            width: 100%; 
+            max-width: 480px; 
+            background: var(--panel-bg); 
+            border-radius: 20px; 
+            border: 2px solid var(--gold-main); 
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.25); 
+            padding: 30px 20px; 
+            margin-top: 15px; 
+            text-align: center; 
+            transition: all 0.5s ease; 
+        }
+        
+        h1 { 
+            color: var(--gold-main); 
+            font-size: 32px; 
+            font-weight: 800;
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            margin-bottom: 4px; 
+            text-shadow: 0 0 15px rgba(251, 191, 36, 0.5); 
+        }
+        
+        .subtitle { 
+            color: #9ca3af; 
+            font-size: 14px; 
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin-bottom: 25px; 
+            text-transform: uppercase;
+        }
+        
+        .notice-bar { 
+            background: #1e2538; 
+            padding: 12px; 
+            border-radius: 10px; 
+            margin-bottom: 25px; 
+            border-left: 5px solid var(--gold-main); 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+            overflow: hidden; 
+            white-space: nowrap; 
+        }
+        .notice-bar marquee { color: #e5e7eb; font-weight: bold; font-size: 14px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 5px; background: #161d2f; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        th, td { padding: 16px 12px; text-align: center; border-bottom: 1px solid #242f49; }
+        
+        th { 
+            background: #1f293d; 
+            color: var(--gold-main); 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            font-size: 13px; 
+            letter-spacing: 1px;
+        }
+        
+        tr:last-child td { border-bottom: none; }
+        
+        .txt-slot { font-weight: 600; color: #e5e7eb; font-size: 14px; }
+        .txt-patti { color: var(--neon-green); font-weight: bold; font-size: 18px; font-family: 'Courier New', monospace; }
+        .txt-single { color: var(--neon-red); font-weight: 800; font-size: 24px; font-family: 'Courier New', monospace; }
+        
+        .loading { padding: 40px; color: #9ca3af; font-style: italic; font-size: 15px; }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper" id="live-main-card">
+        <h1 id="live-title">BOMBAY GOLD</h1>
+        <div class="subtitle" id="live-subtitle">Live Results Board</div>
+        
+        <div class="notice-bar">
+            <marquee id="live-marquee">স্বাগতম বম্বে গোল্ড লাইভ রেজাল্ট প্যানেলে। চোখ রাখুন রিয়েলটাইম আপডেটে।</marquee>
+        </div>
+
+        <div id="today-results-container">
+            <p class="loading">ফলাফল লোড হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।</p>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
