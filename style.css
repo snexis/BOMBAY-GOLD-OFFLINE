@@ -1,0 +1,14 @@
+body { font-family: sans-serif; text-align: center; background-color: #f4f4f4; margin: 0; padding: 0; }
+header { background-color: #b8860b; color: white; padding: 20px; }
+.logo { font-size: 28px; font-weight: bold; }
+.buttons button { margin: 10px; padding: 10px 20px; cursor: pointer; }
+
+/* লাইভ বাটন ব্লিঙ্কিং এনিমেশন */
+.blink { color: red; font-weight: bold; animation: blinker 1s linear infinite; }
+@keyframes blinker { 50% { opacity: 0; } }
+
+/* রেজাল্ট সেকশন */
+#result-section { margin: 20px auto; width: 90%; max-width: 600px; background: white; padding: 20px; border-radius: 10px; }
+
+/* যখন রেজাল্ট অফ থাকবে, তখন এটি ব্যবহার করব */
+.hidden { display: none; }
