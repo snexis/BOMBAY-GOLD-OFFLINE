@@ -2,16 +2,48 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel</title>
+    <title>BOMBAY-GOLD Ultimate Admin</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <main>
-        <h2>রেজাল্ট আপডেট করুন</h2>
-        <input type="text" id="time-input" placeholder="সময় (যেমন: 11:50 AM)">
-        <input type="text" id="result-input" placeholder="রেজাল্ট (যেমন: 190-0)">
-        <button id="add-result-btn">সেভ করুন</button>
-    </main>
+<body style="background:#0a0a0a; color:#d4af37; padding:20px;">
+    <h1>মাস্টার কন্ট্রোল প্যানেল</h1>
+
+    <div class="section">
+        <h3>সাইট ও কন্টেন্ট ম্যানেজমেন্ট</h3>
+        <input type="text" id="h-text" placeholder="হেডার টেক্সট">
+        <input type="text" id="img-url" placeholder="ইমেজ লিঙ্ক">
+        <button onclick="updateSiteContent()">আপডেট কন্টেন্ট</button>
+        <button onclick="toggleLiveStatus(true)">লাইভ অন</button>
+        <button onclick="toggleLiveStatus(false)" style="background:red;">লাইভ অফ</button>
+    </div>
+
+    <div class="section">
+        <h3>প্লেয়ার সেকশন (ব্লক/ব্যালেন্স)</h3>
+        <input type="text" id="p-id" placeholder="প্লেয়ার আইডি">
+        <button onclick="blockPlayer()">আইডি ব্লক করুন</button>
+        <button onclick="manageBalance()">ব্যালেন্স আপডেট করুন</button>
+    </div>
+
+    <div class="section">
+        <h3>গেম হিস্ট্রি ও পার্সেন্টেজ ক্যালকুলেশন</h3>
+        <table style="width:100%; border:1px solid #d4af37;">
+            <thead><tr><th>আইডি</th><th>টাইম</th><th>টাইপ</th><th>অ্যামাউন্ট</th></tr></thead>
+            <tbody id="game-history-body"></tbody>
+        </table>
+        <select id="payout-select">
+            <option value="0.1">১০%</option><option value="0.5">৫০%</option><option value="0.9">৯০%</option>
+        </select>
+        <button onclick="calculatePayout()">মোট পেমেন্ট ক্যালকুলেট</button>
+        <h2 id="final-calc">0</h2>
+    </div>
+
+    <div class="section">
+        <h3>রেজাল্ট আপডেট</h3>
+        <input type="text" id="r-time" placeholder="টাইম">
+        <input type="text" id="r-pati" placeholder="পাতি">
+        <input type="text" id="r-single" placeholder="সিঙ্গেল">
+        <button onclick="submitResult()">সাবমিট (✅✅)</button>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
