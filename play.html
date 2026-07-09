@@ -5,111 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOMBAY GOLD - Premium Play Zone</title>
     <style>
-        :root {
-            --bg-dark: #0f172a;
-            --panel-dark: #1e293b;
-            --gold-primary: #fbbf24;
-            --gold-hover: #f59e0b;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-            --success: #10b981;
-            --error: #ef4444;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: var(--bg-dark); color: var(--text-light); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .container { background: var(--panel-dark); width: 100%; max-width: 500px; padding: 30px; border-radius: 12px; border: 2px solid var(--gold-primary); box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; }
-        .logo { font-size: 28px; font-weight: bold; color: var(--gold-primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        .form-group { text-align: left; margin-bottom: 20px; }
-        label { display: block; font-size: 14px; margin-bottom: 8px; color: var(--text-muted); font-weight: 500; }
-        input, select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white; font-size: 16px; outline: none; transition: 0.3s; }
-        input:focus, select:focus { border-color: var(--gold-primary); box-shadow: 0 0 8px rgba(251, 191, 36, 0.2); }
-        .btn { width: 100%; padding: 14px; background: var(--gold-primary); color: #000; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; text-transform: uppercase; }
-        .btn:hover { background: var(--gold-hover); transform: translateY(-1px); }
-        .toast { display: none; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; font-weight: 500; }
-        .toast-success { background: rgba(16, 185, 129, 0.2); border: 1px solid var(--success); color: #34d399; }
-        .toast-error { background: rgba(239, 68, 68, 0.2); border: 1px solid var(--error); color: #f87171; }
-        #play-main-board { display: none; }
-        .wallet-card { background: #0f172a; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #334155; }
-        .wallet-title { font-size: 14px; color: var(--text-muted); margin-bottom: 5px; }
-        .wallet-bal { font-size: 24px; font-weight: bold; color: var(--success); }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .btn-logout { background: transparent; border: 1px solid var(--error); color: var(--error); margin-top: 25px; font-size: 14px; padding: 8px; }
-        .btn-logout:hover { background: var(--error); color: white; }
+        :root { --bg: #0f172a; --panel: #1e293b; --gold: #fbbf24; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: var(--bg); color: white; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .play-box { background: var(--panel); width: 100%; max-width: 450px; padding: 30px; border-radius: 12px; border: 2px solid var(--gold); text-align: center; }
+        input, select, button { width: 100%; padding: 12px; margin-top: 12px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 16px; box-sizing: border-box; }
+        button { background: var(--gold); color: black; font-weight: bold; cursor: pointer; border: none; }
+        button:hover { background: #f59e0b; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     </style>
 </head>
 <body>
+    <div class="play-box">
+        <h2 style="color:var(--gold);">BOMBAY GOLD PLAY ZONE</h2>
+        <div id="play-toast" style="display:none; padding:10px; margin-top:10px; background:#10b981; border-radius:6px; font-weight:bold;"></div>
 
-    <!-- 🔐 লেয়ার ১: প্লেয়ার অথেন্টিকেশন স্ক্রিন -->
-    <div class="container" id="play-auth-screen">
-        <div class="logo">Bombay Gold</div>
-        <div id="play-toast" class="toast"></div>
-        
-        <div class="form-group">
-            <label>আপনার নাম (Full Name)</label>
+        <div id="play-auth-screen">
             <input type="text" id="player-name" placeholder="আপনার নাম লিখুন...">
-        </div>
-        <div class="form-group">
-            <label>মোবাইলের শেষ ৪টি সংখ্যা (Security Pin)</label>
-            <input type="password" id="player-pin" placeholder="৪ ডিজিটের পিন দিন..." maxlength="4">
-        </div>
-        
-        <button class="btn" id="btn-request-otp">Request Access Code</button>
+            <input type="password" id="player-pin" placeholder="৪ ডিজিটের পিন নম্বর দিন..." maxlength="4">
+            <button id="btn-request-otp">REQUEST ACCESS CODE</button>
 
-        <!-- OTP ভেরিফিকেশন এরিয়া (প্রথমে হাইড থাকবে) -->
-        <div id="otp-input-area" style="display: none; margin-top: 25px; border-top: 1px solid #334155; padding-top: 20px;">
-            <div class="form-group">
-                <label>এডমিন থেকে পাওয়া ৪ ডিজিটের ওটিপি কোড দিন</label>
-                <input type="text" id="player-otp" placeholder="Enter OTP Code" maxlength="4" style="text-align: center; letter-spacing: 5px; font-size: 20px;">
+            <div id="otp-input-area" style="display:none; margin-top:20px; border-top:1px solid #334155; padding-top:15px;">
+                <input type="text" id="player-otp" placeholder="এডমিন থেকে পাওয়া কোডটি দিন" maxlength="4" style="text-align:center; letter-spacing:4px; font-size:18px;">
+                <button id="btn-verify-login" style="background:#10b981; color:white;">VERIFY & ENTER GAME</button>
             </div>
-            <button class="btn" id="btn-verify-login" style="background: var(--success); color: white;">Verify & Enter Game</button>
+        </div>
+
+        <div id="play-main-board" style="display:none; margin-top:20px;">
+            <h3 id="display-player-name" style="color:#fff;">Welcome Player</h3>
+            <div style="background:#0f172a; padding:15px; border-radius:8px; margin: 15px 0; border:1px solid #334155;">
+                <span style="color:#94a3b8; font-size:14px;">AVAILABLE BALANCE</span>
+                <h2 id="player-wallet-display" style="color:#10b981; margin-top:5px;">0.00 PTS</h2>
+            </div>
+
+            <select id="play-slot-select"></select>
+
+            <div class="grid">
+                <input type="text" id="play-single-num" placeholder="Single (0-9)" maxlength="1" style="text-align:center;">
+                <input type="number" id="play-single-points" placeholder="Points">
+            </div>
+            <div class="grid">
+                <input type="text" id="play-patti-num" placeholder="Patti (3 Dig)" maxlength="3" style="text-align:center;">
+                <input type="number" id="play-patti-points" placeholder="Points">
+            </div>
+
+            <button id="btn-submit-bet" style="background:#2563eb; color:white; margin-top:20px;">LOCK BET ROW 🚀</button>
+            <button id="btn-player-logout" style="background:#ef4444; color:white; font-size:14px; padding:6px; margin-top:20px;">Logout</button>
         </div>
     </div>
-
-    <!-- 🎮 লেয়ার ২: কাস্টমার মেইন প্লে বোর্ড -->
-    <div class="container" id="play-main-board">
-        <div class="logo" id="display-player-name">Welcome Player</div>
-        
-        <!-- ওয়ালেট ডিসপ্লে -->
-        <div class="wallet-card">
-            <div class="wallet-title">AVAILABLE BALANCE</div>
-            <div class="wallet-bal" id="player-wallet-display">0.00 PTS</div>
-        </div>
-
-        <!-- বাজি ধরার ফর্ম -->
-        <div class="form-group">
-            <label>বাজির স্লট সিলেক্ট করুন (Select Time Slot)</label>
-            <select id="play-slot-select">
-                <!-- জাভাস্ক্রিপ্ট দিয়ে এখানে স্লট লোড হবে -->
-            </select>
-        </div>
-
-        <div class="grid-2">
-            <div class="form-group">
-                <label>Single Number</label>
-                <input type="text" id="play-single-num" placeholder="0-9" maxlength="1" style="text-align: center;">
-            </div>
-            <div class="form-group">
-                <label>Single Points</label>
-                <input type="number" id="play-single-points" placeholder="Points" min="1">
-            </div>
-        </div>
-
-        <div class="grid-2" style="margin-top: 10px;">
-            <div class="form-group">
-                <label>Patti Number</label>
-                <input type="text" id="play-patti-num" placeholder="3 Digit" maxlength="3" style="text-align: center;">
-            </div>
-            <div class="form-group">
-                <label>Patti Points</label>
-                <input type="number" id="play-patti-points" placeholder="Points" min="1">
-            </div>
-        </div>
-
-        <button class="btn" id="btn-submit-bet" style="background: #2563eb; color: white;">Lock Bet Row 🚀</button>
-        <button class="btn btn-logout" id="btn-player-logout">Logout Game</button>
-    </div>
-
-    <!-- 🌐 গ্লোবাল জাভাস্ক্রিপ্ট কানেকশন লিংক -->
     <script type="module" src="app.js"></script>
 </body>
 </html>
