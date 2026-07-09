@@ -1,27 +1,22 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>BOMBAY GOLD</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>BOMBAY GOLD - লাইভ রেজাল্ট</h1>
-        <table id="resultTable">
-            <thead><tr><th>সময়</th><th>রেজাল্ট</th></tr></thead>
-            <tbody id="liveResults"></tbody>
-        </table>
+    <div id="display">
+        <h1>আজকের রেজাল্ট</h1>
+        <div id="results">লোড হচ্ছে...</div>
     </div>
     <script src="firebase-config.js"></script>
     <script>
         db.ref('results').on('value', snapshot => {
-            let data = snapshot.val();
+            const data = snapshot.val();
             let html = "";
-            for(let time in data) html += `<tr><td>${time}</td><td>${data[time]}</td></tr>`;
-            document.getElementById('liveResults').innerHTML = html;
+            for(let time in data) html += `<p>${time}: <b>${data[time]}</b></p>`;
+            document.getElementById('results').innerHTML = html;
         });
     </script>
 </body>
