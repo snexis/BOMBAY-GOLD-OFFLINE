@@ -1,10 +1,10 @@
-/** * BOMBAY-GOLD MASTER ENGINE 
- * এই ফাইলটি আপনার প্রজেক্টের একমাত্র জাভাস্ক্রিপ্ট ফাইল। 
- * ভবিষ্যতে নতুন কিছু যোগ করতে চাইলে এই ফাইলের নিচে কমেন্ট অনুযায়ী যোগ করবেন।
+/**
+ * BOMBAY-GOLD MASTER ENGINE
+ * ভার্সন: ২.০ (নিরাপদ ও মডুলার)
  */
 
-// ১. কনফিগারেশন
-const firebaseConfig = {
+// ডাটাবেস এবং সিস্টেম কনফিগারেশন
+const FIREBASE_CONFIG = {
     apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
     authDomain: "live-result-b9155.firebaseapp.com",
     databaseURL: "https://live-result-b9155-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -14,46 +14,42 @@ const firebaseConfig = {
     appId: "1:495121483481:web:8e8bf65c71ea3d31ec60c8"
 };
 
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+// ফায়ারবেস ইনিশিয়ালাইজেশন
+if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.database();
-const getToday = () => new Date().toISOString().split('T')[0];
 
-// ২. কোর ডাটাবেস ম্যানেজার (যেকোনো ডাটাবেসে রূপান্তরযোগ্য)
-const DataEngine = {
-    save: (path, data) => db.ref(`${path}/${getToday()}`).push(data),
-    listen: (path, callback) => db.ref(`${path}/${getToday()}`).on('value', (s) => callback(s.val()))
+// গ্লোবাল ফাংশন: প্রতিদিনের জন্য আলাদা ডাটাবেস পাথ তৈরি
+const getPath = (node) => `${node}/${new Date().toISOString().split('T')[0]}`;
+
+// সিস্টেম মডিউল
+const System = {
+    // রেজাল্ট আপডেট (অ্যাডমিন)
+    updateResult: (time, result) => {
+        db.ref(getPath('results')).push({ time, result });
+    },
+    
+    // প্লেয়ার লগইন (নিরাপদ লজিক)
+    verifyPlayer: (id, pin) => {
+        // এখানে পিন চেক করার কোড হবে (ভবিষ্যতে সার্ভার সাইড সিকিউরিটি যুক্ত হবে)
+        console.log("Verifying...", id);
+    },
+    
+    // লাইভ রেজাল্ট লিসেনার
+    listenResults: (callback) => {
+        db.ref(getPath('results')).on('value', (snap) => callback(snap.val()));
+    }
 };
 
-// ৩. অ্যাডমিন লজিক (রেজাল্ট আপডেট)
-const addBtn = document.getElementById('add-result-btn');
-if (addBtn) {
-    addBtn.addEventListener('click', () => {
-        const time = document.getElementById('time-input').value;
-        const result = document.getElementById('result-input').value;
-        if (time && result) {
-            DataEngine.save('results', { time, result });
-            alert("সফলভাবে আপডেট হয়েছে!");
-        }
-    });
-}
-
-// ৪. ইনডেক্স পেজ লজিক (লাইভ রেজাল্ট)
-const resultBody = document.getElementById('result-body');
-if (resultBody) {
-    DataEngine.listen('results', (data) => {
-        resultBody.innerHTML = "";
-        for (let key in data) {
-            resultBody.innerHTML += `<tr><td>${data[key].time}</td><td>${data[key].result}</td></tr>`;
-        }
-    });
-}
-
-// ৫. প্লেয়ার লজিক (নিরাপদ)
-function playerSystem(action, payload) {
-    // এখানে প্লেয়ার লগইন, বেটিং এবং উইথড্র লজিক থাকবে
-    // payload: {name, pin, type, amount, etc}
-    console.log("Player System Active: " + action);
-}
-
-// ভবিষ্যতে নতুন ফিচার যোগ করার জায়গা এখান থেকে শুরু করুন:
-// (যেমন: নতুন কোন গেম বা লজিক)
+// অটো-লোডিং: পেজ অনুযায়ী লজিক রান করা
+window.onload = () => {
+    // ইনডেক্স পেজের জন্য
+    const resultBody = document.getElementById('result-body');
+    if (resultBody) {
+        System.listenResults((data) => {
+            resultBody.innerHTML = "";
+            for (let key in data) {
+                resultBody.innerHTML += `<tr><td>${data[key].time}</td><td>${data[key].result}</td></tr>`;
+            }
+        });
+    }
+};
