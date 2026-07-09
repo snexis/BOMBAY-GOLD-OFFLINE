@@ -3,47 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOMBAY GOLD - Live Game Results</title>
-    <link rel="stylesheet" href="style.css?v=1.1">
+    <title>BOMBAY GOLD - Live Result Center</title>
+    <style>
+        :root { --bg: #0f172a; --panel: #1e293b; --gold: #fbbf24; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: var(--bg); color: white; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { background: var(--panel); width: 100%; max-width: 500px; padding: 25px; border-radius: 12px; border: 2px solid var(--gold); text-align: center; margin-top: 30px; }
+        h1 { color: var(--gold); margin-bottom: 15px; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border-bottom: 1px solid #334155; text-align: center; }
+        th { background: #334155; color: var(--gold); }
+    </style>
 </head>
 <body>
-    
-    <div class="container main-glass-panel">
-        
-        <div id="custom-alert-bar" class="custom-alert-bar"></div>
-
-        <div class="main-header-banner">
-            <div id="live-indicator" class="live-badge" style="position: absolute; top: 15px; right: 15px; margin: 0;">• LIVE</div>
-
-            <div class="logo-wrapper">
-                <img src="https://img.icons8.com/fluent/96/gold-bars.png" alt="Logo" class="rotating-ai-logo">
-            </div>
-            
-            <h1 class="premium-animated-title">BOMBAY GOLD</h1>
-            <p class="premium-subtitle" id="site-subtitle">লাইভ গেম রেজাল্ট সবথেকে প্রথম পাওয়ার জন্য ভিজিট করুন...</p>
-            
-            <div class="marquee-wrapper">
-                <marquee id="site-marquee" scrollamount="5" style="margin: 0; padding: 0; vertical-align: middle;">আজকের লাইভ আপডেট এর জন্য অপেক্ষা করুন...</marquee>
-            </div>
-        </div>
-
-        <div class="nav-buttons">
-            <a href="#" id="link-tips" class="btn btn-tips" target="_blank">Tips</a>
-            <a href="#" id="link-patti" class="btn btn-patti" target="_blank">Patti Chart</a>
-        </div>
-
-        <div id="main-results-wrap">
-            <div class="section-title">
-                <h2>Today's Live Game Results</h2>
-                <h3>Game Results in All West Bengal</h3>
-            </div>
-
-            <div id="results-container">
-                <div class="loading-text">ফলাফল লোড হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।</div>
-            </div>
+    <div class="container">
+        <h1>BOMBAY GOLD LIVE</h1>
+        <div id="today-results-container">
+            <p style="color: #94a3b8; font-style: italic;">ফলাফল লোড হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।</p>
         </div>
     </div>
-
     <script type="module" src="app.js"></script>
 </body>
 </html>
