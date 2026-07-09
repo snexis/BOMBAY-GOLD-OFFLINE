@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BOMBAY-GOLD</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Admin Control Panel</h1>
+        <div id="user-info">Logged in as: <span id="admin-role">Main Admin</span></div>
+    </header>
+
+    <main class="admin-container">
+        
+        <section id="input-section">
+            <h2>গেম রেজাল্ট আপডেট করুন</h2>
+            <div class="form-group">
+                <input type="text" id="time-input" placeholder="সময় (যেমন: 11:50 AM)">
+                <input type="text" id="result-input" placeholder="রেজাল্ট (যেমন: 190-0)">
+                <button id="add-result-btn">রেজাল্ট যোগ করুন</button>
+            </div>
+        </section>
+
+        <section id="control-section">
+            <h2>সাইট কন্ট্রোল</h2>
+            <button id="toggle-site-btn" class="off-btn">সাইট রেজাল্ট অফ করুন</button>
+        </section>
+
+        <section id="sub-admin-section">
+            <h2>সাব-এডমিন ম্যানেজমেন্ট</h2>
+            <p>এখানে সাব-এডমিনদের তালিকা এবং তাদের কন্ট্রোল করার অপশন থাকবে।</p>
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
