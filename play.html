@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOMBAY GOLD - Play Zone</title>
+    <style>
+        :root { 
+            --bg-dark: #06090f; 
+            --card-bg: #121824; 
+            --input-bg: #0b0f17;
+            --gold: #fbbf24; 
+            --gold-hover: #f59e0b;
+            --green-glow: #10b981;
+            --border: #232d42;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        
+        body { 
+            background: var(--bg-dark); 
+            color: #f1f5f9; 
+            padding: 15px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+        }
+        
+        .play-box { 
+            background: var(--card-bg); 
+            width: 100%; 
+            max-width: 440px; 
+            padding: 35px 25px; 
+            border-radius: 20px; 
+            border: 2px solid var(--gold); 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px rgba(251, 191, 36, 0.1);
+            text-align: center; 
+        }
+        
+        h2 { 
+            color: var(--gold); 
+            font-size: 26px; 
+            font-weight: 800;
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+        }
+        
+        label { display: block; text-align: left; color: #94a3b8; font-size: 13px; font-weight: 600; margin-top: 15px; margin-left: 2px; }
+        
+        input, select { 
+            width: 100%; 
+            padding: 14px; 
+            margin-top: 6px; 
+            border-radius: 8px; 
+            border: 1px solid var(--border); 
+            background: var(--input-bg); 
+            color: white; 
+            font-size: 15px; 
+            font-weight: 500;
+            outline: none;
+            box-sizing: border-box; 
+            transition: all 0.3s;
+        }
+        input:focus, select:focus { border-color: var(--gold); box-shadow: 0 0 8px rgba(251, 191, 36, 0.2); }
+        
+        button { 
+            width: 100%; 
+            padding: 15px; 
+            margin-top: 20px; 
+            border-radius: 8px; 
+            background: linear-gradient(135deg, var(--gold), #d97706); 
+            color: #000; 
+            font-size: 16px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            border: none; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+            transition: all 0.2s;
+        }
+        button:hover { background: var(--gold-hover); transform: translateY(-1px); }
+        
+        .wallet-card { 
+            background: #0d121c; 
+            padding: 20px; 
+            border-radius: 12px; 
+            margin: 20px 0; 
+            border: 1px solid var(--border); 
+        }
+        .wallet-card span { color: #64748b; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+        .wallet-card h2 { color: var(--green-glow); font-size: 30px; font-weight: 800; margin-top: 5px; margin-bottom: 0; text-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 5px; }
+        .grid input { text-align: center; font-family: monospace; font-size: 16px; }
+        
+        #otp-input-area { background: rgba(16, 185, 129, 0.05); padding: 15px; border-radius: 10px; border: 1px dashed rgba(16, 185, 129, 0.3); }
+    </style>
+</head>
+<body>
+    <div class="play-box">
+        <h2>BOMBAY GOLD PLAY</h2>
+
+        <div id="play-auth-screen">
+            <input type="text" id="player-name" placeholder="আপনার নাম/ইউজার আইডি...">
+            <input type="password" id="player-pin" placeholder="৪ ডিজিটের সিকিউরিটি পিন নম্বর..." maxlength="4">
+            <button id="btn-request-otp">REQUEST ACCESS CODE 🔑</button>
+
+            <div id="otp-input-area" style="display:none; margin-top:20px;">
+                <p style="color:#94a3b8; font-size:13px;">এডমিন প্যানেল থেকে ওটিপি কোডটি সংগ্রহ করে বসান:</p>
+                <input type="text" id="player-otp" placeholder="ENTER OTP" maxlength="4" style="text-align:center; letter-spacing:6px; font-size:20px; color:var(--gold);">
+                <button id="btn-verify-login" style="background: linear-gradient(135deg, #10b981, #059669); color:white;">VERIFY & ENTER 🎯</button>
+            </div>
+        </div>
+
+        <div id="play-main-board" style="display:none;">
+            <h3 id="display-player-name" style="color: #94a3b8; font-size:16px;">Welcome Player</h3>
+            
+            <div class="wallet-card">
+                <span>AVAILABLE BALANCE</span>
+                <h2 id="player-wallet-display">0.00 PTS</h2>
+            </div>
+
+            <label>বাজি স্লট সিলেক্ট করুন:</label>
+            <select id="play-slot-select"></select>
+
+            <label>সিঙ্গেল বাজি এন্ট্রি (Single Bet Row):</label>
+            <div class="grid">
+                <input type="text" id="play-single-num" placeholder="নম্বর (0-9)" maxlength="1">
+                <input type="number" id="play-single-points" placeholder="পয়েন্ট / PTS">
+            </div>
+            
+            <label>পত্তি বাজি এন্ট্রি (Patti Bet Row):</label>
+            <div class="grid">
+                <input type="text" id="play-patti-num" placeholder="পত্তি (3 Dig)" maxlength="3">
+                <input type="number" id="play-patti-points" placeholder="পয়েন্ট / PTS">
+            </div>
+
+            <button id="btn-submit-bet">LOCK BET ROW 🚀</button>
+            <button id="btn-player-logout" style="background:#334155; color:white; font-size:13px; padding:10px; margin-top:25px; box-shadow:none;">Logout & Exit</button>
+        </div>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
