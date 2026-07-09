@@ -1,65 +1,52 @@
-/* --- ১. গ্লোবাল সেটিংস (সব পেজের জন্য) --- */
+/* style.css */
 body {
-    background-color: #121212;
-    color: #e0e0e0;
-    font-family: 'Segoe UI', sans-serif;
-    margin: 0;
-    padding: 20px;
+  margin: 0;
+  padding: 0;
+  background-color: #0b0f14;
+  color: #e8eef7;
+  font-family: sans-serif;
 }
-button {
-    background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728);
-    color: #000;
-    font-weight: bold;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
-
-/* --- ২. INDEX.HTML এর ডিজাইন --- */
-#result-section {
-    border: 1px solid #333;
-    padding: 15px;
-    border-radius: 10px;
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 10px;
 }
-#result-table {
-    width: 100%;
-    text-align: center;
+.brand {
+  font-weight: bold;
+  font-size: 1.2rem;
 }
-
-/* --- ৩. ADMIN.HTML এর ডিজাইন --- */
-.admin-panel {
-    max-width: 400px;
-    margin: auto;
+.hero {
+  text-align: center;
+  padding: 40px 0;
 }
-input {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0;
-    background: #1e1e1e;
-    border: 1px solid #333;
-    color: #fff;
+.heroTitle {
+  font-size: 2rem;
+  margin-bottom: 10px;
 }
-
-/* --- ৪. PLAYER.HTML (লগইন ও ড্যাশবোর্ড) --- */
-#login-section, #dashboard-section {
-    max-width: 400px;
-    margin: auto;
+.cta {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #3b82f6;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 10px;
+  margin-top: 10px;
 }
-.balance-box {
-    border: 2px solid #d4af37;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    background: #1a1a1a;
-    margin-bottom: 20px;
+.panel {
+  border: 1px solid #2a2a2a;
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
 }
-#bet-history li {
-    background: #1e1e1e;
-    margin-bottom: 5px;
-    padding: 10px;
-    border-left: 4px solid #d4af37;
+.mini {
+  font-size: 0.8rem;
+  opacity: 0.8;
 }
-
-/* গোল্ডেন হেডিং ডিজাইন */
-h1, h2, h3 { color: #d4af37; text-align: center; }
