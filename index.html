@@ -1,169 +1,36 @@
-<!-- admin.html -->
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Panel</title>
+  <title>Gaming Portal</title>
   <link rel="stylesheet" href="./style.css" />
-  <style>
-    .row { display:flex; gap:12px; flex-wrap:wrap; margin:10px 0; }
-    .row > * { flex:1 1 220px; }
-    label { display:block; font-size:12px; opacity:.85; margin-bottom:6px; }
-    input, select, button { width:100%; padding:10px; border-radius:10px; border:1px solid #2a2a2a; background:#0b0f14; color:#e8eef7; }
-    button { cursor:pointer; border-color:#3b82f6; }
-    button:disabled { opacity:.6; cursor:not-allowed; }
-    .status { font-size:12px; opacity:.9; }
-    .mini { font-size:12px; opacity:.85; }
-    .section { border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:14px; margin:12px 0; background:rgba(255,255,255,.03); }
-  </style>
 </head>
 <body>
   <div class="container">
-    <header class="topbar">
+    <header class="hero">
       <div>
-        <div class="brand">🎮 Gaming Portal</div>
-        <div class="mini" id="whoami">Loading session…</div>
+        <div class="heroTitle" id="heroTitle">Loading…</div>
+        <div class="heroSub" id="heroSubtitle">—</div>
       </div>
-      <div class="row" style="margin:0; align-items:center;">
-        <button id="btnLogout" type="button">Logout</button>
-      </div>
+      <a class="cta" id="ctaBtn" href="./player.html">Play</a>
     </header>
 
-    <main>
-      <section class="section">
-        <h2 class="h2">Website Status</h2>
-        <div class="row">
-          <div>
-            <label for="websiteEnabled">Enabled</label>
-            <select id="websiteEnabled">
-              <option value="true">True</option>
-              <option value="false">False</option>
-            </select>
-          </div>
-          <div>
-            <label>&nbsp;</label>
-            <button id="btnToggleWebsite" type="button">Save Status</button>
-            <div class="status" id="statusToggle">—</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <h2 class="h2">Hero / Header Content</h2>
-        <div class="row">
-          <div>
-            <label for="heroTitle">Hero Title</label>
-            <input id="heroTitle" maxlength="60" placeholder="e.g., Win Big Every Day" />
-          </div>
-          <div>
-            <label for="heroSubtitle">Hero Subtitle</label>
-            <input id="heroSubtitle" maxlength="90" placeholder="e.g., Fair results, instant payouts" />
-          </div>
-          <div>
-            <label for="headerCta">Header CTA Text</label>
-            <input id="headerCta" maxlength="30" placeholder="e.g., Play Now" />
-          </div>
-          <div>
-            <label>&nbsp;</label>
-            <button id="btnSaveHero" type="button">Save Content</button>
-            <div class="status" id="statusHero">—</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <h2 class="h2">Player ID Blocking</h2>
-        <div class="row">
-          <div>
-            <label for="blockPlayerId">Player ID</label>
-            <input id="blockPlayerId" placeholder="e.g., 100123" />
-            <div class="mini">Blocks login verification access for that player.</div>
-          </div>
-          <div>
-            <label for="blockState">State</label>
-            <select id="blockState">
-              <option value="true">Blocked</option>
-              <option value="false">Unblocked</option>
-            </select>
-          </div>
-          <div>
-            <label>&nbsp;</label>
-            <button id="btnSetBlock" type="button">Apply</button>
-            <div class="status" id="statusBlock">—</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <h2 class="h2">Staff Assignment (Master Admin only)</h2>
-        <div class="row">
-          <div>
-            <label for="staffUid">Staff UID (Firebase Auth UID)</label>
-            <input id="staffUid" placeholder="uid_..." />
-            <div class="mini">Master Admin can grant Staff Admin role via server-side custom claims.</div>
-          </div>
-          <div>
-            <label for="staffEnabled">Permission</label>
-            <select id="staffEnabled">
-              <option value="true">Grant Staff Admin</option>
-              <option value="false">Revoke Staff Admin</option>
-            </select>
-          </div>
-          <div>
-            <label>&nbsp;</label>
-            <button id="btnStaffAssign" type="button">Update Staff Role</button>
-            <div class="status" id="statusStaff">—</div>
-          </div>
-        </div>
-        <div class="mini">
-          Staff Admin can ONLY update result documents where server-side validation passes.
-        </div>
-      </section>
-
-      <section class="section">
-        <h2 class="h2">Result Management (Staff updates)</h2>
-        <div class="row">
-          <div>
-            <label for="resultCode">Pick Result Code</label>
-            <select id="resultCode"></select>
-          </div>
-          <div>
-            <label for="resultStatus">Set Status</label>
-            <select id="resultStatus">
-              <option value="pending">Pending</option>
-              <option value="verified">Verified (Green)</option>
-            </select>
-          </div>
-          <div>
-            <label for="resultPick">Final Pick / Outcome</label>
-            <input id="resultPick" placeholder="e.g., RED / BLUE / TEAM A" maxlength="40"/>
-          </div>
-          <div>
-            <label>&nbsp;</label>
-            <button id="btnUpdateResult" type="button">Update Result</button>
-            <div class="status" id="statusResult">—</div>
-          </div>
-        </div>
-        <div class="mini">
-          Double-check validation is enforced server-side: verified results require the staff update + OTP-validated transaction flag.
-        </div>
-      </section>
-
-    </main>
+    <section class="panel">
+      <h2 class="h2">How it works</h2>
+      <ul class="ul">
+        <li>Login with verification code.</li>
+        <li>Place/Manage balance securely.</li>
+        <li>Results require verified staff updates.</li>
+      </ul>
+      <div class="mini" id="siteStatus">—</div>
+    </section>
   </div>
 
   <script type="module">
-    // admin.html loads app.js which handles auth + secure API calls.
     import "./app.js";
-    window.addEventListener("DOMContentLoaded", () => {
-      window.__SECURE_APP__.bootAdmin?.();
-    });
-  </script>
-
-  <script>
-    // Production hint: remove this script tag and keep only module usage in build step.
-    // app.js performs role checks via Firebase Auth custom claims + Firestore rules.
+    window.addEventListener("DOMContentLoaded", () => window.__SECURE_APP__.bootIndex?.());
   </script>
 </body>
 </html>
