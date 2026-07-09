@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Bombay Gold Player</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<div class="player-container">
+
+<div class="player-box">
+
+<div style="text-align:center;margin-bottom:20px;">
+
+<svg width="70" height="70" viewBox="0 0 100 100">
+
+<circle cx="50" cy="50" r="48" fill="#FFD700"/>
+
+<text x="50%" y="58%" text-anchor="middle" font-size="34" font-weight="bold" fill="#000">
+
+BG
+
+</text>
+
+</svg>
+
+<h2>Bombay Gold Player</h2>
+
+<p>Player Login Panel</p>
+
+</div>
+
+<div id="loginSection">
+
+<input
+type="tel"
+id="playerMobile"
+placeholder="Enter Mobile Number"
+maxlength="10">
+
+<input
+type="password"
+id="playerPin"
+placeholder="Last 4 Digit PIN"
+maxlength="4">
+
+<button id="requestLogin">
+
+Request Login
+
+</button>
+
+<p id="requestStatus"></p>
+
+<hr style="margin:25px 0;">
+
+<input
+type="text"
+id="loginCode"
+placeholder="Enter Admin Login Code">
+
+<button id="verifyLogin">
+
+Verify & Login
+
+</button>
+
+</div>
+
+<div
+id="playerDashboard"
+class="player-dashboard">
+
+<h2>Player Dashboard</h2>
+<!-- ===========================
+     PLAYER INFORMATION
+=========================== -->
+
+<div class="player-info-card">
+
+<p>
+<strong>Player ID :</strong>
+<span id="playerId">------</span>
+</p>
+
+<p>
+<strong>Login Status :</strong>
+<span id="loginStatus">Online</span>
+</p>
+
+<p>
+<strong>Today's Date :</strong>
+<span id="playerDate">--/--/----</span>
+</p>
+
+</div>
+
+
+<!-- ===========================
+     PLAYER BALANCE
+=========================== -->
+
+<div class="player-balance">
+
+<h3>Available Balance</h3>
+
+<h1 id="playerBalance">
+
+₹ 0
+
+</h1>
+
+</div>
+
+
+<!-- ===========================
+     GAME PANEL
+=========================== -->
+
+<div class="player-game">
+
+<h3>Play Game</h3>
+
+<input
+type="number"
+id="playPoint"
+placeholder="Enter Point">
+
+<select id="playType">
+
+<option value="">Select Game</option>
+
+<option value="Single">Single</option>
+
+<option value="Double">Double</option>
+
+<option value="Triple">Triple</option>
+
+</select>
+
+<input
+type="text"
+id="playNumber"
+placeholder="Enter Number">
+
+<button id="playGame">
+
+🎮 Play Now
+
+</button>
+
+</div>
+
+
+<!-- ===========================
+     PLAYER SUMMARY
+=========================== -->
+
+<div class="player-summary">
+
+<div class="summary-box">
+
+<label>Today's Play</label>
+
+<h3 id="todayPlay">
+
+0
+
+</h3>
+
+</div>
+
+<div class="summary-box">
+
+<label>Total Point</label>
+
+<h3 id="todayPoint">
+
+0
+
+</h3>
+
+</div>
+
+<div class="summary-box">
+
+<label>Today's Win</label>
+
+<h3 id="todayWin">
+
+0
+
+</h3>
+
+</div>
+
+</div>
+
+
+<!-- ===========================
+     LOGOUT
+=========================== -->
+
+<div style="margin-top:25px;">
+
+<button id="logoutPlayer">
+
+Logout
+
+</button>
+<!-- ===========================
+     TODAY GAME HISTORY
+=========================== -->
+
+<div class="player-history">
+
+<h3>Today's Game History</h3>
+
+<table class="history-table">
+
+<thead>
+
+<tr>
+
+<th>Time</th>
+
+<th>Game</th>
+
+<th>Number</th>
+
+<th>Point</th>
+
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody id="historyTable">
+
+<tr>
+
+<td colspan="5" style="text-align:center;">
+
+No Game Played Today
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<footer class="footer">
+
+<p>
+
+Bombay Gold Player Panel
+
+</p>
+
+<p>
+
+All Rights Reserved © 2026
+
+</p>
+
+</footer>
+
+<script type="module" src="js/app.js"></script>
+
+</body>
+
+</html>
+</div>
