@@ -1,1 +1,148 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOMBAY GOLD - Admin Control Center</title>
+    <style>
+        :root { 
+            --bg: #0b0e14;           
+            --card: #151921;         
+            --border: #252d3a;       
+            --gold: #d4af37;         
+            --blue: #2563eb;         
+            --text-main: #e2e8f0;    
+            --text-dim: #94a3b8;     
+        }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        
+        body { background: var(--bg); color: var(--text-main); padding: 20px; display: flex; justify-content: center; min-height: 100vh; line-height: 1.6; }
+        .admin-box { width: 100%; max-width: 850px; background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        
+        h2 { font-size: 20px; color: var(--gold); margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .login-field { position: relative; margin-bottom: 15px; }
+        .eye-icon { position: absolute; right: 12px; top: 38px; cursor: pointer; color: var(--text-dim); font-size: 18px; }
+        
+        input, select { width: 100%; padding: 12px; background: #0f1218; border: 1px solid var(--border); border-radius: 6px; color: white; margin-top: 5px; }
+        
+        button { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.3s; margin-top: 15px; }
+        button:hover { opacity: 0.9; }
+        
+        .remember-box { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 14px; color: var(--text-dim); }
+        .remember-box input { width: auto; margin: 0; }
+
+        .panel-card { background: #1a1f29; border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 25px; }
+        .panel-card h3 { font-size: 15px; margin-bottom: 15px; color: #f8fafc; display: flex; align-items: center; gap: 10px; border-left: 3px solid var(--gold); padding-left: 8px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th { background: #0f1218; color: var(--text-dim); padding: 12px; border-bottom: 2px solid var(--border); text-align: center; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); text-align: center; color: #cbd5e1; }
+        
+        .badge { background: #dc2626; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        #status-message { display: none; padding: 10px; background: #10b981; color: #0f172a; border-radius: 6px; text-align: center; font-weight: bold; margin-bottom: 15px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    </style>
+</head>
+<body>
+    <div class="admin-box">
+        <h2>BOMBAY GOLD - Control Room <div id="status-message"></div></h2>
+
+        <div id="admin-auth-screen">
+            <div class="login-field">
+                <label style="color:#94a3b8;">সিকিউরিটি পিন নম্বর প্রবেশ করুন:</label>
+                <input type="password" id="admin-password" placeholder="Enter Security PIN...">
+                <span class="eye-icon" id="toggle-admin-pass">👁️</span>
+            </div>
+            <div class="remember-box">
+                <input type="checkbox" id="chk-remember">
+                <label for="chk-remember">পাসওয়ার্ড মনে রাখুন (Remember Me)</label>
+            </div>
+            <button id="btn-login">ENTER DASHBOARD 🚀</button>
+        </div>
+
+        <div id="admin-main-content" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <span id="admin-role-badge" class="badge">ROLE: GUEST</span>
+                <button id="btn-logout" style="width:auto; margin:0; padding:6px 15px; background:#475569;">LOGOUT</button>
+            </div>
+
+            <div id="master-settings-box" class="panel-card" style="display:none;">
+                <h3>🎨 সিস্টেম ও পাসওয়ার্ড কন্ট্রোল (মাস্টার অনলি)</h3>
+                <div class="grid-2">
+                    <div>
+                        <label style="font-size:12px; color:#94a3b8;">মেইন পেজ ব্যাকগ্রাউন্ড কালার/কোড:</label>
+                        <input type="text" id="cfg-bg" placeholder="e.g. #090d16 বা ইমেজ লিংক">
+                    </div>
+                    <div>
+                        <label style="font-size:12px; color:#94a3b8;">চলতি নোটিশ (Marquee Text):</label>
+                        <input type="text" id="cfg-marquee" placeholder="নোটিশ লিখুন...">
+                    </div>
+                </div>
+                <div class="grid-2" style="margin-top:15px; padding-top:15px; border-top:1px dashed var(--border);">
+                    <div>
+                        <label style="font-size:12px; color:#94a3b8;">মাস্টার পিন পরিবর্তন:</label>
+                        <input type="text" id="new-master-pin" placeholder="নতুন মাস্টার পিন...">
+                    </div>
+                    <div>
+                        <label style="font-size:12px; color:#94a3b8;">স্টাফ পিন পরিবর্তন:</label>
+                        <input type="text" id="new-staff-pin" placeholder="নতুন স্টাফ পিন...">
+                    </div>
+                </div>
+                <button id="btn-save-master-global" style="background:var(--gold); color:black;">সংরক্ষণ করুন (UPDATE SYSTEM)</button>
+            </div>
+
+            <div id="analytics-box" class="panel-card" style="display:none;">
+                <h3>📊 লাইভ বিট অ্যানালিটিক্স ও পার্সেন্টেজ ক্যালকুলেটর</h3>
+                <div style="margin-bottom:12px;">
+                    <label>স্লট সিলেক্ট করে লাইভ বিট দেখুন:</label>
+                    <select id="analytics-slot-select" style="width:auto; display:inline-block; margin-left:10px; padding:6px;"></select>
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>নম্বর ক্যাটাগরি</th><th>ধরণ (Type)</th><th>টোটাল বাজি (Total Points)</th><th>ঝুঁকি/বিট পার্সেন্টেজ (%)</th></tr>
+                    </thead>
+                    <tbody id="analytics-rows"></tbody>
+                </table>
+            </div>
+
+            <div class="panel-card">
+                <h3>🔑 ওটিপি ও স্টাফ লগইন লাইভ অ্যাপ্রুভাল গেট</h3>
+                <table>
+                    <thead>
+                        <tr><th>ইউজার টাইপ</th><th>আইডি / নাম</th><th>সিকিউরিটি পিন</th><th>কোড (OTP)</th><th>অ্যাকশন</th></tr>
+                    </thead>
+                    <tbody id="admin-otp-requests-body"></tbody>
+                </table>
+            </div>
+
+            <div id="player-manager-box" class="panel-card" style="display:none;">
+                <h3>👥 প্লেয়ার ও লাইভ ওয়ালেট ড্যাশবোর্ড</h3>
+                <table>
+                    <thead>
+                        <tr><th>প্লেয়ার সেশন আইডি</th><th>কারেন্ট ব্যালেন্স</th><th>অ্যাকশন (পয়েন্ট যোগ/বিয়োগ)</th><th>অবস্থা (Status)</th></tr>
+                    </thead>
+                    <tbody id="admin-players-body"></tbody>
+                </table>
+            </div>
+
+            <div class="panel-card">
+                <h3>✍️ বাজি উইনিং ফলাফল এন্ট্রি (পত্তি ও সিঙ্গেল)</h3>
+                <div style="margin-bottom:12px;">
+                    <label>তারিখ নির্ধারণ করুন:</label>
+                    <input type="date" id="result-date" style="width:auto; display:inline-block; margin-left:10px; padding:6px;">
+                </div>
+                <table>
+                    <thead>
+                        <tr><th>বাজি স্লট</th><th>উইনিং পত্তি (3 Digit)</th><th>উইনিং সিঙ্গেল (1 Digit)</th><th>অ্যাকশন</th></tr>
+                    </thead>
+                    <tbody id="admin-inputs-body"></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
