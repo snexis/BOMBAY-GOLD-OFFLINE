@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
 import { getDatabase, ref, set, get, child, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
 
-// ⚙️ ফায়ারবেস প্রজেক্ট কনফিগারেশন (১০০% সিনট্যাক্স এরর ফিক্সড)
+// ⚙️ ফায়ারবেস প্রজেক্ট কনফিগারেশন
 const firebaseConfig = {
     apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
     authDomain: "live-result-b9155.firebaseapp.com",
@@ -27,7 +27,8 @@ const todayStr = new Date().toISOString().split('T')[0];
 // 🛡️ লেয়ার ১: গ্লোবাল ইনিশিয়ালাইজেশন ও সেটিংস লিসেনার
 // ==========================================
 function initAppEngine() {
-    onValue(ref(db, 'system_settings'), (snapshot) => {
+    // এখন রুট (Root) থেকেই সরাসরি ডেটা রিড করবে, কোনো system_settings ফোল্ডার লাগবে না
+    onValue(ref(db), (snapshot) => {
         if (snapshot.exists()) {
             cachedSystemSettings = snapshot.val();
             syncAdminAndPlayDropdowns();
@@ -78,13 +79,14 @@ if (btnLogin) {
 }
 
 function executeAdminAuth(enteredPin, isAuto = false) {
-    get(child(ref(db), 'system_settings')).then((snapshot) => {
+    get(ref(db)).then((snapshot) => {
         if (snapshot.exists()) {
             const settings = snapshot.val();
-            if (enteredPin === settings.masterPassword) {
+            // ফায়ারবেসের সরাসরি master এবং staff ট্যাগ চেক করছে
+            if (enteredPin === String(settings.master)) {
                 currentRole = 'MASTER';
                 unlockAdminPanel(enteredPin, isAuto);
-            } else if (enteredPin === settings.staffPassword) {
+            } else if (enteredPin === String(settings.staff)) {
                 currentRole = 'STAFF';
                 unlockAdminPanel(enteredPin, isAuto);
             } else if (!isAuto) {
@@ -382,7 +384,7 @@ function runLiveBetAnalytics(slotId) {
 }
 
 // ==========================================
-// 👑 লেয়ার ৫: মাস্টার গ্লোবাল সেটিংস এবং পাওয়ার কন্ট্রোল
+// 👑 লেইয়ার ৫: মাস্টার গ্লোবাল সেটিংস এবং পাওয়ার কন্ট্রোল
 // ==========================================
 function updateMasterSettingsUI() {
     document.getElementById('input-live-status').value = cachedSystemSettings.websiteStatus || 'live';
@@ -393,8 +395,8 @@ function updateMasterSettingsUI() {
     document.getElementById('input-marquee').value = cachedSystemSettings.marqueeText || '';
     document.getElementById('input-tips-url').value = cachedSystemSettings.tipsUrl || '';
     document.getElementById('input-patti-url').value = cachedSystemSettings.pattiUrl || '';
-    document.getElementById('input-master-pass').value = cachedSystemSettings.masterPassword || '';
-    document.getElementById('input-staff-pass').value = cachedSystemSettings.staffPassword || '';
+    document.getElementById('input-master-pass').value = cachedSystemSettings.master || '';
+    document.getElementById('input-staff-pass').value = cachedSystemSettings.staff || '';
 
     const perms = cachedSystemSettings.permissions || {};
     document.getElementById('perm-approve-otp').checked = !!perms.approveOtp;
@@ -417,8 +419,8 @@ if (btnSaveSettings) {
             marqueeText: document.getElementById('input-marquee').value.trim(),
             tipsUrl: document.getElementById('input-tips-url').value.trim(),
             pattiUrl: document.getElementById('input-patti-url').value.trim(),
-            masterPassword: document.getElementById('input-master-pass').value.trim(),
-            staffPassword: document.getElementById('input-staff-pass').value.trim(),
+            master: document.getElementById('input-master-pass').value.trim(),
+            staff: document.getElementById('input-staff-pass').value.trim(),
             permissions: {
                 approveOtp: document.getElementById('perm-approve-otp').checked,
                 recharge: document.getElementById('perm-recharge').checked,
@@ -426,7 +428,7 @@ if (btnSaveSettings) {
                 editHistory: document.getElementById('perm-edit-history').checked
             }
         };
-        set(ref(db, 'system_settings'), config).then(() => showAdminNotification("মাস্টার কনফিগারেশন ও পাওয়ার পারমিশন লাইভ সেভ হয়েছে!", "success"));
+        update(ref(db), config).then(() => showAdminNotification("কনফিগারেশন লাইভ সেভ হয়েছে!", "success"));
     });
 }
 
@@ -474,7 +476,7 @@ if (btnAddSlotRow) {
 }
 
 function saveSlotsToFirebase() {
-    update(ref(db, 'system_settings'), { timeSlots: cachedSystemSettings.timeSlots }).then(() => renderSlotsManager());
+    update(ref(db), { timeSlots: cachedSystemSettings.timeSlots }).then(() => renderSlotsManager());
 }
 
 // ==========================================
@@ -504,11 +506,11 @@ if (btnReqOtp) {
             createdAt: new Date().toISOString()
         }).then(() => {
             document.getElementById('otp-input-area').style.display = 'block';
-            showPlayToast("অ্যাক্সেস কোড রিকোয়েস্ট পাঠানো হয়েছে। এডমিনের থেকে ওটিপি কোড নিয়ে বসান।", "success");
+            showPlayToast("অ্যাক্সেস কোড রিকোয়েস্ট পাঠানো হয়েছে। एडমিন থেকে ওটিপি কোড নিয়ে বসান।", "success");
             
             onValue(ref(db, `otp_requests/${playerSessionKey}`), (snapshot) => {
                 if(snapshot.exists() && snapshot.val().status === 'approved' && snapshot.val().otp) {
-                    showPlayToast(`এডমিন ভেরিফাইড! কোড জেনারেট হয়েছে।`, "success");
+                    showPlayToast(`কোড জেনারেট হয়েছে।`, "success");
                 }
             });
         });
@@ -552,7 +554,7 @@ if (btnSubmitBet) {
         const pNum = document.getElementById('play-patti-num').value.trim();
         const pPts = parseFloat(document.getElementById('play-patti-points').value || 0);
 
-        if (!targetSlot) { showPlayToast("কোনো ড্র টাইম বা স্লট সিলেক্ট করা নেই!", "error"); return; }
+        if (!targetSlot) { showPlayToast("কোনো স্লট সিলেক্ট করা নেই!", "error"); return; }
         if (sPts <= 0 && pPts <= 0) { showPlayToast("কোনো ঘরে পয়েন্ট ইনপুট দিন!", "error"); return; }
 
         const totalRequired = sPts + pPts;
@@ -560,7 +562,7 @@ if (btnSubmitBet) {
         get(ref(db, `wallets/${playerSessionKey}`)).then((wSnap) => {
             const currentBal = wSnap.exists() ? parseFloat(wSnap.val().balance || 0) : 0;
             if (currentBal < totalRequired) {
-                showPlayToast("আপনার ওয়ালেটে পর্যাপ্ত পয়েন্ট ব্যালেন্স নেই! রিচার্জ করুন।", "error");
+                showPlayToast("আপনার ওয়ালেটে পর্যাপ্ত পয়েন্ট ব্যালেন্স নেই!", "error");
                 return;
             }
 
@@ -575,7 +577,7 @@ if (btnSubmitBet) {
                     pattiPoints: pPts,
                     timestamp: new Date().toISOString()
                 }).then(() => {
-                    showPlayToast("আপনার বাজি সফলভাবে লক ও সাবমিট হয়েছে! 🚀", "success");
+                    showPlayToast("আপনার বাজি সফলভাবে লক হয়েছে! 🚀", "success");
                     document.getElementById('play-single-num').value = '';
                     document.getElementById('play-single-points').value = '';
                     document.getElementById('play-patti-num').value = '';
@@ -587,7 +589,7 @@ if (btnSubmitBet) {
 }
 
 // ==========================================
-// 🔔 লেয়ার ৭: কাস্টম নোটিফিকেশন সিস্টেম (টোস্ট অ্যালার্ট)
+// 🔔 লেয়ার ৭: কাস্টম নোটিফিকেশন সিস্টেম
 // ==========================================
 function showAdminNotification(msg, type = "success") {
     const bar = document.getElementById('status-message');
