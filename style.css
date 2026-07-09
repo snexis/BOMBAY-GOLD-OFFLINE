@@ -29,3 +29,61 @@ header { background-color: #b8860b; color: white; padding: 20px; }
 
 /* যখন রেজাল্ট অফ থাকবে, তখন এটি ব্যবহার করব */
 .hidden { display: none; }
+/* Admin Panel Styles */
+.admin-container {
+    max-width: 600px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.form-group input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+#add-result-btn {
+    padding: 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#add-result-btn:hover {
+    background-color: #218838;
+}
+
+#control-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.off-btn {
+    padding: 12px 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#user-info {
+    font-size: 14px;
+    color: #eee;
+    margin-top: 5px;
+}
