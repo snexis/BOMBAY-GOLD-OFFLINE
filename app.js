@@ -1,6 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
-
+// ১. ফায়ারবেস কনফিগারেশন (আপনার কনসোল থেকে পাওয়া কপি করা অংশ এখানে বসান)
 const firebaseConfig = {
     apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
     authDomain: "live-result-b9155.firebaseapp.com",
@@ -12,40 +10,43 @@ const firebaseConfig = {
     measurementId: "G-DFDW40QF87"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+// ফায়ারবেস ইনিশিয়ালাইজ করা
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
 
-// রেজাল্ট সেভ করার ফাংশন (Admin প্যানেলের জন্য)
-window.saveResult = function() {
-    const time = document.getElementById('time-input').value;
-    const result = document.getElementById('result-input').value;
-    
-    set(ref(db, 'results/' + time), {
-        result: result,
-        timestamp: Date.now()
-    }).then(() => {
-        alert("রেজাল্ট আপডেট হয়েছে!");
-    });
-};
-
-// ওয়েবসাইট রেজাল্ট অন/অফ করার ফাংশন
-window.toggleSite = function(status) {
-    update(ref(db, 'settings/'), {
-        isLive: status
-    }).then(() => {
-        alert("সাইট স্ট্যাটাস আপডেট হয়েছে!");
-    });
-};
-
-// লাইভ রেজাল্ট দেখার ফাংশন (Index পেজের জন্য)
+// ২. ইনডেক্স পেজের জন্য রেজাল্ট দেখানো
 if (document.getElementById('result-body')) {
-    onValue(ref(db, 'results/'), (snapshot) => {
-        const data = snapshot.val();
+    database.ref('results').on('value', (snapshot) => {
         const tbody = document.getElementById('result-body');
-        tbody.innerHTML = ""; // আগের ডেটা পরিষ্কার করা
+        tbody.innerHTML = ""; // টেবিল রিসেট করা
         
-        for (let time in data) {
-            tbody.innerHTML += `<tr><td>${time}</td><td>${data[time].result}</td></tr>`;
+        const data = snapshot.val();
+        for (let key in data) {
+            let row = `<tr>
+                        <td>${data[key].time}</td>
+                        <td>${data[key].result}</td>
+                       </tr>`;
+            tbody.innerHTML += row;
+        }
+    });
+
+    // আজকের তারিখ অটোমেটিক সেট করা
+    document.getElementById('result-date').innerText = "BOMBAY-GOLD Live Result " + new Date().toLocaleDateString();
+}
+
+// ৩. অ্যাডমিন পেজের জন্য ডেটা সেভ করা
+if (document.getElementById('add-result-btn')) {
+    document.getElementById('add-result-btn').addEventListener('click', () => {
+        const time = document.getElementById('time-input').value;
+        const result = document.getElementById('result-input').value;
+
+        if (time && result) {
+            database.ref('results/' + Date.now()).set({
+                time: time,
+                result: result
+            }).then(() => alert("রেজাল্ট সফলভাবে যোগ হয়েছে!"));
+        } else {
+            alert("সব ঘর পূরণ করুন");
         }
     });
 }
