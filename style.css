@@ -1,4 +1,21 @@
-body { font-family: sans-serif; text-align: center; background-color: #f4f4f4; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; margin: 0; padding: 0; }
+header { background-color: #b8860b; color: white; padding: 20px; }
+.logo { font-size: 28px; font-weight: bold; margin-bottom: 5px; }
+
+.buttons button { margin: 10px; padding: 10px 20px; background-color: #003366; color: white; border: none; cursor: pointer; }
+
+/* লাইভ বাটন ব্লিঙ্কিং এনিমেশন */
+.blink { color: red; font-weight: bold; animation: blinker 1s linear infinite; }
+@keyframes blinker { 50% { opacity: 0; } }
+
+/* রেজাল্ট সেকশন */
+#result-section { margin: 20px auto; width: 90%; max-width: 600px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+table, th, td { border: 1px solid #ddd; padding: 12px; }
+th { background-color: #b8860b; color: white; }
+
+/* সাইট কন্ট্রোলের জন্য লুকানোর ক্লাস */
+.hidden { display: none; }body { font-family: sans-serif; text-align: center; background-color: #f4f4f4; margin: 0; padding: 0; }
 header { background-color: #b8860b; color: white; padding: 20px; }
 .logo { font-size: 28px; font-weight: bold; }
 .buttons button { margin: 10px; padding: 10px 20px; cursor: pointer; }
