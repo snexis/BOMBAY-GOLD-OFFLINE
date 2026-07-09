@@ -1,13 +1,10 @@
-<div class="container">
-    <h2>লগইন প্যানেল</h2>
-    <input type="password" id="pass" placeholder="পাসওয়ার্ড দিন">
-    <button onclick="checkLogin()">প্রবেশ করুন</button>
-</div>
+<input type="password" id="pass" placeholder="পাসওয়ার্ড">
+<button onclick="check()">প্রবেশ</button>
 <script>
-    function checkLogin() {
-        let pass = document.getElementById('pass').value;
-        if(pass === "admin123") window.location.href = "admin.html";
-        else if(pass === "subadmin123") window.location.href = "sub-admin.html";
+    function check() {
+        let p = document.getElementById('pass').value;
+        if(p === "admin123") window.location.href = "admin.html";
+        else if(p === "sub123") window.location.href = "sub-admin.html";
         else alert("ভুল পাসওয়ার্ড!");
     }
 </script>
