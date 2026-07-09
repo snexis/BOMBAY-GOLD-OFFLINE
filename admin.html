@@ -1,16 +1,52 @@
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-<script src="firebase-config.js"></script>
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>BOMBAY GOLD Admin</title>
+    <style>
+        /* ইমেজের সাথে মিল রেখে ডিজাইন */
+        body { font-family: 'Montserrat', sans-serif; background: #f7f5ef; margin: 0; padding: 20px; }
+        .wrap { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { color: #8b6b15; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th { background-color: #1f5aa8; color: white; padding: 15px; }
+        td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        input { width: 80%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+        .btn-publish { width: 100%; padding: 15px; background: #1f9d55; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1>BOMBAY GOLD প্যানেল</h1>
+        <table>
+            <thead><tr><th>সময়</th><th>রেজাল্ট</th></tr></thead>
+            <tbody id="result-rows">
+                <tr><td>১২:২০</td><td><input type="text" id="res-1220"></td></tr>
+                <tr><td>০১:১০</td><td><input type="text" id="res-0110"></td></tr>
+            </tbody>
+        </table>
+        <button class="btn-publish" onclick="saveData()">পাবলিশ করুন (Publish)</button>
+    </div>
 
-<input id="time" placeholder="সময়">
-<input id="res" placeholder="রেজাল্ট">
-<button onclick="save()">পাবলিশ করুন</button>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script>
+        // আপনার দেওয়া কনফিগ
+        const firebaseConfig = {
+            apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
+            databaseURL: "https://live-result-b9155-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "live-result-b9155"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-<script>
-    function save() {
-        let t = document.getElementById('time').value;
-        let r = document.getElementById('res').value;
-        db.ref('results/' + t).set(r);
-        alert("আপডেট হয়েছে!");
-    }
-</script>
+        function saveData() {
+            let data = {
+                "12:20": document.getElementById('res-1220').value,
+                "01:10": document.getElementById('res-0110').value
+            };
+            db.ref('results').set(data).then(() => alert("সফলভাবে আপডেট হয়েছে!"));
+        }
+    </script>
+</body>
+</html>
