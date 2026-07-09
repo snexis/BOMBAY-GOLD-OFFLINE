@@ -3,32 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOMBAY-GOLD Live Result</title>
+    <title>BOMBAY-GOLD | Official Site</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
+
+    <header id="main-header">
         <div class="logo">🏆 BOMBAY-GOLD</div>
-        <h1>Welcome to BOMBAY-GOLD</h1>
+        <h1 id="welcome-message">Welcome to BOMBAY-GOLD</h1>
     </header>
 
     <main>
         <h2 id="result-date">Loading date...</h2>
-        <p class="notice">লাইভ গেম রেজাল্ট সব থেকে প্রথম পাওয়ার জন্য ভিজিট করুন এই সাইট এ।</p>
+        <p class="notice" id="notice-text">লাইভ গেম রেজাল্ট সব থেকে প্রথম পাওয়ার জন্য ভিজিট করুন এই সাইট এ।</p>
 
         <div class="buttons">
-            <button>Tips</button>
-            <button>Patti Chart</button>
+            <button id="tips-btn">Tips</button>
+            <button id="patti-chart-btn">Patti Chart</button>
         </div>
 
         <section id="result-section">
             <div class="live-header">
                 <span id="live-indicator" class="blink">● LIVE</span>
-                <h3 id="result-title">Today's Live Game Results</h3>
+                <h3 id="table-title">Today's Live Game Results</h3>
             </div>
             
             <div id="game-results-container">
-                </div>
+                <table id="result-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="result-body">
+                        </tbody>
+                </table>
+            </div>
         </section>
     </main>
 
