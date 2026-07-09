@@ -2,46 +2,24 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOMBAY-GOLD | Official Site</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <header id="main-header">
-        <div class="logo">🏆 BOMBAY-GOLD</div>
-        <h1 id="welcome-message">Welcome to BOMBAY-GOLD</h1>
-    </header>
-
+    <header><h1>BOMBAY-GOLD</h1></header>
     <main>
-        <h2 id="result-date">Loading date...</h2>
-        <p class="notice" id="notice-text">লাইভ গেম রেজাল্ট সব থেকে প্রথম পাওয়ার জন্য ভিজিট করুন এই সাইট এ।</p>
-
-        <div class="buttons">
-            <button id="tips-btn">Tips</button>
-            <button id="patti-chart-btn">Patti Chart</button>
-        </div>
-
+        <h2 id="result-date">Loading...</h2>
         <section id="result-section">
-            <div class="live-header">
-                <span id="live-indicator" class="blink">● LIVE</span>
-                <h3 id="table-title">Today's Live Game Results</h3>
-            </div>
-            
-            <div id="game-results-container">
-                <table id="result-table">
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Result</th>
-                        </tr>
-                    </thead>
-                    <tbody id="result-body">
-                        </tbody>
-                </table>
-            </div>
+            <h3>● LIVE Result</h3>
+            <table>
+                <thead><tr><th>Time</th><th>Result</th></tr></thead>
+                <tbody id="result-body"></tbody>
+            </table>
         </section>
     </main>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
