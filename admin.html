@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOMBAY GOLD - Admin Control Center</title>
     <style>
-        :root { --bg: #0b0e14; --card: #151921; --border: #252d3a; --gold: #d4af37; --blue: #2563eb; --text-main: #e2e8f0; --text-dim: #94a3b8; --green: #10b981; }
+        :root { --bg: #0b0e14; --card: #151921; --border: #252d3a; --gold: #d4af37; --blue: #2563eb; --text-main: #e2e8f0; --text-dim: #94a3b8; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
         body { background: var(--bg); color: var(--text-main); padding: 20px; display: flex; justify-content: center; min-height: 100vh; line-height: 1.6; }
         .admin-box { width: 100%; max-width: 850px; background: var(--card); border-radius: 16px; border: 1px solid var(--border); padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
@@ -13,9 +13,11 @@
         .panel-card { background: #1a1f29; border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 25px; }
         .panel-card h3 { font-size: 15px; margin-bottom: 15px; color: #f8fafc; display: flex; align-items: center; gap: 10px; border-left: 3px solid var(--gold); padding-left: 8px; }
         input, select { width: 100%; padding: 12px; background: #0f1218; border: 1px solid var(--border); border-radius: 6px; color: white; margin-top: 5px; }
-        button { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.3s; margin-top: 15px; }
-        button:hover { opacity: 0.9; }
-        .success-btn { background: var(--green) !important; }
+        button { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th { background: #0f1218; color: var(--text-dim); padding: 12px; border-bottom: 2px solid var(--border); text-align: center; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); text-align: center; color: #cbd5e1; }
+        .badge { background: #dc2626; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -27,55 +29,32 @@
             <button id="btn-sys-toggle" style="background:#dc2626;">SCREEN OFF</button>
             <input type="text" id="off-msg" placeholder="অফ মেসেজ (ফাঁকা রাখলে শুধু লোগো দেখাবে)">
             <p style="margin-top:10px;">লাইভ টাইমার: <span id="live-timer" style="color:var(--gold);">00:00</span></p>
-            <p style="margin-top:10px;">স্টাফ লগইন ওটিপি: <span id="otp-display" style="color:var(--gold); font-weight:bold;">XXXX</span></p>
-            <button onclick="generateOTP()">জেনারেট নতুন ওটিপি</button>
+            <button onclick="generateOTP()">জেনারেট স্টাফ ওটিপি</button>
         </div>
 
         <div class="panel-card">
             <h3>📊 বিট অ্যানালিটিক্স ও পেমেন্ট ক্যালকুলেটর</h3>
             <select id="payout-percent">
-                <option value="10">10%</option> <option value="30">30%</option> <option value="50">50%</option> <option value="100">100%</option>
+                <option value="10">10%</option> <option value="20">20%</option> <option value="30">30%</option> <option value="50">50%</option> <option value="100">100%</option>
             </select>
-            <button style="background:var(--gold); color:black;" onclick="calculatePayout()">CALCULATE PAYOUT</button>
-            <p id="calc-result" style="margin-top:10px;"></p>
+            <button style="background:var(--gold); color:black;">CALCULATE PAYOUT</button>
         </div>
 
         <div class="panel-card">
-            <h3>✍️ রেজাল্ট এন্ট্রি</h3>
-            <button id="res-btn" onclick="markResultDone(this)">SUBMIT RESULT</button>
-            <button style="background:#475569;">PREVIOUS RESULTS</button>
+            <h3>👥 প্লেয়ার ও লাইভ ওয়ালেট ড্যাশবোর্ড</h3>
+            <table>
+                <thead><tr><th>প্লেয়ার আইডি</th><th>ব্যালেন্স</th><th>অ্যাকশন</th></tr></thead>
+                <tbody id="admin-players-body"></tbody>
+            </table>
         </div>
 
-        <div id="admin-main-content"></div>
+        <div class="panel-card">
+            <h3>✍️ রেজাল্ট এন্ট্রি (পত্তি ও সিঙ্গেল)</h3>
+            <table>
+                <thead><tr><th>স্লট</th><th>উইনিং</th><th>অ্যাকশন</th></tr></thead>
+                <tbody id="admin-inputs-body"></tbody>
+            </table>
+        </div>
     </div>
-
-    <script>
-        // ওটিপি জেনারেটর
-        function generateOTP() {
-            const otp = Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('otp-display').innerText = otp;
-        }
-
-        // রেজাল্ট সাবমিট (ডবল টিক)
-        function markResultDone(btn) {
-            btn.innerHTML = "Submitted ✔✔";
-            btn.classList.add('success-btn');
-        }
-
-        // পেমেন্ট ক্যালকুলেটর
-        function calculatePayout() {
-            const percent = document.getElementById('payout-percent').value;
-            document.getElementById('calc-result').innerText = "পেমেন্ট পার্সেন্টেজ: " + percent + "% সেট করা হয়েছে।";
-        }
-
-        // টাইমার
-        let timeLeft = 300; 
-        setInterval(() => {
-            let m = Math.floor(timeLeft / 60);
-            let s = timeLeft % 60;
-            document.getElementById('live-timer').innerText = m + ":" + (s < 10 ? '0' : '') + s;
-            if(timeLeft > 0) timeLeft--;
-        }, 1000);
-    </script>
 </body>
 </html>
