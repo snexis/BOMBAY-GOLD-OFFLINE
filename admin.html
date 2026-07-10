@@ -1,451 +1,102 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOMBAY GOLD - Admin Panel</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
-    
-    <style>
-        /* এডমিন প্যানেল স্পেশাল স্টাইল */
-        body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #0f172a;
-            color: #f8fafc;
-        }
-        .container { max-width: 800px; margin: 30px auto; padding: 20px; }
-        .card {
-            background: #1e293b;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            margin-bottom: 25px;
-        }
-        h2, h3 { margin-top: 0; color: #ff9800; }
-        
-        /* ইনপুট ও বাটন স্টাইল */
-        .form-group { margin-bottom: 15px; position: relative; text-align: left; }
-        label { display: block; margin-bottom: 5px; color: #cbd5e1; font-weight: bold; }
-        input[type="text"], input[type="password"], select {
-            width: 100%; padding: 12px; border-radius: 6px; border: 1px solid #475569;
-            background: #334155; color: white; font-size: 16px; box-sizing: border-box;
-        }
-        .pass-container { position: relative; }
-        .eye-btn {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 20px;
-        }
-        .btn {
-            background: linear-gradient(135deg, #ff9800, #f57c00); color: white;
-            padding: 12px 25px; border: none; border-radius: 6px; font-size: 16px;
-            font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s;
-        }
-        .btn:hover { opacity: 0.9; }
-
-        /* রেজাল্ট টেবিল ও গ্রিন ফিডব্যাক স্টাইল */
-        .result-row {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px; border-bottom: 1px solid #334155; border-radius: 6px; margin-bottom: 8px;
-            background: #1e293b; transition: background 0.3s;
-        }
-        .result-row.submitted {
-            background-color: #16a34a !important; /* সাবমিট হলে লাইনটি সবুজ হবে */
-            border-color: #15803d;
-        }
-        .slot-name { width: 25%; font-weight: bold; font-size: 16px; }
-        .input-box { width: 22%; }
-        .btn-submit-row { 
-            width: 25%; background: #0284c7; padding: 8px; font-size: 14px; 
-            border: none; color: white; border-radius: 4px; cursor: pointer;
-        }
-        .status-badge { display: none; color: #fff; font-weight: bold; font-size: 14px; }
-        .submitted .status-badge { display: inline-block; }
-        .submitted .btn-submit-row { display: none; } /* সাবমিট হলে বাটন লুকিয়ে যাবে */
-
-        /* ড্যাশবোর্ড সেকশন কন্ট্রোল */
-        #login-page, #otp-page, #admin-dashboard { display: none; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .badge-live { background: #dc2626; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
-        
-        /* লাইভ অ্যাপ্রুভাল বক্স */
-        .approval-box { background: #334155; padding: 15px; border-radius: 8px; margin-top: 10px; text-align: center; }
-        .code-display { font-size: 28px; font-weight: 900; color: #22c55e; letter-spacing: 4px; margin: 10px 0; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOMBAY GOLD - Admin Control Panel</title>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container">
-        <div id="login-page" class="card" style="display: block; max-width: 400px; margin: 100px auto;">
-            <h2>BOMBAY GOLD LOGIN</h2>
-            <div class="form-group">
-                <label>Username / নাম</label>
-                <input type="text" id="login-user" placeholder="যেমন: admin বা staff1">
-            </div>
-            <div class="form-group">
-                <label>PIN / মোবাইলের শেষ ৪ সংখ্যা</label>
-                <div class="pass-container">
-                    <input type="password" id="login-pin" placeholder="৪ ডিজিটের পিন দিন">
-                    <button type="button" class="eye-btn" onclick="togglePass('login-pin')">👁️</button>
-                </div>
-            </div>
-            <button class="btn" onclick="handleLogin()">লগইন করুন</button>
-        </div>
+  <div class="top-notice">BOMBAY GOLD কন্ট্রোল প্যানেল (ADMIN PANEL)</div>
 
-        <div id="otp-page" class="card" style="max-width: 400px; margin: 100px auto;">
-            <h2>ডাবল সিকিউরিটি ভেরিফিকেশন</h2>
-            <p style="color: #cbd5e1; font-size: 14px;">মেইন এডমিনের স্ক্রিনে একটি অ্যাপ্রুভাল কোড গেছে। সেই কোডটি এখানে বসান।</p>
-            <div class="form-group">
-                <label>Enter Verification Code</label>
-                <input type="text" id="verification-code" placeholder="কোডটি লিখুন">
-            </div>
-            <button class="btn" onclick="verifySubAdminCode()">ভেরিফাই ও ওপেন প্যানেল</button>
-        </div>
+  <div class="container">
+    
+    <div class="admin-box">
+      <h3>⚙️ জেনারেল সেটিংস ও লাইভ কন্ট্রোল (General Settings & Live Control)</h3>
+      
+      <div class="form-group">
+        <label>লাইভ স্ট্যাটাস (Live Status):</label>
+        <button id="btn-live-toggle" class="btn-danger">LIVE OFF (বন্ধ আছে)</button>
+      </div>
 
-        <div id="admin-dashboard">
-            <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h1 style="margin:0; color: #ff9800;">BOMBAY GOLD CONTROL PANEL</h1>
-                    <p style="margin:5px 0 0 0;" id="user-welcome"></p>
-                </div>
-                <button class="btn" style="width: auto; background: #475569;" onclick="location.reload()">Log Out</button>
-            </div>
+      <div class="form-group">
+        <label>লাইভ নোটিশ টেক্সট (Live Notice Text - Blink):</label>
+        <input type="text" id="input-live-text" class="form-control" placeholder="যেমন: Game Results in All West Bengal">
+      </div>
 
-            <div class="card">
-                <h3>আজকের বাজি রেজাল্ট এন্ট্রি (Result Entry)</h3>
-                <p style="color: #94a3b8; font-size: 14px; margin-bottom: 15px;">নম্বর বসিয়ে সাবমিট করলেই ঘরটি সবুজ হয়ে যাবে। ভুল হওয়ার কোনো সুযোগ নেই।</p>
-                <div id="results-entry-list">
-                    </div>
-            </div>
+      <div class="form-group">
+        <label>ওয়েলকাম নোট (Welcome Note):</label>
+        <input type="text" id="input-welcome-note" class="form-control" placeholder="যেমন: Welcome to Bombay Gold">
+      </div>
 
-            <div id="main-admin-only-sections">
-                
-                <div class="grid-2">
-                    <div class="card">
-                        <h3>লাইভ স্টাফ অ্যাপ্রুভাল <span class="badge-live">LIVE</span></h3>
-                        <p style="color: #cbd5e1; font-size: 13px;">কোনো স্টাফ লগইন করতে চাইলে নিচে রিকোয়েস্ট চলে আসবে।</p>
-                        <div id="approval-section-area">
-                            <p style="color: #94a3b8;" id="no-request-txt">কোনো পেন্ডিং লগইন রিকোয়েস্ট নেই</p>
-                        </div>
-                    </div>
+      <div class="form-group">
+        <label>ব্যাকগ্রাউন্ড ইমেজ লিংক (Background Image URL):</label>
+        <input type="text" id="input-bg-url" class="form-control" placeholder="ইমেজ ফাইলের অনলাইন লিংক বসান">
+      </div>
 
-                    <div class="card">
-                        <h3>পিন/পাসওয়ার্ড পরিবর্তন সেকশন</h3>
-                        <div class="form-group">
-                            <label>কাউন্টের ধরণ সিলেক্ট করুন</label>
-                            <select id="change-target">
-                                <option value="admin_pin">Main Admin Pin</option>
-                                <option value="sub_pin">Staff (Sub-Admin) Pin</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>নতুন ৪ ডিজিটের পিন</label>
-                            <div class="pass-container">
-                                <input type="password" id="new-pin-val" placeholder="নতুন পিন লিখুন">
-                                <button type="button" class="eye-btn" onclick="togglePass('new-pin-val')">👁️</button>
-                            </div>
-                        </div>
-                        <button class="btn" style="background:#16a34a;" onclick="changeSystemPin()">পিন আপডেট করুন</button>
-                    </div>
-                </div>
+      <div class="form-group">
+        <label>ভবিষ্যতের লোগো লিংক (Logo URL):</label>
+        <input type="text" id="input-logo-url" class="form-control" placeholder="লোগো ইমেজের লিংক বসান">
+      </div>
 
-                <div class="card">
-                    <h3>ডাইনামিক বাজি/টাইম স্লট ম্যানেজমেন্ট</h3>
-                    <p style="color: #cbd5e1; font-size: 14px;">এখান থেকে টাইম যোগ করলে মেইন সাইটের টেবিল নিজে থেকেই বড় বা ছোট হবে। (কমা দিয়ে দিয়ে লিখুন)</p>
-                    <div class="form-group">
-                        <label>সক্রিয় টাইম স্লটসমূহ (Active Slots)</label>
-                        <input type="text" id="slots-input-field" placeholder="যেমন: 10:20 AM, 11:50 AM, 01:20 PM">
-                    </div>
-                    <button class="btn" onclick="saveTimeSlots()">টাইম স্লট আপডেট করুন</button>
-                </div>
-
-                <div class="card">
-                    <h3>ওয়েবসাইট জেনারেল সেটিংস এবং ব্যাকগ্রাউন্ড ইমেজ</h3>
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label>লাল নোটিশ বার এর লেখা</label>
-                            <input type="text" id="sys-notice-text">
-                        </div>
-                        <div class="form-group">
-                            <label>নোটিশ স্ট্যাটাস</label>
-                            <select id="sys-notice-status">
-                                <option value="on">চালু (ON)</option>
-                                <option value="off">বন্ধ (OFF)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="grid-2" style="margin-top: 10px;">
-                        <div class="form-group">
-                            <label>Tips URL Link</label>
-                            <input type="text" id="sys-tips-url">
-                        </div>
-                        <div class="form-group">
-                            <label>Patti Chart URL Link</label>
-                            <input type="text" id="sys-patti-url">
-                        </div>
-                    </div>
-                    <div class="form-group" style="margin-top: 10px;">
-                        <label>ওয়েবসাইট ব্যাকগ্রাউন্ড ইমেজ লিংক (Background Image URL)</label>
-                        <input type="text" id="sys-bg-url" placeholder="অনলাইন ইমেজের URL পেস্ট করুন">
-                    </div>
-                    <button class="btn" style="background:#0284c7;" onclick="saveGeneralSettings()">সব সেটিংস সেভ করুন</button>
-                </div>
-
-            </div> </div>
+      <button id="btn-save-settings" class="btn-submit">সেটিংস সেভ করুন (Save Settings)</button>
     </div>
 
-    <script src="firebase-config.js"></script>
+    <div class="admin-box" id="result-entry-box">
+      <h3>✍️ আজকের বাজি রেজাল্ট এন্ট্রি (Result Entry Slot)</h3>
+      <p style="color: #aaa; font-size: 13px; margin-bottom: 10px;">সাবমিট বা পুশ করলে বক্সটি সবুজ হয়ে '✔ OK' দেখাবে।</p>
+      
+      <div class="form-group">
+        <label>তারিখ সিলেক্ট করুন (Select Date):</label>
+        <input type="date" id="res-date" class="form-control">
+      </div>
 
-    <script>
-        let currentLoggedInUser = "";
-        let systemCredentials = {};
-        let currentTodayDate = "";
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label>টাইম (Time):</label>
+          <input type="text" id="res-time" class="form-control" placeholder="e.g. 11:25 AM">
+        </div>
+        <div class="form-group">
+          <label>পাত্তি (Patti):</label>
+          <input type="text" id="res-patti" class="form-control" placeholder="e.g. 123">
+        </div>
+        <div class="form-group">
+          <label>সিঙ্গেল (Single):</label>
+          <input type="text" id="res-single" class="form-control" placeholder="e.g. 6">
+        </div>
+      </div>
 
-        // আজকের তারিখ বের করার লজিক
-        const today = new Date();
-        currentTodayDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+      <button id="btn-submit-result" class="btn-submit">ডাটা পুশ করুন (Push Result)</button>
+      <span id="submit-status" style="margin-left: 15px; font-weight: bold;"></span>
+    </div>
 
-        // পাসওয়ার্ড দেখা/লুকানোর আই বাটন ফাংশন
-        function togglePass(id) {
-            const el = document.getElementById(id);
-            el.type = el.type === "password" ? "text" : "password";
-        }
+    <div class="admin-box">
+      <h3>🔒 মাস্টার সিকিউরিটি সেকশন (Master Security & PIN)</h3>
+      <div class="form-group">
+        <label>বর্তমান মাস্টার ডিলিট পিন (Current Master PIN):</label>
+        <input type="password" id="input-master-pin" class="form-control" placeholder="কোড ডিলিট করার সিকিউরিটি পিন">
+      </div>
+      <button id="btn-save-pin" class="btn-submit">পিন আপডেট করুন (Update PIN)</button>
+    </div>
 
-        // ডাটাবেস থেকে ডিফল্ট ক্রেডেনশিয়াল লোড করা বা তৈরি করা
-        db.collection("SystemSettings").doc("Auth").onSnapshot((doc) => {
-            if(doc.exists) {
-                systemCredentials = doc.data();
-            } else {
-                // প্রথমবার ডাটাবেস খালি থাকলে ডিফল্ট পিন সেট হবে
-                db.collection("SystemSettings").doc("Auth").set({
-                    admin_pin: "1234",
-                    sub_pin: "5678"
-                });
-            }
-        });
+    <div class="admin-box">
+      <h3>📊 রেজাল্ট ডাটাবেস লিস্ট (View & Delete History)</h3>
+      <div id="admin-data-list">
+        </div>
+    </div>
 
-        // লগইন হ্যান্ডলার এবং ডাবল সিকিউরিটি লজিক
-        function handleLogin() {
-            const user = document.getElementById("login-user").value.trim();
-            const pin = document.getElementById("login-pin").value.trim();
+    <div class="admin-box" style="border-left: 5px solid #007bff;">
+      <h3>👥 প্লেয়ার ম্যানেজমেন্ট সেকশন (Player Section - Future Update)</h3>
+      <p style="color: #6c757d;">ভবিষ্যতে প্লেয়ার যুক্ত করার সিস্টেমটি এখানে একটি ক্লিয়ার সেকশন হিসেবে অ্যাক্টিভ করা হবে।</p>
+    </div>
 
-            if(!user || !pin) { alert("সবগুলো ঘর পূরণ করুন!"); return; }
+  </div>
 
-            if(user === "admin") {
-                if(pin === systemCredentials.admin_pin) {
-                    currentLoggedInUser = "admin";
-                    openDashboard("admin");
-                } else { alert("ভুল এডমিন পিন!"); }
-            } else {
-                // সাব-এডমিন (স্টাফ) লগইন চেষ্টা করলে
-                if(pin === systemCredentials.sub_pin) {
-                    currentLoggedInUser = user;
-                    // এডমিনকে জানানোর জন্য লাইভ রিকোয়েস্ট পাঠানো
-                    db.collection("AdminApprovals").doc("LiveRequest").set({
-                        username: user,
-                        status: "pending",
-                        generated_code: ""
-                    }).then(() => {
-                        document.getElementById("login-page").style.display = "none";
-                        document.getElementById("otp-page").style.display = "block";
-                        listenToApprovalStatus(); // কোডের জন্য অপেক্ষা করা
-                    });
-                } else { alert("ভুল স্টাফ পিন!"); }
-            }
-        }
-
-        // মেইন এডমিন কর্তৃক কোড জেনারেট করা (অ্যাপ্রুভাল দেওয়া)
-        function approveStaffLogin() {
-            const randomCode = Math.floor(1000 + Math.random() * 9000); // ৪ ডিজিটের র্যান্ডম কোড
-            db.collection("AdminApprovals").doc("LiveRequest").update({
-                status: "approved",
-                generated_code: String(randomCode)
-            });
-        }
-
-        // সাব-এডমিনের স্ক্রিনে লাইভ কোড চেক করা
-        function listenToApprovalStatus() {
-            db.collection("AdminApprovals").doc("LiveRequest").onSnapshot((doc) => {
-                if(doc.exists && doc.data().status === "approved") {
-                    // মেইন এডমিন ক্লিক করেছেন, এবার সাব-এডমিন কোড দিলেই খুলবে
-                }
-            });
-        }
-
-        function verifySubAdminCode() {
-            const userCode = document.getElementById("verification-code").value.trim();
-            db.collection("AdminApprovals").doc("LiveRequest").get().then((doc) => {
-                if(doc.exists && doc.data().generated_code === userCode) {
-                    // কোড মিলে গেছে! ড্যাশবোর্ড ওপেন
-                    openDashboard("staff");
-                    // রিকোয়েস্ট ক্লিয়ার করা
-                    db.collection("AdminApprovals").doc("LiveRequest").delete();
-                } else { alert("ভুল ভেরিফিকেশন কোড! আবার চেষ্টা করুন।"); }
-            });
-        }
-
-        // ড্যাশবোর্ড স্ক্রিন ওপেন করা এবং রোল সেট করা
-        function openDashboard(role) {
-            document.getElementById("login-page").style.display = "none";
-            document.getElementById("otp-page").style.display = "none";
-            document.getElementById("admin-dashboard").style.display = "block";
-            document.getElementById("user-welcome").innerText = `লগইন আছেন: ${currentLoggedInUser.toUpperCase()} (${role === 'admin' ? 'Main Owner' : 'Staff'})`;
-
-            if(role === "admin") {
-                document.getElementById("main-admin-only-sections").style.display = "block";
-                loadMainAdminFeatures();
-            } else {
-                document.getElementById("main-admin-only-sections").style.display = "none";
-            }
-
-            loadResultEntryTable();
-        }
-
-        // মেইন এডমিনের লাইভ লিসেনারসমূহ লোড করা
-        function loadMainAdminFeatures() {
-            // ১. লাইভ লগইন রিকোয়েস্ট শোনা
-            db.collection("AdminApprovals").doc("LiveRequest").onSnapshot((doc) => {
-                const area = document.getElementById("approval-section-area");
-                if(doc.exists && doc.data().status === "pending") {
-                    area.innerHTML = `
-                        <div class="approval-box">
-                            <p><strong>${doc.data().username}</strong> প্যানেলে ঢুকতে চাচ্ছেন</p>
-                            <button class="btn" style="background:#22c55e;" onclick="approveStaffLogin()">অ্যাপ্রুভাল দিন ও কোড দেখুন</button>
-                        </div>
-                    `;
-                } else if(doc.exists && doc.data().status === "approved") {
-                    area.innerHTML = `
-                        <div class="approval-box" style="background:#14532d;">
-                            <p style="margin:0; color:#22c55e;">✔ অ্যাপ্রুভড হয়েছে!</p>
-                            <p style="margin:5px 0 0 0;">স্টাফকে এই সিকিউরিটি কোডটি বলুন:</p>
-                            <div class="code-display">${doc.data().generated_code}</div>
-                        </div>
-                    `;
-                } else {
-                    area.innerHTML = `<p style="color: #94a3b8;">কোনো পেন্ডিং লগইন রিকোয়েস্ট নেই</p>`;
-                }
-            });
-
-            // ২. টাইম স্লট ইনপুটে আগের স্লট লোড করা
-            db.collection("SystemSettings").doc("Slots").get().then((doc) => {
-                if(doc.exists) {
-                    document.getElementById("slots-input-field").value = doc.data().active_slots.join(", ");
-                }
-            });
-
-            // ৩. জেনারেল সেটিংস ডেটা লোড করা
-            db.collection("SystemSettings").doc("General").get().then((doc) => {
-                if(doc.exists) {
-                    const d = doc.data();
-                    document.getElementById("sys-notice-text").value = d.notice || "";
-                    document.getElementById("sys-notice-status").value = d.notice_status || "off";
-                    document.getElementById("sys-tips-url").value = d.tips_url || "";
-                    document.getElementById("sys-patti-url").value = d.patti_url || "";
-                    document.getElementById("sys-bg-url").value = d.bg_url || "";
-                }
-            });
-        }
-
-        // ডাইনামিক রেজাল্ট এন্ট্রি টেবিল ও গ্রিন কালার ভিজ্যুয়াল ফিডব্যাক তৈরি
-        function loadResultEntryTable() {
-            db.collection("SystemSettings").doc("Slots").onSnapshot((slotDoc) => {
-                if(slotDoc.exists) {
-                    const slots = slotDoc.data().active_slots || [];
-                    
-                    db.collection("GameResults").doc(currentTodayDate).onSnapshot((resDoc) => {
-                        const currentResults = resDoc.exists ? resDoc.data() : {};
-                        let rowsHtml = "";
-
-                        slots.forEach((slot, index) => {
-                            const hasData = currentResults[slot] ? true : false;
-                            const pattiVal = hasData ? currentResults[slot].patti : "";
-                            const singleVal = hasData ? currentResults[slot].single : "";
-                            
-                            // যদি রেজাল্ট দেওয়া থাকে তবে 'submitted' ক্লাস যোগ হবে (যা রোটিকে সবুজ করবে)
-                            rowsHtml += `
-                                <div class="result-row ${hasData ? 'submitted' : ''}" id="row-${index}">
-                                    <div class="slot-name">${slot}</div>
-                                    <input type="text" class="input-box" id="patti-${index}" placeholder="পাত্তি" value="${pattiVal}" ${hasData ? 'disabled' : ''}>
-                                    <input type="text" class="input-box" id="single-${index}" placeholder="সিঙ্গেল" value="${singleVal}" ${hasData ? 'disabled' : ''}>
-                                    <button class="btn-submit-row" onclick="submitRowResult('${slot}', ${index})">Submit</button>
-                                    <div class="status-badge">✔✔ OK</div>
-                                </div>
-                            `;
-                        });
-
-                        document.getElementById("results-entry-list").innerHTML = rowsHtml;
-                    });
-                } else {
-                    // প্রথমবার ডাটাবেস খালি থাকলে ডিফল্ট ৮টি বাজি সেট করে দেওয়া হবে
-                    db.collection("SystemSettings").doc("Slots").set({
-                        active_slots: ["10:20 AM", "11:50 AM", "01:20 PM", "02:50 PM", "04:20 PM", "05:50 PM", "07:20 PM", "08:50 PM"]
-                    });
-                }
-            });
-        }
-
-        // একটি নির্দিষ্ট বাজির রেজাল্ট ডাটাবেসে সেভ করা
-        function submitRowResult(slotName, index) {
-            const patti = document.getElementById(`patti-${index}`).value.trim();
-            const single = document.getElementById(`single-${index}`).value.trim();
-
-            if(!patti || !single) { alert("পাত্তি এবং সিঙ্গেল দুটোই পূরণ করুন!"); return; }
-
-            // আজ বা গতকালের ডেটা নিখুঁতভাবে মার্জ করে ফায়ারবেসে সেভ করা
-            db.collection("GameResults").doc(currentTodayDate).set({
-                [slotName]: { patti: patti, single: single }
-            }, { merge: true }).then(() => {
-                // ফায়ারবেস অটোমেটিক স্ন্যাপশট নিয়ে রো টিকে সবুজ (Green) করে দেবে
-            }).catch((err) => { alert("Error saving result: " + err); });
-        }
-
-        // টাইম স্লট বাড়ানো বা কমানো সেভ করা
-        function saveTimeSlots() {
-            const rawInput = document.getElementById("slots-input-field").value;
-            const slotsArray = rawInput.split(",").map(s => s.trim()).filter(s => s.length > 0);
-
-            if(slotsArray.length === 0) { alert("কমপক্ষে একটি টাইম স্লট দিন!"); return; }
-
-            db.collection("SystemSettings").doc("Slots").set({
-                active_slots: slotsArray
-            }).then(() => { alert("টাইম স্লট সফলভাবে আপডেট করা হয়েছে!"); });
-        }
-
-        // জেনারেল সেটিংস এবং ব্যাকগ্রাউন্ড ইমেজ সেভ করা
-        function saveGeneralSettings() {
-            const notice = document.getElementById("sys-notice-text").value.trim();
-            const status = document.getElementById("sys-notice-status").value;
-            const tips = document.getElementById("sys-tips-url").value.trim();
-            const patti = document.getElementById("sys-patti-url").value.trim();
-            const bg = document.getElementById("sys-bg-url").value.trim();
-
-            db.collection("SystemSettings").doc("General").set({
-                notice: notice,
-                notice_status: status,
-                tips_url: tips,
-                patti_url: patti,
-                bg_url: bg
-            }).then(() => { alert("সব জেনারেল সেটিংস এবং ব্যাকগ্রাউন্ড সফলভাবে সেভ হয়েছে!"); });
-        }
-
-        // মেইন এডমিন কর্তৃক নিজের বা স্টাফের পিন কোড চেঞ্জ করা
-        function changeSystemPin() {
-            const target = document.getElementById("change-target").value;
-            const newPin = document.getElementById("new-pin-val").value.trim();
-
-            if(newPin.length < 4) { alert("পিন কমপক্ষে ৪ ডিজিটের হতে হবে!"); return; }
-
-            db.collection("SystemSettings").doc("Auth").update({
-                [target]: newPin
-            }).then(() => {
-                alert("পিন কোডটি সফলভাবে পরিবর্তন করা হয়েছে!");
-                document.getElementById("new-pin-val").value = "";
-            });
-        }
-    </script>
+  <script src="firebase-config.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>
