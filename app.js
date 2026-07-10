@@ -1,6 +1,6 @@
-// App.js - সেন্ট্রাল কন্ট্রোলার
+// App.js - সেন্ট্রাল সিস্টেম কন্ট্রোলার
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, onValue, set, remove, transaction } from 'firebase/database';
+import { getDatabase, ref, onValue, set, remove, transaction, serverTimestamp } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
@@ -16,37 +16,39 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// সিস্টেম অটো-রিসেট লজিক (রাত ১২টা)
-function scheduleDailyReset() {
+// অটো-রিসেট লজিক: প্রতিদিন রাত ১২টায় লাইভ সেশন ও বেট পরিষ্কার হবে
+function scheduleMidnightReset() {
   const now = new Date();
-  const resetTime = new Date();
-  resetTime.setHours(24, 0, 0, 0); 
-  const delay = resetTime - now;
-
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  
   setTimeout(() => {
     remove(ref(db, 'Live_Session'));
     remove(ref(db, 'bets'));
-    scheduleDailyReset();
-  }, delay);
+    scheduleMidnightReset();
+  }, midnight - now);
 }
-scheduleDailyReset();
+scheduleMidnightReset();
 
-// উইনিং ক্যালকুলেটর (x9 ও x11.5 লজিক)
-export const calculateWinnings = (publishedResult) => {
-  onValue(ref(db, 'bets'), (snapshot) => {
+// উইনিং ক্যালকুলেটর: সিঙ্গেল (x9) ও পাত্তি (x11.5)
+export const processGameResults = (resultData) => {
+  const betsRef = ref(db, 'bets');
+  onValue(betsRef, (snapshot) => {
     const allBets = snapshot.val();
     if (!allBets) return;
-    
+
     Object.entries(allBets).forEach(([userId, userBets]) => {
       Object.values(userBets).forEach(bet => {
-        let winAmount = 0;
-        if (bet.patti === publishedResult.patti) winAmount = bet.amount * 11.5;
-        else if (bet.single === publishedResult.result) winAmount = bet.amount * 9;
-        
-        if (winAmount > 0) {
-          transaction(ref(db, `wallets/${userId}/winningBalance`), (cur) => (cur || 0) + winAmount);
+        let win = 0;
+        if (bet.patti === resultData.patti) win = bet.amount * 11.5;
+        else if (bet.single === resultData.result) win = bet.amount * 9;
+
+        if (win > 0) {
+          transaction(ref(db, `wallets/${userId}/winningBalance`), (cur) => (cur || 0) + win);
         }
       });
     });
   }, { onlyOnce: true });
 };
+
+export { db };
