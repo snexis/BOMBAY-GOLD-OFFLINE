@@ -2,29 +2,28 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel - Bombay Gold</title>
+    <title>Master Admin Panel</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="admin-container">
-    <h2>অ্যাডমিন প্যানেল</h2>
-    
-    <div class="admin-input-group">
-        <label>লাইভ স্ট্যাটাস:</label>
-        <button id="toggleLive">চালু/বন্ধ করুন</button>
+<body>
+    <div id="sec1">
+        <button id="masterLiveSwitch">লাইভ অন/অফ</button>
+        <input type="text" id="publicNoticeInput" placeholder="পাবলিক নোটিশ">
+        <input type="text" id="playerMessageInput" placeholder="প্লেয়ার মেসেজ">
     </div>
 
-    <div class="admin-input-group">
-        <input type="text" id="noticeInput" placeholder="নোটিশ লিখুন...">
-        <button id="saveNotice">আপডেট নোটিশ</button>
+    <div id="sec2">
+        <div id="resultRows"></div>
+        <button id="addResultRow">নতুন রো যোগ করুন</button>
+        <button id="saveAllResults">মাস্টার সেভ</button>
     </div>
 
-    <div id="resultEditor" class="admin-input-group">
-        <h3>রেজাল্ট এডিটর</h3>
-        <div id="rowsContainer"></div>
-        <button id="addRow">নতুন রো যোগ করুন</button>
-        <button id="saveAllResults">সব সেভ করুন</button>
-    </div>
+    <div id="sec3">
+        </div>
 
-    <script type="module" src="js/app.js"></script>
+    <div id="sec4">
+        </div>
+
+    <script type="module" src="app.js"></script>
 </body>
 </html>
