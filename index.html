@@ -4,259 +4,61 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>BOMBAY-GOLD</title>
-  <section class="hero-section">
-    <div class="hero-content">
-        <h1>Welcome to <span class="brand-name">BOMBAY-GOLD</span></h1>
-        <p>লাইভ রেজাল্ট সবার আগে পেতে নিয়মিত আমাদের ওয়েবসাইট ভিজিট করুন।</p>
-        <button class="cta-button">আজকের রেজাল্ট দেখুন</button>
-    </div>
-</section>
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Segoe UI', 'Noto Sans Bengali', Roboto, sans-serif; 
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
+      background-size: cover; background-position: center; background-repeat: no-repeat; 
+      background-attachment: fixed; transition: background-image 0.4s ease-in-out; 
+      padding: 1rem; background-color: #1a1e2b; color: white;
     }
+    body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.45); z-index: 0; pointer-events: none; }
+    
+    .main-container { position: relative; z-index: 2; width: 100%; max-width: 650px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding: 1rem 0.5rem; }
 
-    body {
-      font-family: 'Segoe UI', 'Noto Sans Bengali', Roboto, system-ui, sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      transition: background-image 0.4s ease-in-out;
-      position: relative;
-      padding: 1rem;
-      /* default fallback */
-      background-color: #1a1e2b;
-    }
+    /* হিরো সেকশন স্টাইল */
+    .hero-section { width: 100%; text-align: center; padding: 20px 10px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 2rem; border: 1px solid rgba(255, 215, 0, 0.3); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+    .hero-content h1 { font-size: 1.6rem; margin-bottom: 8px; color: #fff; }
+    .brand-name { color: #facc15; font-weight: bold; animation: neonGlow 2s infinite alternate; text-transform: uppercase; }
+    @keyframes neonGlow { from { text-shadow: 0 0 5px #facc15; } to { text-shadow: 0 0 15px #ff0055; } }
+    .hero-content p { font-size: 0.95rem; margin-bottom: 15px; opacity: 0.9; }
+    .cta-button { background: linear-gradient(90deg, #ff0055, #facc15); border: none; padding: 10px 25px; color: #000; font-weight: bold; border-radius: 50px; cursor: pointer; transition: transform 0.3s; }
+    .cta-button:hover { transform: scale(1.05); }
 
-    /* semi-transparent overlay for better readability */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.45);
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .main-container {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      max-width: 650px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.5rem;
-      padding: 1rem 0.5rem;
-    }
-
-    /* ----- পাবলিক নোটিশ বার ----- */
-    .notice-bar {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(10px);
-      border-radius: 2.5rem;
-      padding: 0.9rem 1.8rem;
-      text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,215,0,0.5);
-      font-weight: 600;
-      font-size: 1.2rem;
-      color: #1e293b;
-      letter-spacing: 0.3px;
-      word-break: break-word;
-      transition: all 0.3s ease;
-      min-height: 4rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* ----- লাইভ বাটন (অ্যানিমেটেড কন্ট্রোল) ----- */
-    .live-button-wrapper {
-      display: flex;
-      justify-content: center;
-      margin: 0.5rem 0;
-    }
-
-    .status-button {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background-color: #dc2626; /* default off লাল */
-      box-shadow: 0 0 25px rgba(220,38,38,0.7);
-      border: 4px solid rgba(255,255,255,0.9);
-      transition: background-color 0.25s ease, box-shadow 0.3s ease, transform 0.2s;
-      cursor: default;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 1.6rem;
-      color: white;
-      text-shadow: 0 2px 6px black;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    /* সবুজ অবস্থা + পালসিং অ্যানিমেশন */
-    .status-button.on {
-      background-color: #16a34a;
-      box-shadow: 0 0 45px #22c55e;
-      animation: pulseGreen 1.3s infinite ease-in-out;
-    }
-
-    @keyframes pulseGreen {
-      0% {
-        transform: scale(1);
-        box-shadow: 0 0 25px #22c55e, 0 0 50px rgba(34,197,94,0.7);
-      }
-      50% {
-        transform: scale(1.06);
-        box-shadow: 0 0 50px #4ade80, 0 0 80px rgba(74,222,128,0.9);
-      }
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 25px #22c55e, 0 0 50px rgba(34,197,94,0.7);
-      }
-    }
-
-    /* ----- রেজাল্ট সেকশন (অটো-হাইড) ----- */
-    .result-section {
-      width: 100%;
-      background: rgba(20, 20, 30, 0.8);
-      backdrop-filter: blur(14px);
-      border-radius: 2rem;
-      padding: 1.5rem 1.2rem;
-      box-shadow: 0 20px 35px rgba(0,0,0,0.6);
-      border: 1px solid rgba(255,255,255,0.25);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      display: block; /* controlled by js */
-    }
-
-    .result-section.hidden-section {
-      display: none !important;
-    }
-
-    .result-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      text-align: center;
-      color: #facc15;
-      margin-bottom: 1.2rem;
-      border-bottom: 2px dashed rgba(255,255,255,0.4);
-      padding-bottom: 0.5rem;
-    }
-
-    .result-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-      max-height: 450px;
-      overflow-y: auto;
-      padding-right: 0.3rem;
-    }
-
-    .result-row {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 1.2rem;
-      padding: 0.9rem 1.2rem;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      border-left: 6px solid #fbbf24;
-      backdrop-filter: blur(8px);
-      color: #f1f5f9;
-      font-weight: 500;
-      transition: 0.2s;
-    }
-
-    .result-time {
-      background: #0f172a;
-      padding: 0.3rem 0.9rem;
-      border-radius: 2rem;
-      font-weight: 700;
-      color: #fcd34d;
-    }
-
-    .result-patti {
-      font-weight: 700;
-      font-size: 1.3rem;
-      color: #ffffff;
-      background: #334155;
-      padding: 0.2rem 1rem;
-      border-radius: 2rem;
-      letter-spacing: 0.5px;
-    }
-
-    .result-value {
-      font-weight: 800;
-      font-size: 1.6rem;
-      color: #fbbf24;
-      text-shadow: 0 0 8px black;
-    }
-
-    .empty-message {
-      text-align: center;
-      color: #cbd5e1;
-      padding: 1.5rem;
-      font-style: italic;
-    }
-
-    /* ----- ফুটার সেকশন ----- */
-    .footer-section {
-      width: 100%;
-      text-align: center;
-      margin-top: 0.8rem;
-      color: rgba(255, 255, 255, 0.85);
-      font-weight: 500;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      border-radius: 3rem;
-      padding: 0.9rem 1rem;
-      font-size: 0.95rem;
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-
-    @media (max-width: 450px) {
-      .result-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.4rem;
-      }
-    }
+    .notice-bar { width: 100%; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border-radius: 2.5rem; padding: 0.9rem 1.8rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border: 1px solid rgba(255,215,0,0.5); font-weight: 600; font-size: 1.2rem; color: #1e293b; min-height: 4rem; display: flex; align-items: center; justify-content: center; }
+    .live-button-wrapper { display: flex; justify-content: center; margin: 0.5rem 0; }
+    .status-button { width: 110px; height: 110px; border-radius: 50%; background-color: #dc2626; box-shadow: 0 0 25px rgba(220,38,38,0.7); border: 4px solid rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.6rem; color: white; transition: 0.3s; }
+    .status-button.on { background-color: #16a34a; box-shadow: 0 0 45px #22c55e; animation: pulseGreen 1.3s infinite ease-in-out; }
+    @keyframes pulseGreen { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+    .result-section { width: 100%; background: rgba(20, 20, 30, 0.8); backdrop-filter: blur(14px); border-radius: 2rem; padding: 1.5rem 1.2rem; box-shadow: 0 20px 35px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.25); }
+    .result-section.hidden-section { display: none !important; }
+    .result-title { font-size: 1.5rem; font-weight: 700; text-align: center; color: #facc15; margin-bottom: 1.2rem; border-bottom: 2px dashed rgba(255,255,255,0.4); padding-bottom: 0.5rem; }
+    .result-row { background: rgba(255, 255, 255, 0.1); border-radius: 1.2rem; padding: 0.9rem 1.2rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #fbbf24; }
+    .result-time { background: #0f172a; padding: 0.3rem 0.9rem; border-radius: 2rem; color: #fcd34d; font-weight: 700; }
+    .result-value { font-weight: 800; font-size: 1.6rem; color: #fbbf24; }
+    .footer-section { width: 100%; text-align: center; margin-top: 0.8rem; padding: 0.9rem; background: rgba(0, 0, 0, 0.5); border-radius: 3rem; color: white; border: 1px solid rgba(255,255,255,0.2); }
   </style>
 </head>
 <body id="mainBody">
   <div class="main-container">
     
-    <!-- পাবলিক নোটিশ বার -->
-    <div class="notice-bar" id="noticeBar">
-      ⏳ নোটিশ লোড হচ্ছে...
-    </div>
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Welcome to <span class="brand-name">BOMBAY-GOLD</span></h1>
+            <p>লাইভ রেজাল্ট সবার আগে পেতে নিয়মিত আমাদের ওয়েবসাইট ভিজিট করুন।</p>
+            <button class="cta-button" onclick="window.scrollTo({top: 500, behavior: 'smooth'})">আজকের রেজাল্ট দেখুন</button>
+        </div>
+    </section>
 
-    <!-- লাইভ বাটন -->
+    <div class="notice-bar" id="noticeBar">⏳ নোটিশ লোড হচ্ছে...</div>
+
     <div class="live-button-wrapper">
       <div class="status-button" id="liveStatusButton">OFF</div>
     </div>
 
-    <!-- রেজাল্ট সেকশন (অটো-হাইড কন্ট্রোল) -->
     <div class="result-section" id="resultSection">
       <div class="result-title">📋 আজকের রেজাল্ট</div>
       <div class="result-list" id="resultListContainer">
@@ -264,15 +66,11 @@
       </div>
     </div>
 
-    <!-- ফুটার সেকশন -->
-    <div class="footer-section">
-      © ২০২৫ লাইভ রেজাল্ট সিস্টেম · সর্বস্বত্ব সংরক্ষিত
-    </div>
+    <div class="footer-section">© ২০২৫ লাইভ রেজাল্ট সিস্টেম · সর্বস্বত্ব সংরক্ষিত</div>
   </div>
 
   <script>
     (function() {
-      // ---------- ফায়ারবেস কনফিগারেশন (নিজের কনফিগ দিন) ----------
       const firebaseConfig = {
         apiKey: "AIzaSyDummyKeyForDemoReplaceWithYours",
         authDomain: "your-project.firebaseapp.com",
@@ -283,146 +81,45 @@
         appId: "1:123456789:web:abc123def456"
       };
 
-      // ফায়ারবেস ইনিশিয়ালাইজ
       firebase.initializeApp(firebaseConfig);
       const db = firebase.database();
-
-      // DOM এলিমেন্টস
       const bodyElement = document.getElementById('mainBody');
       const noticeBar = document.getElementById('noticeBar');
       const liveButton = document.getElementById('liveStatusButton');
       const resultSection = document.getElementById('resultSection');
       const resultListContainer = document.getElementById('resultListContainer');
 
-      // ---------- রিয়েল-টাইম লিসেনার: সিস্টেম স্ট্যাটাস (মেইন সুইচ) ----------
-      const systemStatusRef = db.ref('systemStatus'); 
-      // ধরে নিচ্ছি ডাটাবেজে systemStatus: { isOn: true/false }
-
-      systemStatusRef.on('value', (snapshot) => {
+      // System Status
+      db.ref('systemStatus').on('value', (snapshot) => {
         const data = snapshot.val();
-        let isSystemOn = false;
-        
-        if (data && typeof data.isOn === 'boolean') {
-          isSystemOn = data.isOn;
-        } else {
-          // যদি ডাটা না থাকে বা আইসঅন না থাকে, ডিফল্ট false (অফ)
-          isSystemOn = false;
-        }
-
-        // বাটন আপডেট
-        updateLiveButton(isSystemOn);
-
-        // রেজাল্ট সেকশন কন্ট্রোল (অটো-হাইড)
-        if (resultSection) {
-          if (isSystemOn) {
-            resultSection.classList.remove('hidden-section');
-          } else {
-            resultSection.classList.add('hidden-section');
-          }
-        }
+        const isSystemOn = data ? data.isOn : false;
+        liveButton.textContent = isSystemOn ? 'ON' : 'OFF';
+        isSystemOn ? liveButton.classList.add('on') : liveButton.classList.remove('on');
+        resultSection.style.display = isSystemOn ? 'block' : 'none';
       });
 
-      function updateLiveButton(isOn) {
-        if (!liveButton) return;
-        if (isOn) {
-          liveButton.textContent = 'ON';
-          liveButton.classList.add('on');
-        } else {
-          liveButton.textContent = 'OFF';
-          liveButton.classList.remove('on');
-        }
-      }
-
-      // ---------- পাবলিক নোটিশ বার ----------
-      const noticeRef = db.ref('publicNotice');
-      noticeRef.on('value', (snapshot) => {
-        const noticeText = snapshot.val();
-        if (noticeText && typeof noticeText === 'string' && noticeText.trim() !== '') {
-          noticeBar.textContent = noticeText.trim();
-        } else {
-          noticeBar.textContent = '📢 স্বাগতম! আজকের নোটিশ এখানে দেখুন।';
-        }
+      // Notice
+      db.ref('publicNotice').on('value', (snap) => {
+        noticeBar.textContent = snap.val() || '📢 স্বাগতম!';
       });
 
-      // ---------- ডাইনামিক রেজাল্ট সেকশন (রেজাল্ট রো) ----------
-      const resultsRef = db.ref('results'); 
-      // প্রত্যাশিত স্ট্রাকচার: results একটি অবজেক্ট বা অ্যারে? আমরা অ্যারে-লাইক অবজেক্ট ধরে নিচ্ছি
-      // example: { "row1": { "time": "12:30 PM", "patti": "123", "result": "45" }, "row2": {...} }
-
-      resultsRef.on('value', (snapshot) => {
-        const resultsData = snapshot.val();
-        renderResultRows(resultsData);
-      });
-
-      function renderResultRows(resultsData) {
-        if (!resultListContainer) return;
-        
-        // ক্লিয়ার করে ফেলা
+      // Results
+      db.ref('results').on('value', (snap) => {
+        const data = snap.val();
         resultListContainer.innerHTML = '';
-
-        if (!resultsData || typeof resultsData !== 'object' || Object.keys(resultsData).length === 0) {
-          resultListContainer.innerHTML = '<div class="empty-message">⏳ এখনো কোনো রেজাল্ট প্রকাশিত হয়নি</div>';
-          return;
-        }
-
-        // অবজেক্ট থেকে ভ্যালুগুলোকে অ্যারেতে রূপান্তর
-        const rows = Object.values(resultsData);
-        
-        // ফিল্টার করে শুধু ভ্যালিড অবজেক্ট রাখা (time, patti, result প্রপার্টি থাকা)
-        const validRows = rows.filter(row => 
-          row && typeof row === 'object' && (row.time || row.patti || row.result)
-        );
-
-        if (validRows.length === 0) {
-          resultListContainer.innerHTML = '<div class="empty-message">📭 কোন বৈধ রেজাল্ট সারি নেই</div>';
-          return;
-        }
-
-        // প্রতিটি রো এর জন্য এলিমেন্ট তৈরি
-        validRows.forEach(row => {
-          const timeText = row.time || '--:--';
-          const pattiText = row.patti || '---';
-          const resultText = row.result || '--';
-
-          const rowDiv = document.createElement('div');
-          rowDiv.className = 'result-row';
-          rowDiv.innerHTML = `
-            <span class="result-time">🕒 ${escapeHTML(timeText)}</span>
-            <span class="result-patti">🎯 ${escapeHTML(pattiText)}</span>
-            <span class="result-value">🏆 ${escapeHTML(resultText)}</span>
-          `;
-          resultListContainer.appendChild(rowDiv);
+        if (!data) { resultListContainer.innerHTML = '<div class="empty-message">⏳ রেজাল্ট নেই</div>'; return; }
+        Object.values(data).forEach(row => {
+          const div = document.createElement('div');
+          div.className = 'result-row';
+          div.innerHTML = `<span class="result-time">🕒 ${row.time}</span><span class="result-value">🏆 ${row.result}</span>`;
+          resultListContainer.appendChild(div);
         });
-      }
-
-      // simple escape helper
-      function escapeHTML(str) {
-        return String(str)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#039;');
-      }
-
-      // ---------- ব্যাকগ্রাউন্ড ইমেজ কন্ট্রোল (আনলিমিটেড ইমেজ সাপোর্ট) ----------
-      const backgroundRef = db.ref('backgroundImageURL');
-      backgroundRef.on('value', (snapshot) => {
-        const imageUrl = snapshot.val();
-        if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim().length > 5) {
-          // ব্যাকগ্রাউন্ড ইমেজ সেট করা
-          bodyElement.style.backgroundImage = `url('${imageUrl}')`;
-        } else {
-          // ডিফল্ট ব্যাকগ্রাউন্ড বা খালি রাখা (ফলব্যাক CSS ব্যাকগ্রাউন্ড কালার দেখাবে)
-          bodyElement.style.backgroundImage = 'none';
-        }
       });
 
-      // এছাড়াও ফায়ারবেসে backgroundImageURL না থাকলে ফলব্যাক হিসেবে none সেট করে দিতে পারি।
-      // প্রথম লোডে যদি null থাকে তাহলে none থাকবে।
-
-      // ছোট একটি নিরাপত্তা: ডাটাবেজ রেফারেন্স ঠিক রাখতে কনসোল লগ (ডেভেলপমেন্টে)
-      console.log('🔥 Firebase public view initialized. Listening for real-time updates...');
+      // Background
+      db.ref('backgroundImageURL').on('value', (snap) => {
+        if (snap.val()) bodyElement.style.backgroundImage = `url('${snap.val()}')`;
+      });
     })();
   </script>
 </body>
