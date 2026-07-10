@@ -2,15 +2,30 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebas
 import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
 // ফায়ারবেস কনফিগারেশন (এখানে আপনার ডেটা বসাবেন)
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_ID",
-  appId: "YOUR_APP_ID"
-};
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
+    authDomain: "live-result-b9155.firebaseapp.com",
+    databaseURL: "https://live-result-b9155-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "live-result-b9155",
+    storageBucket: "live-result-b9155.firebasestorage.app",
+    messagingSenderId: "495121483481",
+    appId: "1:495121483481:web:8e8bf65c71ea3d31ec60c8",
+    measurementId: "G-DFDW40QF87"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
