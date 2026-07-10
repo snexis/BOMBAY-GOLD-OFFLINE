@@ -1,21 +1,30 @@
-/* গ্লোবাল ডিজাইন */
-body { margin: 0; padding: 0; font-family: sans-serif; background: #f4f4f4; text-align: center; }
+/* গ্লোবাল সেটিংস */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f4f4; line-height: 1.6; }
 
-/* হেডার */
-.header { background: #333; color: white; padding: 20px; }
+/* হেডার ও নোটিশবার */
+header { background: #333; color: #fff; padding: 15px; text-align: center; }
+#publicNoticeBar, #playerMessageBar { background: #FFD700; padding: 10px; text-align: center; font-weight: bold; border-bottom: 2px solid #ccc; }
 
-/* নোটিশ বার */
-.notice { background: #FFD700; padding: 10px; font-weight: bold; }
+/* লাইভ বাটন - রেসপন্সিভ ও এনিমেটেড */
+.live-status { display: inline-block; padding: 10px 25px; margin: 10px auto; border-radius: 50px; color: white; font-weight: bold; text-align: center; cursor: pointer; transition: 0.3s; }
+.live-on { background: #28a745; animation: pulse 1.5s infinite; }
+.live-off { background: #dc3545; }
+@keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); } 100% { transform: scale(1); } }
 
-/* ন্যাভিগেশন */
-.nav-buttons { margin: 20px; display: flex; justify-content: center; gap: 15px; }
-.btn { background: #17a2b8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; }
-.live-indicator { color: red; font-weight: bold; border: 2px solid red; padding: 5px 10px; border-radius: 5px; }
+/* রেজাল্ট গ্রিড - আনলিমিটেড রো সাপোর্ট */
+#resultSection { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 20px; }
+.result-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+.hidden { display: none !important; }
 
-/* রেজাল্ট সেকশন */
-.result-section { background: white; margin: 20px auto; width: 90%; padding: 20px; border-radius: 10px; }
-.result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.card { border: 1px solid #ddd; padding: 15px; background: #fff; border-radius: 5px; }
+/* অ্যাডমিন ও প্লেয়ার কার্ড */
+.admin-card, .player-card { background: #fff; padding: 20px; margin: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+input, button { padding: 10px; margin: 5px; border-radius: 5px; border: 1px solid #ccc; width: 100%; max-width: 300px; }
+button { background: #007bff; color: white; cursor: pointer; font-weight: bold; }
+button:hover { background: #0056b3; }
 
-/* ফুটর */
-.footer { text-align: center; color: #777; padding: 10px; margin-top: 20px; }
+/* রেসপন্সিভ ডিজাইন */
+@media (max-width: 600px) {
+    #resultSection { grid-template-columns: 1fr; }
+    .admin-card, .player-card { margin: 10px; padding: 15px; }
+}
