@@ -2,415 +2,64 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>প্লেয়ার প্যানেল | গেম টেবিল</title>
-  <!-- Firebase SDK -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>প্লেয়ার প্যানেল | BOMBAY-GOLD</title>
+  <link rel="stylesheet" href="style.css">
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', 'Noto Sans Bengali', system-ui, sans-serif;
-      background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.2rem;
-      color: #e2e8f0;
-    }
-
-    .panel-container {
-      width: 100%;
-      max-width: 500px;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(18px);
-      border-radius: 2.5rem;
-      padding: 1.8rem 1.5rem;
-      box-shadow: 0 30px 50px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,215,0,0.2);
-      display: flex;
-      flex-direction: column;
-      gap: 1.8rem;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .section-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      text-align: center;
-      color: #facc15;
-      text-shadow: 0 4px 10px black;
-      letter-spacing: 0.5px;
-      border-bottom: 2px dashed rgba(255,255,255,0.3);
-      padding-bottom: 0.5rem;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
-    }
-
-    label {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #cbd5e1;
-    }
-
-    input, select {
-      padding: 0.9rem 1rem;
-      border-radius: 2rem;
-      border: 1px solid rgba(255,255,255,0.25);
-      background: rgba(0,0,0,0.55);
-      color: white;
-      font-size: 1rem;
-      outline: none;
-      transition: 0.25s;
-    }
-
-    input:focus {
-      border-color: #facc15;
-      box-shadow: 0 0 15px rgba(250,204,21,0.5);
-    }
-
-    .btn {
-      background: #facc15;
-      color: #0f172a;
-      font-weight: 800;
-      border: none;
-      padding: 0.9rem 1.8rem;
-      border-radius: 3rem;
-      cursor: pointer;
-      font-size: 1.1rem;
-      letter-spacing: 0.5px;
-      transition: 0.2s;
-      box-shadow: 0 8px 20px rgba(250,204,21,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.3rem;
-    }
-
-    .btn:active { transform: scale(0.96); }
-    .btn.green-double {
-      background: #16a34a;
-      color: white;
-      box-shadow: 0 0 20px #22c55e;
-    }
-
-    .balance-row {
-      display: flex;
-      justify-content: space-between;
-      background: #0f172a;
-      border-radius: 2rem;
-      padding: 0.8rem 1.3rem;
-      font-weight: bold;
-      border: 1px solid #334155;
-    }
-
-    .otp-box {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .bet-card {
-      background: rgba(255,255,255,0.05);
-      border-radius: 1.5rem;
-      padding: 1.2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .history-item {
-      background: #1e293b;
-      border-radius: 1rem;
-      padding: 0.7rem 1rem;
-      margin-bottom: 0.5rem;
-      font-size: 0.9rem;
-      border-left: 5px solid #facc15;
-    }
-  </style>
 </head>
 <body>
-  <div class="panel-container" id="appContainer">
-    <!-- লগইন সেকশন -->
-    <div id="loginSection">
-      <div class="section-title">🔐 প্লেয়ার লগইন</div>
-      <div class="input-group">
-        <label>👤 আপনার নাম</label>
-        <input type="text" id="playerName" placeholder="নাম লিখুন" autocomplete="off">
+  <div class="container">
+    <div id="loginSection" class="card">
+      <h2 style="color:var(--primary-gold)">🔐 প্লেয়ার লগইন</h2>
+      <input type="text" id="playerName" class="input-box" placeholder="আপনার নাম">
+      <input type="password" id="playerPin" class="input-box" placeholder="পিন (৪ ডিজিট)" maxlength="4">
+      <button class="btn" id="loginBtn">লগইন রিকোয়েস্ট</button>
+      <div id="otpSection" class="hidden">
+        <input type="text" id="otpInput" class="input-box" placeholder="অ্যাডমিন ওটিপি">
+        <button class="btn" id="verifyBtn">ভেরিফাই</button>
       </div>
-      <div class="input-group">
-        <label>📱 মোবাইল নম্বর (শেষ ৪ ডিজিট পিন)</label>
-        <input type="password" id="playerPin" maxlength="4" placeholder="শেষ ৪ ডিজিট" inputmode="numeric">
-      </div>
-      <button class="btn" id="requestLoginBtn">🔑 লগইন রিকোয়েস্ট পাঠান</button>
-      <div id="otpSection" class="hidden otp-box">
-        <input type="text" id="otpInput" placeholder="অ্যাডমিন ওটিপি" maxlength="6">
-        <button class="btn" id="verifyOtpBtn">✔️ ভেরিফাই</button>
-      </div>
-      <p style="font-size:0.8rem; color:#94a3b8; text-align:center;">⚠️ পিন ভুলে গেলে ব্যালেন্স পুনরুদ্ধার সম্ভব নয়</p>
     </div>
 
-    <!-- মেইন গেম প্যানেল (লগইন পরবর্তী) -->
-    <div id="gamePanel" class="hidden">
-      <div class="section-title">🎮 গেম টেবিল</div>
-      
-      <div class="balance-row">
-        <span>💰 মেইন: <span id="mainBalance">0</span></span>
-        <span>🏆 উইনিং: <span id="winningBalance">0</span></span>
+    <div id="gamePanel" class="hidden card">
+      <h2 style="color:var(--primary-gold)">🎮 গেম টেবিল</h2>
+      <div class="card" style="background:#0f172a">
+        <span>💰 মেইন: <span id="mBal">0</span></span> | 
+        <span>🏆 উইনিং: <span id="wBal">0</span></span>
       </div>
-
-      <div class="bet-card">
-        <div class="input-group">
-          <label>⏱️ টাইম</label>
-          <input type="text" id="betTime" placeholder="যেমন: 12:30 PM">
-        </div>
-        <div class="input-group">
-          <label>🎯 পাত্তি (৩ ডিজিট)</label>
-          <input type="text" id="betPatti" placeholder="যেমন: 123" maxlength="3">
-        </div>
-        <div class="input-group">
-          <label>🔢 সিঙ্গেল (১ ডিজিট)</label>
-          <input type="text" id="betSingle" placeholder="যেমন: 5" maxlength="1">
-        </div>
-        <div class="input-group">
-          <label>💵 বাজির পরিমাণ</label>
-          <input type="number" id="betAmount" placeholder="অ্যামাউন্ট" min="1">
-        </div>
-        <button class="btn" id="submitBetBtn">📤 সাবমিট বেট</button>
-        <div id="betConfirmIndicator" style="text-align:center; font-weight:bold;"></div>
-        <button class="btn" id="viewHistoryBtn" style="background:#334155; color:white;">📋 আমার হিস্ট্রি দেখুন</button>
-      </div>
-
-      <div id="historyPanel" class="hidden">
-        <div class="section-title">📜 বেট হিস্ট্রি</div>
-        <div id="historyList" style="max-height: 250px; overflow-y: auto;"></div>
-        <button class="btn" id="closeHistoryBtn">🔙 ফিরে যান</button>
-      </div>
-
-      <div class="input-group" style="margin-top:0.5rem;">
-        <button class="btn" id="transferWinningBtn" style="background:#1e40af; color:white;">🔄 উইনিং → মেইন ট্রান্সফার</button>
-        <p style="font-size:0.7rem; text-align:center;">প্রয়োজন অ্যাডমিন ওটিপি</p>
-      </div>
+      <input type="text" id="bTime" class="input-box" placeholder="টাইম">
+      <input type="text" id="bPatti" class="input-box" placeholder="পাত্তি">
+      <input type="number" id="bAmt" class="input-box" placeholder="পরিমাণ">
+      <button class="btn" id="submitBet" style="width:100%">সাবমিট বেট</button>
     </div>
   </div>
 
   <script>
-    (function() {
-      // ফায়ারবেস কনফিগ (নিজস্ব তথ্য বসান)
-      const firebaseConfig = {
-        apiKey: "AIzaSyDummyKeyReplaceWithReal",
-        authDomain: "your-project.firebaseapp.com",
-        databaseURL: "https://your-database.firebaseio.com",
-        projectId: "your-project-id",
-        storageBucket: "your-project.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "1:123456789:web:abc123"
-      };
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
+    const db = firebase.database();
+    let currentUserId = null;
 
-      // UI elements
-      const loginSection = document.getElementById('loginSection');
-      const gamePanel = document.getElementById('gamePanel');
-      const otpSection = document.getElementById('otpSection');
-      const playerNameInput = document.getElementById('playerName');
-      const playerPinInput = document.getElementById('playerPin');
-      const otpInput = document.getElementById('otpInput');
-      const requestLoginBtn = document.getElementById('requestLoginBtn');
-      const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-      const submitBetBtn = document.getElementById('submitBetBtn');
-      const viewHistoryBtn = document.getElementById('viewHistoryBtn');
-      const closeHistoryBtn = document.getElementById('closeHistoryBtn');
-      const historyPanel = document.getElementById('historyPanel');
-      const historyList = document.getElementById('historyList');
-      const betConfirmIndicator = document.getElementById('betConfirmIndicator');
-      const transferWinningBtn = document.getElementById('transferWinningBtn');
+    // লগইন ও বেটিং লজিক আপনার ব্লুপ্রিন্ট অনুযায়ী এখানে কাজ করবে
+    document.getElementById('loginBtn').onclick = () => {
+      const name = document.getElementById('playerName').value;
+      const pin = document.getElementById('playerPin').value;
+      currentUserId = `${name}_${pin}`;
+      
+      db.ref('loginRequests/' + currentUserId).set({ name, pin });
+      document.getElementById('otpSection').classList.remove('hidden');
+      alert('রিকোয়েস্ট পাঠানো হয়েছে, ওটিপির জন্য অপেক্ষা করুন।');
+    };
 
-      let currentUserId = null; // playerName_mobileLast4 (unique key)
-      let currentPlayerName = '';
-      let currentPin = '';
-
-      // ----- লগইন রিকোয়েস্ট -----
-      requestLoginBtn.addEventListener('click', () => {
-        const name = playerNameInput.value.trim();
-        const pin = playerPinInput.value.trim();
-        if (!name || pin.length !== 4 || isNaN(pin)) {
-          alert('নাম এবং সঠিক ৪ ডিজিট পিন দিন');
-          return;
+    document.getElementById('verifyBtn').onclick = () => {
+      const inputOtp = document.getElementById('otpInput').value;
+      db.ref('loginRequests/' + currentUserId + '/adminOtp').once('value').then(snap => {
+        if(snap.val() == inputOtp) {
+          document.getElementById('loginSection').classList.add('hidden');
+          document.getElementById('gamePanel').classList.remove('hidden');
+        } else {
+          alert('ভুল ওটিপি!');
         }
-        currentPlayerName = name;
-        currentPin = pin;
-        const userId = `${name}_${pin}`;
-        currentUserId = userId;
-
-        // অ্যাডমিন প্যানেলে নোটিফিকেশন পাঠানো (pendingLoginRequest)
-        db.ref('loginRequests/' + userId).set({
-          name: name,
-          pin: pin,
-          timestamp: firebase.database.ServerValue.TIMESTAMP,
-          status: 'pending'
-        }).then(() => {
-          alert('✅ লগইন রিকোয়েস্ট পাঠানো হয়েছে। অ্যাডমিন ওটিপি প্রদান করবে।');
-          otpSection.classList.remove('hidden');
-        }).catch(err => {
-          alert('ত্রুটি: ' + err.message);
-        });
       });
-
-      // ওটিপি ভেরিফিকেশন
-      verifyOtpBtn.addEventListener('click', () => {
-        const otp = otpInput.value.trim();
-        if (!otp || !currentUserId) return alert('ওটিপি দিন');
-        
-        db.ref('loginRequests/' + currentUserId + '/adminOtp').once('value').then(snap => {
-          const adminOtp = snap.val();
-          if (adminOtp && adminOtp.toString() === otp) {
-            // লগইন সফল
-            loginSection.classList.add('hidden');
-            gamePanel.classList.remove('hidden');
-            attachPlayerListeners();
-            // ক্লিনআপ লগইন রিকোয়েস্ট
-            db.ref('loginRequests/' + currentUserId).remove();
-          } else {
-            alert('❌ ভুল ওটিপি অথবা অ্যাডমিন এখনো ওটিপি সেট করেনি');
-          }
-        });
-      });
-
-      function attachPlayerListeners() {
-        if (!currentUserId) return;
-        // ব্যালেন্স রিয়েলটাইম
-        const walletRef = db.ref('wallets/' + currentUserId);
-        walletRef.on('value', snap => {
-          const data = snap.val() || {};
-          document.getElementById('mainBalance').textContent = data.mainBalance || 0;
-          document.getElementById('winningBalance').textContent = data.winningBalance || 0;
-        });
-
-        // অ্যাডভান্স প্লে চেক (গ্লোবাল সেটিংস থেকে)
-        db.ref('settings/advancePlay').on('value', snap => {
-          const allowed = snap.val() === true;
-          submitBetBtn.disabled = !allowed;
-          if (!allowed) {
-            betConfirmIndicator.textContent = '⛔ অ্যাডভান্স প্লে বন্ধ আছে';
-          } else {
-            betConfirmIndicator.textContent = '';
-          }
-        });
-      }
-
-      // সাবমিট বেট
-      submitBetBtn.addEventListener('click', () => {
-        if (!currentUserId) return;
-        const time = document.getElementById('betTime').value.trim();
-        const patti = document.getElementById('betPatti').value.trim();
-        const single = document.getElementById('betSingle').value.trim();
-        const amount = parseInt(document.getElementById('betAmount').value, 10);
-        if (!time || (!patti && !single) || !amount || amount < 1) {
-          return alert('সব ফিল্ড পূরণ করুন (পাত্তি অথবা সিঙ্গেল)');
-        }
-        
-        const betId = db.ref('bets/' + currentUserId).push().key;
-        const betData = {
-          time, patti, single, amount,
-          userId: currentUserId,
-          timestamp: firebase.database.ServerValue.TIMESTAMP,
-          status: 'pending'
-        };
-        
-        submitBetBtn.classList.add('green-double');
-        betConfirmIndicator.textContent = '⏳ সার্ভারে পাঠানো হচ্ছে...';
-        
-        db.ref('bets/' + currentUserId + '/' + betId).set(betData)
-          .then(() => {
-            betConfirmIndicator.innerHTML = '✅✅ ডবল টিক (কনফার্ম)';
-            submitBetBtn.classList.remove('green-double');
-            setTimeout(() => { betConfirmIndicator.textContent = ''; }, 3000);
-          })
-          .catch(err => {
-            alert('ত্রুটি: ' + err.message);
-            submitBetBtn.classList.remove('green-double');
-          });
-      });
-
-      // ভিউ হিস্ট্রি
-      viewHistoryBtn.addEventListener('click', () => {
-        if (!currentUserId) return;
-        historyPanel.classList.remove('hidden');
-        historyList.innerHTML = 'লোড হচ্ছে...';
-        db.ref('bets/' + currentUserId).once('value').then(snap => {
-          const data = snap.val();
-          historyList.innerHTML = '';
-          if (!data) {
-            historyList.innerHTML = '<p>কোনো বেট হিস্ট্রি নেই</p>';
-            return;
-          }
-          Object.values(data).forEach(bet => {
-            const div = document.createElement('div');
-            div.className = 'history-item';
-            div.innerHTML = `🕒${bet.time || '-'} | পাত্তি:${bet.patti||'-'} | সিঙ্গেল:${bet.single||'-'} |💰${bet.amount}`;
-            historyList.appendChild(div);
-          });
-        });
-      });
-
-      closeHistoryBtn.addEventListener('click', () => {
-        historyPanel.classList.add('hidden');
-      });
-
-      // উইনিং ট্রান্সফার (প্রয়োজন ওটিপি)
-      transferWinningBtn.addEventListener('click', () => {
-        if (!currentUserId) return;
-        const otp = prompt('অ্যাডমিনের দেওয়া ট্রান্সফার ওটিপি দিন:');
-        if (!otp) return;
-        db.ref('transferOtp/' + currentUserId).once('value').then(snap => {
-          const validOtp = snap.val();
-          if (validOtp && validOtp.toString() === otp) {
-            // ট্রান্সফার করুন: উইনিং ব্যালেন্স -> মেইন ব্যালেন্স, উইনিং 0
-            db.ref('wallets/' + currentUserId).transaction(wallet => {
-              if (wallet) {
-                const win = wallet.winningBalance || 0;
-                wallet.mainBalance = (wallet.mainBalance || 0) + win;
-                wallet.winningBalance = 0;
-              }
-              return wallet;
-            }).then(() => {
-              alert('✅ উইনিং ব্যালেন্স মেইন ব্যালেন্সে স্থানান্তরিত হয়েছে');
-              db.ref('transferOtp/' + currentUserId).remove();
-            });
-          } else {
-            alert('❌ ভুল ওটিপি');
-          }
-        });
-      });
-
-      // অটো-রিসেট লজিক (রাত ১২টা) – শুধু সেশন/আইডি নয়, ওয়ালেট স্থায়ী।
-      // আমরা শুধু লগইন সেশন রিসেট করবো না, কারণ ওয়ালেট সংরক্ষিত।
-      // কিন্তু প্রতিদিন রাত ১২টায় লগইন রিকোয়েস্ট ও কিছু টেম্প ডাটা ক্লিন করতে পারি।
-      function scheduleMidnightCleanup() {
-        const now = new Date();
-        const midnight = new Date(now);
-        midnight.setHours(24,0,0,0);
-        const msUntilMidnight = midnight - now;
-        setTimeout(() => {
-          db.ref('loginRequests').remove();
-          db.ref('bets').remove(); // প্রতিদিন বেট রিসেট (মাস্টার ব্লুপ্রিন্ট অনুযায়ী)
-          scheduleMidnightCleanup();
-        }, msUntilMidnight);
-      }
-      scheduleMidnightCleanup();
-
-    })();
+    };
   </script>
+</body>
+</html>
