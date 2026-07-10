@@ -1,312 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="bn">
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>Bombay Gold | Today's Live Result</title>
-
-<meta name="theme-color" content="#0b3d91">
-
-<link rel="stylesheet" href="css/style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bombay Gold | Live Result</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-
-<body>
-
-<!-- HEADER START -->
-
-<header class="header">
-
-<div class="header-left">
-
-<div class="logo-circle">
-
-<svg width="58" height="58" viewBox="0 0 100 100">
-
-<circle cx="50" cy="50" r="48" fill="#FFD700"/>
-
-<text x="50%" y="58%" text-anchor="middle" font-size="32" font-weight="bold" fill="#000">BG</text>
-
-</svg>
-
-</div>
-
-<div>
-
-<h1>Bombay Gold</h1>
-
-<p>Today's Live Result</p>
-
-</div>
-
-</div>
-
-<div class="header-right">
-
-<div id="todayDate"></div>
-
-<div class="live-status">
-
-<span class="live-dot"></span>
-
-LIVE
-
-</div>
-
-</div>
-
-</header>
-
-<!-- HEADER END -->
-
-<!-- MARQUEE START -->
-
-<div class="notice-bar">
-
-<marquee id="noticeText" scrollamount="5">
-
-Welcome to Bombay Gold Live Result Website
-
-</marquee>
-
-</div>
-
-<!-- MARQUEE END -->
-
-<main class="container">
-
-<!-- ===========================
-     TODAY RESULT - 1
-=========================== -->
-
-<section class="result-section">
-
-<div class="section-title">
-
-Today's Result - 1
-
-</div>
-
-<div class="result-grid">
-
-<div class="result-card">
-
-<div class="result-time">10:20 AM</div>
-
-<div class="result-number" id="r1020">--</div>
-
-</div>
-
-<div class="result-card">
-
-<div class="result-time">11:50 AM</div>
-
-<div class="result-number" id="r1150">--</div>
-
-</div>
-
-<div class="result-card">
-
-<div class="result-time">01:20 PM</div>
-
-<div class="result-number" id="r0120">--</div>
-
-</div>
-
-<div class="result-card">
-
-<div class="result-time">02:50 PM</div>
-
-<div class="result-number" id="r0250">--</div>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- ===========================
-     TODAY RESULT - 2
-=========================== -->
-
-<section class="result-section">
-
-<div class="section-title">
-
-Today's Result - 2
-
-</div>
-
-<div class="result-grid">
-
-<div class="result-card">
-
-<div class="result-time">04:20 PM</div>
-
-<div class="result-number" id="r0420">--</div>
-
-</div>
-
-<div class="result-card">
-
-<div class="result-time">05:50 PM</div>
-
-<div class="result-number" id="r0550">--</div>
-
-</div>
-
-<div class="result-card">
-
-<div class="result-time">07:20 PM</div>
-
-<div class="result-number" id="r0720">--</div>
-
-</div>
-
-<div class="result-card">
-
-<div class="result-time">08:50 PM</div>
-
-<div class="result-number" id="r0850">--</div>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- ===========================
-     LIVE STATUS CARD
-=========================== -->
-
-<section class="live-card">
-
-<div class="live-card-title">
-
-Today's Live Status
-
-</div>
-
-<div id="liveMessage">
-
-🟢 LIVE RESULT RUNNING
-
-</div>
-
-</section>
-
-<!-- ===========================
-     PREVIOUS RESULT
-=========================== -->
-
-<section class="previous-section">
-
-<div class="section-title">
-
-Previous Result
-
-</div>
-
-<div class="previous-card">
-
-<div>
-
-<b>Date :</b>
-
-<span id="previousDate">--/--/----</span>
-
-</div>
-
-<div>
-
-<b>Result :</b>
-
-<span id="previousResult">--</span>
-
-</div>
-
-</div>
-
-</section>
-
-
-<!-- ===========================
-     NOTICE
-=========================== -->
-
-<section class="notice-section">
-
-<div class="section-title">
-
-Today's Notice
-
-</div>
-
-<div class="notice-card">
-
-<p id="todayNotice">
-
-Welcome to Bombay Gold Live Result.
-
-</p>
-
-</div>
-
-</section>
-
-
-<!-- ===========================
-     QUICK LINKS
-=========================== -->
-
-<section class="quick-links">
-
-<a href="player.html" class="btn-player">
-
-🎮 Player Login
-
-</a>
-
-<a href="admin.html" class="btn-admin">
-
-🛠 Admin Login
-
-</a>
-
-</section>
-
-</main>
-
-
-<!-- ===========================
-     FOOTER
-=========================== -->
-
-<footer class="footer">
-
-<p>
-
-© 2026 Bombay Gold Live Result
-
-</p>
-
-<p>
-
-Powered by Firebase
-
-</p>
-
-</footer>
-
-
-<script type="module" src="js/app.js"></script>
-
+<body id="mainBody">
+
+    <header id="headerSection">
+        <div class="logo">BG</div>
+        <h1 id="siteTitle">Bombay Gold</h1>
+    </header>
+
+    <div id="liveIndicator" class="live-status">
+        <span class="dot"></span> <span id="statusText">LIVE</span>
+    </div>
+
+    <div id="noticeBar">
+        <marquee id="noticeText">Welcome to Bombay Gold Live Result</marquee>
+    </div>
+
+    <div class="quick-nav">
+        <a href="#" id="tipsBtn">Tips</a>
+        <a href="#" id="pattiBtn">Patti Chart</a>
+    </div>
+
+    <main id="resultContainer" class="container">
+        <div class="result-grid" id="resultGrid">
+            </div>
+    </main>
+
+    <footer id="footerSection">
+        <p>© 2026 Bombay Gold. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
 </body>
-
 </html>
