@@ -1,126 +1,72 @@
+Hereclass="str">'s the corrected HTML code:
+
+```html
 <!DOCTYPE html>
-<html lang="bn">
+<html lang=class="str">"bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta charset=class="str">"UTF-class="num">8">
+  <meta name=class="str">"viewport" content=class="str">"width=device-width, initial-scale=class="num">1.0, maximum-scale=class="num">1.0, user-scalable=no, viewport-fit=cover">
   <title>BOMBAY-GOLD</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <script src=class="str">"https:class="cmtclass="str">">//www.gstatic.com/firebasejs/class="num">9.22.class="num">1/firebase-app-compat.js"></script>
+  <script src=class="str">"https:class="cmtclass="str">">//www.gstatic.com/firebasejs/class="num">9.22.class="num">1/firebase-database-compat.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: class="num">0; padding: class="num">0; box-sizing: border-box; }
     body { 
-      font-family: 'Segoe UI', 'Noto Sans Bengali', Roboto, sans-serif; 
+      font-family: 'Segoe UIclass="str">', 'Noto Sans Bengaliclass="str">', Roboto, sans-serif; 
       min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
       background-size: cover; background-position: center; background-repeat: no-repeat; 
-      background-attachment: fixed; transition: background-image 0.4s ease-in-out; 
-      padding: 1rem; background-color: #1a1e2b; color: white;
+      background-attachment: fixed; transition: background-image class="num">0.4s ease-in-out; 
+      padding: 1rem; background-color: class=class="str">"cmt">#1a1e2b; color: white;
     }
-    body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.45); z-index: 0; pointer-events: none; }
+    body::before { content: class="str">""; position: fixed; top: class="num">0; left: class="num">0; width: class="num">100%; height: class="num">100%; background: rgba(class="num">0, class="num">0, class="num">0, class="num">0.45); z-index: class="num">0; pointer-events: none; }
     
-    .main-container { position: relative; z-index: 2; width: 100%; max-width: 650px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding: 1rem 0.5rem; }
+    .main-container { position: relative; z-index: class="num">2; width: class="num">100%; max-width: 650px; margin: class="num">0 auto; display: flex; flex-direction: column; align-items: center; gap: class="num">1.5rem; padding: 1rem class="num">0.5rem; }
 
-    /* হিরো সেকশন স্টাইল */
-    .hero-section { width: 100%; text-align: center; padding: 20px 10px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 2rem; border: 1px solid rgba(255, 215, 0, 0.3); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-    .hero-content h1 { font-size: 1.6rem; margin-bottom: 8px; color: #fff; }
-    .brand-name { color: #facc15; font-weight: bold; animation: neonGlow 2s infinite alternate; text-transform: uppercase; }
-    @keyframes neonGlow { from { text-shadow: 0 0 5px #facc15; } to { text-shadow: 0 0 15px #ff0055; } }
-    .hero-content p { font-size: 0.95rem; margin-bottom: 15px; opacity: 0.9; }
-    .cta-button { background: linear-gradient(90deg, #ff0055, #facc15); border: none; padding: 10px 25px; color: #000; font-weight: bold; border-radius: 50px; cursor: pointer; transition: transform 0.3s; }
-    .cta-button:hover { transform: scale(1.05); }
+    class=class="str">"cmt">/* হিরো সেকশন স্টাইল */
+    .hero-section { width: class="num">100%; text-align: center; padding: 20px 10px; background: rgba(class="num">255, class="num">255, class="num">255, class="num">0.1); backdrop-filter: blur(10px); border-radius: 2rem; border: 1px solid rgba(class="num">255, class="num">215, class="num">0, class="num">0.3); box-shadow: class="num">0 10px 20px rgba(class="num">0,class="num">0,class="num">0,class="num">0.3); }
+    .hero-content h1 { font-size: class="num">1.6rem; margin-bottom: 8px; color: class=class="str">"cmt">#fff; }
+    .brand-name { color: class=class="str">"cmt">#facc15; font-weight: bold; animation: neonGlow 2s infinite alternate; text-transform: uppercase; }
+    @keyframes neonGlow { from { text-shadow: class="num">0 class="num">0 5px class=class="str">"cmt">#facc15; } to { text-shadow: class="num">0 class="num">0 15px #ff0055; } }
+    .hero-content p { font-size: class="num">0.95rem; margin-bottom: 15px; opacity: class="num">0.9; }
+    .cta-button { background: linear-gradient(90deg, class=class="str">"cmt">#ff0055, #facc15); border: none; padding: 10px 25px; color: #class="num">000; font-weight: bold; border-radius: 50px; cursor: pointer; transition: transform class="num">0.3s; }
+    .cta-button:hover { transform: scale(class="num">1.05); }
 
-    .notice-bar { width: 100%; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(10px); border-radius: 2.5rem; padding: 0.9rem 1.8rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border: 1px solid rgba(255,215,0,0.5); font-weight: 600; font-size: 1.2rem; color: #1e293b; min-height: 4rem; display: flex; align-items: center; justify-content: center; }
-    .live-button-wrapper { display: flex; justify-content: center; margin: 0.5rem 0; }
-    .status-button { width: 110px; height: 110px; border-radius: 50%; background-color: #dc2626; box-shadow: 0 0 25px rgba(220,38,38,0.7); border: 4px solid rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.6rem; color: white; transition: 0.3s; }
-    .status-button.on { background-color: #16a34a; box-shadow: 0 0 45px #22c55e; animation: pulseGreen 1.3s infinite ease-in-out; }
-    @keyframes pulseGreen { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-    .result-section { width: 100%; background: rgba(20, 20, 30, 0.8); backdrop-filter: blur(14px); border-radius: 2rem; padding: 1.5rem 1.2rem; box-shadow: 0 20px 35px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.25); }
+    .notice-bar { width: class="num">100%; background: rgba(class="num">255, class="num">255, class="num">255, class="num">0.92); backdrop-filter: blur(10px); border-radius: class="num">2.5rem; padding: class="num">0.9rem class="num">1.8rem; text-align: center; box-shadow: class="num">0 10px 25px rgba(class="num">0,class="num">0,class="num">0,class="num">0.3); border: 1px solid rgba(class="num">255,class="num">215,class="num">0,class="num">0.5); font-weight: class="num">600; font-size: class="num">1.2rem; color: class=class="str">"cmt">#1e293b; min-height: 4rem; display: flex; align-items: center; justify-content: center; }
+    .live-button-wrapper { display: flex; justify-content: center; margin: class="num">0.5rem class="num">0; }
+    .status-button { width: 110px; height: 110px; border-radius: class="num">50%; background-color: class=class="str">"cmt">#dc2626; box-shadow: class="num">0 class="num">0 25px rgba(class="num">220,class="num">38,class="num">38,class="num">0.7); border: 4px solid rgba(class="num">255,class="num">255,class="num">255,class="num">0.9); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: class="num">1.6rem; color: white; transition: class="num">0.3s; }
+    .status-button.on { background-color: class=class="str">"cmt">#16a34a; box-shadow: class="num">0 class="num">0 45px #22c55e; animation: pulseGreen class="num">1.3s infinite ease-in-out; }
+    @keyframes pulseGreen { class="num">0%, class="num">100% { transform: scale(class="num">1); } class="num">50% { transform: scale(class="num">1.06); } }
+    .result-section { width: class="num">100%; background: rgba(class="num">20, class="num">20, class="num">30, class="num">0.8); backdrop-filter: blur(14px); border-radius: 2rem; padding: class="num">1.5rem class="num">1.2rem; box-shadow: class="num">0 20px 35px rgba(class="num">0,class="num">0,class="num">0,class="num">0.6); border: 1px solid rgba(class="num">255,class="num">255,class="num">255,class="num">0.25); }
     .result-section.hidden-section { display: none !important; }
-    .result-title { font-size: 1.5rem; font-weight: 700; text-align: center; color: #facc15; margin-bottom: 1.2rem; border-bottom: 2px dashed rgba(255,255,255,0.4); padding-bottom: 0.5rem; }
-    .result-row { background: rgba(255, 255, 255, 0.1); border-radius: 1.2rem; padding: 0.9rem 1.2rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #fbbf24; }
-    .result-time { background: #0f172a; padding: 0.3rem 0.9rem; border-radius: 2rem; color: #fcd34d; font-weight: 700; }
-    .result-value { font-weight: 800; font-size: 1.6rem; color: #fbbf24; }
-    .footer-section { width: 100%; text-align: center; margin-top: 0.8rem; padding: 0.9rem; background: rgba(0, 0, 0, 0.5); border-radius: 3rem; color: white; border: 1px solid rgba(255,255,255,0.2); }
+    .result-title { font-size: class="num">1.5rem; font-weight: class="num">700; text-align: center; color: class=class="str">"cmt">#facc15; margin-bottom: class="num">1.2rem; border-bottom: 2px dashed rgba(class="num">255,class="num">255,class="num">255,class="num">0.4); padding-bottom: class="num">0.5rem; }
+    .result-row { background: rgba(class="num">255, class="num">255, class="num">255, class="num">0.1); border-radius: class="num">1.2rem; padding: class="num">0.9rem class="num">1.2rem; margin-bottom: class="num">0.8rem; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid class=class="str">"cmt">#fbbf24; }
+    .result-time { background: class=class="str">"cmt">#0f172a; padding: class="num">0.3rem class="num">0.9rem; border-radius: 2rem; color: #fcd34d; font-weight: class="num">700; }
+    .result-value { font-weight: class="num">800; font-size: class="num">1.6rem; color: class=class="str">"cmt">#fbbf24; }
+    .footer-section { width: class="num">100%; text-align: center; margin-top: class="num">0.8rem; padding: class="num">0.9rem; background: rgba(class="num">0, class="num">0, class="num">0, class="num">0.5); border-radius: 3rem; color: white; border: 1px solid rgba(class="num">255,class="num">255,class="num">255,class="num">0.2); }
   </style>
 </head>
-<body id="mainBody">
-  <div class="main-container">
+<body id=class="str">"mainBody">
+  <div class=class="str">"main-container">
     
-    <section class="hero-section">
-        <div class="hero-content">
-            <h3>Welcome to <span class="brand-name">BOMBAY-GOLD</span></h3>
+    <section class=class="str">"hero-section">
+        <div class=class="str">"hero-content">
+            <h3>Welcome to <span class=class="str">"brand-name">BOMBAY-GOLD</span></h3>
             <p>লাইভ রেজাল্ট সবার আগে পেতে নিয়মিত আমাদের ওয়েবসাইট ভিজিট করুন।</p>
-            <button class="cta-button" onclick="window.scrollTo({top: 500, behavior: 'smooth'})">আজকের রেজাল্ট দেখুন</button>
+            <button class=class="str">"cta-button" onclick=class="str">"window.scrollTo({top: class="num">500, behavior: 'smooth'})">আজকের রেজাল্ট দেখুন</button>
         </div>
     </section>
 
-    <div class="notice-bar" id="noticeBar">⏳ নোটিশ লোড হচ্ছে...</div>
+    <div class=class="str">"notice-bar" id=class="str">"noticeBar">⏳ নোটিশ লোড হচ্ছে...</div>
 
-    <div class="live-button-wrapper">
-      <div class="status-button" id="liveStatusButton">OFF</div>
+    <div class=class="str">"live-button-wrapper">
+      <div class=class="str">"status-button" id=class="str">"liveStatusButton">OFF</div>
     </div>
 
-    <div class="result-section" id="resultSection">
-      <div class="result-title">📋 আজকের রেজাল্ট</div>
-      <div class="result-list" id="resultListContainer">
-        <div class="empty-message">কোনো রেজাল্ট আপডেট নেই</div>
+    <div class=class="str">"result-section" id=class="str">"resultSection">
+      <div class=class="str">"result-title">📋 আজকের রেজাল্ট</div>
+      <div class=class="str">"result-list" id=class="str">"resultListContainer">
+        <div class=class="str">"empty-message">কোনো রেজাল্ট আপডেট নেই</div>
       </div>
     </div>
 
-    <div class="footer-section">© ২০২৫ লাইভ রেজাল্ট সিস্টেম · সর্বস্বত্ব সংরক্ষিত</div>
-  </div>
-
-  <script>
-    (function() {
-      const firebaseConfig = {
-        apiKey: "AIzaSyDummyKeyForDemoReplaceWithYours",
-        authDomain: "your-project.firebaseapp.com",
-        databaseURL: "https://your-database-name.firebaseio.com",
-        projectId: "your-project-id",
-        storageBucket: "your-project.appspot.com",
-        messagingSenderId: "123456789",
-        appId: "1:123456789:web:abc123def456"
-      };
-
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
-      const bodyElement = document.getElementById('mainBody');
-      const noticeBar = document.getElementById('noticeBar');
-      const liveButton = document.getElementById('liveStatusButton');
-      const resultSection = document.getElementById('resultSection');
-      const resultListContainer = document.getElementById('resultListContainer');
-
-      // System Status
-      db.ref('systemStatus').on('value', (snapshot) => {
-        const data = snapshot.val();
-        const isSystemOn = data ? data.isOn : false;
-        liveButton.textContent = isSystemOn ? 'ON' : 'OFF';
-        isSystemOn ? liveButton.classList.add('on') : liveButton.classList.remove('on');
-        resultSection.style.display = isSystemOn ? 'block' : 'none';
-      });
-
-      // Notice
-      db.ref('publicNotice').on('value', (snap) => {
-        noticeBar.textContent = snap.val() || '📢 স্বাগতম!';
-      });
-
-      // Results
-      db.ref('results').on('value', (snap) => {
-        const data = snap.val();
-        resultListContainer.innerHTML = '';
-        if (!data) { resultListContainer.innerHTML = '<div class="empty-message">⏳ রেজাল্ট নেই</div>'; return; }
-        Object.values(data).forEach(row => {
-          const div = document.createElement('div');
-          div.className = 'result-row';
-          div.innerHTML = `<span class="result-time">🕒 ${row.time}</span><span class="result-value">🏆 ${row.result}</span>`;
-          resultListContainer.appendChild(div);
-        });
-      });
-
-      // Background
-      db.ref('backgroundImageURL').on('value', (snap) => {
-        if (snap.val()) bodyElement.style.backgroundImage = `url('${snap.val()}')`;
-      });
-    })();
-  </script>
-</body>
-</html>
+    <div class=class="str">"footer-section">© ২০২৫ লাইভ রেজাল
