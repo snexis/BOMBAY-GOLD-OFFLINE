@@ -1,59 +1,53 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-  <title>BOMBAY-GOLD | Live Result</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <meta charset="UTF-8">
+    <title>BOMBAY GOLD</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
-  <div class="container">
-    <section class="card">
-        <h3>BOMBAY-GOLD</h3>
-        <p>লাইভ রেজাল্ট আপডেট সিস্টেম</p>
-    </section>
 
-    <div class="card" id="noticeBar">📢 লোড হচ্ছে...</div>
-    
-    <div style="text-align: center; margin: 1rem 0;">
-      <div id="liveStatusButton" class="btn">OFF</div>
+    <div class="logo-container">
+        <h1 class="logo-animation" id="mainHeader">BOMBAY GOLD</h1>
     </div>
 
-    <div class="card" id="resultSection">
-      <div style="font-weight: 700; color: var(--primary-gold); margin-bottom: 1rem;">📋 আজকের রেজাল্ট</div>
-      <div id="resultListContainer"></div>
+    <div class="container">
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>টাইম</th>
+                    <th>পাত্তি</th>
+                    <th>রেজাল্ট</th>
+                </tr>
+            </thead>
+            <tbody id="resultList">
+                </tbody>
+        </table>
     </div>
-  </div>
 
-  <script>
-    // ফায়ারবেস লজিক এবং ইনডেক্স রেন্ডারিং
-    const db = firebase.database();
-    
-    // সিস্টেম স্ট্যাটাস রেন্ডার
-    db.ref('systemStatus').on('value', (snap) => {
-        const isOn = snap.val()?.isOn;
-        const btn = document.getElementById('liveStatusButton');
-        btn.textContent = isOn ? 'LIVE ON' : 'OFFLINE';
-        btn.className = isOn ? 'btn pulse-animation live-on' : 'btn live-off';
-    });
-
-    // রেজাল্ট আপডেট রেন্ডার
-    db.ref('results').on('value', (snap) => {
-        const list = document.getElementById('resultListContainer');
-        list.innerHTML = '';
-        const data = snap.val();
-        if(!data) { list.innerHTML = '<p>কোনো রেজাল্ট নেই</p>'; return; }
-        
-        Object.values(data).forEach(row => {
-            list.innerHTML += `
-                <div class="card" style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
-                    <span>🕒 ${row.time}</span>
-                    <span style="font-weight:bold; color:var(--primary-gold)">🏆 ${row.result}</span>
-                </div>`;
+    <script src="app.js"></script>
+    <script>
+        // হেডার আপডেট চেক
+        db.ref('settings/interface/header').on('value', (snapshot) => {
+            if(snapshot.val()) document.getElementById('mainHeader').innerText = snapshot.val();
         });
-    });
-  </script>
+
+        // রেজাল্ট লোড
+        db.ref('dailyResults').on('value', (snapshot) => {
+            const list = document.getElementById('resultList');
+            list.innerHTML = '';
+            snapshot.forEach(child => {
+                const item = child.val();
+                list.innerHTML += `
+                    <tr style="color: #facc15;">
+                        <td>${item.time}</td>
+                        <td>${item.patti}</td>
+                        <td>${item.result} ✅</td>
+                    </tr>`;
+            });
+        });
+    </script>
 </body>
 </html>
