@@ -1,78 +1,25 @@
-/* Global CSS - Bombay Gold System */
 :root {
   --primary-gold: #facc15;
   --bg-dark: #0b1120;
   --card-bg: rgba(255, 255, 255, 0.08);
   --text-light: #e2e8f0;
-  --success-green: #16a34a;
-  --danger-red: #dc2626;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-light);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px;
 }
 
-.container {
-  width: 100%;
-  max-width: 650px;
-  padding: 1.5rem;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* UI Components */
-.card {
-  background: var(--card-bg);
-  backdrop-filter: blur(15px);
-  border-radius: 2rem;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid rgba(255, 215, 0, 0.2);
-}
-
-.btn {
-  background: var(--primary-gold);
-  color: #000;
-  font-weight: 800;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 3rem;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.btn:active {
-  transform: scale(0.95);
-}
-
-/* Animations */
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-.pulse-animation {
-  animation: pulse 1.5s infinite;
-}
-
-/* Responsive Grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
+.container { width: 100%; max-width: 500px; }
+.card { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 15px; border: 1px solid rgba(255,215,0,0.2); }
+.input-box { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: none; }
+.btn { width: 100%; padding: 12px; background: var(--primary-gold); border-radius: 10px; font-weight: bold; cursor: pointer; border: none; }
+.hidden { display: none !important; }
