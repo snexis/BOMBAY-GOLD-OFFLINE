@@ -2,410 +2,63 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>অ্যাডমিন প্যানেল | মাস্টার কন্ট্রোল</title>
-  <!-- Firebase SDK -->
+  <link rel="stylesheet" href="style.css">
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Segoe UI', 'Noto Sans Bengali', system-ui, sans-serif;
-      background: #0b1120;
-      color: #e2e8f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 1rem;
-    }
-    .admin-container {
-      width: 100%;
-      max-width: 700px;
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(20px);
-      border-radius: 2.5rem;
-      padding: 1.8rem;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.8);
-      border: 1px solid rgba(255,215,0,0.3);
-    }
-    .hidden {
-      display: none !important;
-    }
-    .section-title {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: #facc15;
-      text-align: center;
-      margin-bottom: 1.2rem;
-      border-bottom: 2px dashed #4b5563;
-      padding-bottom: 0.5rem;
-    }
-    .btn {
-      background: #facc15;
-      color: #0f172a;
-      font-weight: 700;
-      border: none;
-      padding: 0.7rem 1.4rem;
-      border-radius: 3rem;
-      cursor: pointer;
-      transition: 0.2s;
-      box-shadow: 0 5px 15px rgba(250,204,21,0.3);
-      margin: 0.3rem;
-    }
-    .btn.danger {
-      background: #dc2626;
-      color: white;
-    }
-    .btn.success {
-      background: #16a34a;
-      color: white;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 0.7rem;
-      border-radius: 2rem;
-      background: #1e293b;
-      border: 1px solid #475569;
-      color: white;
-      margin: 0.4rem 0;
-      outline: none;
-    }
-    .card {
-      background: #1e293b;
-      border-radius: 1.5rem;
-      padding: 1.2rem;
-      margin: 1rem 0;
-      border-left: 6px solid #facc15;
-    }
-    .flex-row {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .bet-row {
-      background: #0f172a;
-      padding: 0.6rem 1rem;
-      border-radius: 1rem;
-      margin: 0.4rem 0;
-      display: flex;
-      justify-content: space-between;
-    }
-    .live-indicator {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #22c55e;
-      display: inline-block;
-      animation: pulse 1.2s infinite;
-    }
-    @keyframes pulse { 0%{opacity:1;} 50%{opacity:0.5;} 100%{opacity:1;} }
-  </style>
 </head>
 <body>
-<div class="admin-container" id="appContainer">
-  
-  <!-- লগইন সেকশন -->
-  <div id="loginSection">
-    <div class="section-title">🔐 অ্যাডমিন লগইন</div>
-    <select id="adminTypeSelect">
-      <option value="master">মাস্টার অ্যাডমিন</option>
-      <option value="staff">স্টাফ অ্যাডমিন</option>
-    </select>
-    <input type="password" id="adminPassword" placeholder="পাসওয়ার্ড">
-    <button class="btn" id="loginBtn">প্রবেশ করুন</button>
-    <p style="font-size:0.8rem; color:#94a3b8;">মাস্টার: sonu7 | স্টাফ: sonu123</p>
-  </div>
-
-  <!-- মাস্টার ড্যাশবোর্ড -->
-  <div id="masterDashboard" class="hidden">
-    <div class="section-title">👑 মাস্টার কন্ট্রোল</div>
-    
-    <div class="card">
-      <strong>সিস্টেম সেটিংস</strong>
-      <div class="flex-row">
-        <button class="btn" id="liveToggleBtn">🔘 লাইভ সুইচ: <span id="liveStatusText">OFF</span></button>
-      </div>
-      <input type="text" id="noticeInput" placeholder="পাবলিক নোটিশ লিখুন">
-      <button class="btn" id="updateNoticeBtn">📢 নোটিশ আপডেট</button>
-      <input type="url" id="bgImageUrl" placeholder="ব্যাকগ্রাউন্ড ইমেজ URL">
-      <button class="btn" id="updateBgBtn">🖼️ ব্যাকগ্রাউন্ড সেট</button>
+  <div class="container">
+    <div id="loginSection" class="card">
+      <h2 style="color:var(--primary-gold)">🔐 অ্যাডমিন লগইন</h2>
+      <select id="adminType">
+        <option value="master">মাস্টার অ্যাডমিন</option>
+        <option value="staff">স্টাফ</option>
+      </select>
+      <input type="password" id="adminPass" class="input-box" placeholder="পাসওয়ার্ড">
+      <button class="btn" id="loginBtn">প্রবেশ করুন</button>
     </div>
 
-    <div class="card">
-      <strong>অ্যাডভান্স কন্ট্রোল</strong>
-      <button class="btn" id="advancePlayBtn">🎮 অ্যাডভান্স প্লে: <span id="advanceStatus">OFF</span></button>
-    </div>
-
-    <div class="card">
-      <strong>👥 স্টাফ ম্যানেজমেন্ট</strong>
-      <button class="btn" id="generateStaffCodeBtn">🔑 ইউনিক কোড জেনারেট</button>
-      <div id="staffCodeDisplay" style="margin-top:0.5rem; font-weight:bold;"></div>
-    </div>
-
-    <div class="card">
-      <strong>📊 রেজাল্ট ম্যানেজমেন্ট</strong>
-      <input type="text" id="resultTime" placeholder="টাইম (12:30 PM)">
-      <input type="text" id="resultPatti" placeholder="পাত্তি (123)">
-      <input type="text" id="resultValue" placeholder="রেজাল্ট (45)">
-      <button class="btn success" id="publishResultBtn">✅ রেজাল্ট পাবলিশ</button>
+    <div id="masterDashboard" class="hidden card">
+      <h2 style="color:var(--primary-gold)">👑 মাস্টার কন্ট্রোল</h2>
+      <button class="btn" id="liveToggle">লাইভ সুইচ</button>
+      <input type="text" id="noticeInput" class="input-box" placeholder="নোটিশ আপডেট">
+      <button class="btn" id="updateNotice">নোটিশ পাঠান</button>
+      <hr style="margin:1rem 0;">
+      <input type="text" id="resTime" placeholder="টাইম (যেমন: 12:30 PM)">
+      <input type="text" id="resPatti" placeholder="পাত্তি">
+      <input type="text" id="resVal" placeholder="রেজাল্ট (যেমন: 45)">
+      <button class="btn" id="publishBtn" style="background:var(--success-green); color:white;">রেজাল্ট পাবলিশ</button>
     </div>
   </div>
 
-  <!-- স্টাফ ড্যাশবোর্ড -->
-  <div id="staffDashboard" class="hidden">
-    <div class="section-title">🧑‍💼 স্টাফ প্যানেল</div>
-    <div id="staffUnlockSection">
-      <input type="text" id="staffUniqueCode" placeholder="মাস্টার থেকে পাওয়া ইউনিক কোড">
-      <button class="btn" id="unlockStaffBtn">🔓 আনলক রেজাল্ট এন্ট্রি</button>
-    </div>
-    <div id="staffResultSection" class="hidden card">
-      <strong>রেজাল্ট এন্ট্রি</strong>
-      <input type="text" id="staffResultTime" placeholder="টাইম">
-      <input type="text" id="staffResultPatti" placeholder="পাত্তি">
-      <input type="text" id="staffResultValue" placeholder="রেজাল্ট">
-      <button class="btn success" id="staffPublishBtn">📤 প্রকাশ করুন</button>
-    </div>
-  </div>
-
-  <!-- প্লেয়ার ম্যানেজমেন্ট (মাস্টার ভিউ) -->
-  <div id="playerManagement" class="hidden card">
-    <strong>🧑‍🤝‍🧑 প্লেয়ার লাইভ ট্র্যাকার</strong>
-    <div id="playerLoginList"></div>
-    <div style="margin-top:1rem;">
-      <strong>🎫 ওটিপি সেন্টার</strong>
-      <input type="text" id="playerIdForOtp" placeholder="প্লেয়ার আইডি (নাম_পিন)">
-      <input type="text" id="otpValue" placeholder="ওটিপি">
-      <button class="btn" id="sendOtpBtn">📨 ওটিপি সেট করুন</button>
-    </div>
-    <div style="margin-top:1rem;">
-      <strong>💰 ব্যালেন্স আপডেট</strong>
-      <input type="text" id="balancePlayerId" placeholder="প্লেয়ার আইডি">
-      <input type="number" id="mainBalanceInput" placeholder="মেইন ব্যালেন্স">
-      <input type="number" id="winningBalanceInput" placeholder="উইনিং ব্যালেন্স">
-      <button class="btn" id="updateBalanceBtn">💵 আপডেট</button>
-    </div>
-    <button class="btn danger" id="lockPlayerBtn">🔒 আইডি লক/আনলক</button>
-  </div>
-
-  <!-- লাইভ বেট টেবিল -->
-  <div id="liveBetSection" class="hidden card">
-    <strong>📋 লাইভ বেট টেবিল <span class="live-indicator"></span></strong>
-    <div id="liveBetList"></div>
-  </div>
-
-  <button class="btn danger hidden" id="logoutBtn" style="margin-top:1rem;">🚪 লগআউট</button>
-</div>
-
-<script>
-  (function() {
-    const firebaseConfig = {
-      apiKey: "AIzaSyDummyKeyReplaceWithReal",
-      authDomain: "your-project.firebaseapp.com",
-      databaseURL: "https://your-database.firebaseio.com",
-      projectId: "your-project-id",
-      storageBucket: "your-project.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456789:web:abc123"
-    };
-    firebase.initializeApp(firebaseConfig);
+  <script>
     const db = firebase.database();
-
-    // UI elements
-    const loginSection = document.getElementById('loginSection');
-    const masterDashboard = document.getElementById('masterDashboard');
-    const staffDashboard = document.getElementById('staffDashboard');
-    const playerManagement = document.getElementById('playerManagement');
-    const liveBetSection = document.getElementById('liveBetSection');
-    const logoutBtn = document.getElementById('logoutBtn');
-    let currentRole = null;
-
-    // লগইন
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      const type = document.getElementById('adminTypeSelect').value;
-      const pass = document.getElementById('adminPassword').value;
-      if (type === 'master' && pass === 'sonu7') {
-        loginAs('master');
-      } else if (type === 'staff' && pass === 'sonu123') {
-        loginAs('staff');
+    
+    // লগইন লজিক
+    document.getElementById('loginBtn').onclick = () => {
+      const type = document.getElementById('adminType').value;
+      const pass = document.getElementById('adminPass').value;
+      
+      if((type === 'master' && pass === 'sonu7') || (type === 'staff' && pass === 'sonu123')) {
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('masterDashboard').classList.remove('hidden');
+        alert('স্বাগতম!');
       } else {
-        alert('ভুল পাসওয়ার্ড');
+        alert('ভুল পাসওয়ার্ড!');
       }
-    });
+    };
 
-    function loginAs(role) {
-      currentRole = role;
-      loginSection.classList.add('hidden');
-      logoutBtn.classList.remove('hidden');
-      if (role === 'master') {
-        masterDashboard.classList.remove('hidden');
-        playerManagement.classList.remove('hidden');
-        liveBetSection.classList.remove('hidden');
-        staffDashboard.classList.add('hidden');
-        attachMasterListeners();
-      } else {
-        staffDashboard.classList.remove('hidden');
-        masterDashboard.classList.add('hidden');
-        playerManagement.classList.add('hidden');
-        liveBetSection.classList.add('hidden');
-      }
-      loadLiveBets();
-    }
-
-    logoutBtn.addEventListener('click', ()=>{
-      location.reload();
-    });
-
-    // মাস্টার লিসেনার
-    function attachMasterListeners() {
-      // লাইভ সুইচ
-      const liveRef = db.ref('systemStatus/isOn');
-      liveRef.on('value', snap => {
-        const isOn = snap.val() === true;
-        document.getElementById('liveStatusText').textContent = isOn ? 'ON' : 'OFF';
-      });
-      document.getElementById('liveToggleBtn').addEventListener('click', ()=>{
-        db.ref('systemStatus/isOn').transaction(val => !val);
-      });
-
-      // নোটিশ
-      document.getElementById('updateNoticeBtn').addEventListener('click', ()=>{
-        const notice = document.getElementById('noticeInput').value;
-        db.ref('publicNotice').set(notice);
-      });
-
-      // ব্যাকগ্রাউন্ড
-      document.getElementById('updateBgBtn').addEventListener('click', ()=>{
-        const url = document.getElementById('bgImageUrl').value;
-        db.ref('backgroundImageURL').set(url);
-      });
-
-      // অ্যাডভান্স প্লে
-      db.ref('settings/advancePlay').on('value', snap => {
-        document.getElementById('advanceStatus').textContent = snap.val() ? 'ON' : 'OFF';
-      });
-      document.getElementById('advancePlayBtn').addEventListener('click', ()=>{
-        db.ref('settings/advancePlay').transaction(val => !val);
-      });
-
-      // স্টাফ কোড জেনারেট
-      document.getElementById('generateStaffCodeBtn').addEventListener('click', ()=>{
-        const code = Math.random().toString(36).substring(2,8).toUpperCase();
-        db.ref('staffUniqueCode').set(code);
-        document.getElementById('staffCodeDisplay').textContent = 'বর্তমান কোড: ' + code;
-      });
-
-      // রেজাল্ট পাবলিশ (মাস্টার)
-      document.getElementById('publishResultBtn').addEventListener('click', ()=>{
-        const time = document.getElementById('resultTime').value;
-        const patti = document.getElementById('resultPatti').value;
-        const result = document.getElementById('resultValue').value;
-        if(!time || !patti || !result) return alert('সব ফিল্ড দিন');
-        const resId = db.ref('results').push().key;
-        db.ref('results/' + resId).set({time, patti, result});
-        calculateWinnings({time, patti, result});
-      });
-
-      // প্লেয়ার ট্র্যাকার
-      db.ref('loginRequests').on('value', snap => {
-        const data = snap.val();
-        const list = document.getElementById('playerLoginList');
-        list.innerHTML = '';
-        if(data) {
-          Object.entries(data).forEach(([id, val])=> {
-            list.innerHTML += `<div class="bet-row">🟢 ${val.name} (${id})</div>`;
-          });
-        }
-      });
-
-      // ওটিপি সেন্টার
-      document.getElementById('sendOtpBtn').addEventListener('click', ()=>{
-        const playerId = document.getElementById('playerIdForOtp').value.trim();
-        const otp = document.getElementById('otpValue').value.trim();
-        if(playerId && otp) {
-          db.ref('loginRequests/' + playerId + '/adminOtp').set(otp);
-          db.ref('transferOtp/' + playerId).set(otp);
-          alert('ওটিপি সেট করা হয়েছে');
-        }
-      });
-
-      // ব্যালেন্স আপডেট
-      document.getElementById('updateBalanceBtn').addEventListener('click', ()=>{
-        const pid = document.getElementById('balancePlayerId').value.trim();
-        const main = parseInt(document.getElementById('mainBalanceInput').value) || 0;
-        const win = parseInt(document.getElementById('winningBalanceInput').value) || 0;
-        if(pid) db.ref('wallets/' + pid).set({mainBalance: main, winningBalance: win});
-      });
-
-      // লক/আনলক (সিম্পল টগল)
-      document.getElementById('lockPlayerBtn').addEventListener('click', ()=>{
-        const pid = prompt('প্লেয়ার আইডি লিখুন:');
-        if(pid) db.ref('lockedPlayers/' + pid).transaction(val => !val);
-      });
-    }
-
-    // স্টাফ আনলক
-    document.getElementById('unlockStaffBtn').addEventListener('click', ()=>{
-      const code = document.getElementById('staffUniqueCode').value;
-      db.ref('staffUniqueCode').once('value').then(snap => {
-        if(snap.val() === code) {
-          document.getElementById('staffResultSection').classList.remove('hidden');
-        } else alert('ভুল কোড');
-      });
-    });
-
-    document.getElementById('staffPublishBtn').addEventListener('click', ()=>{
-      const time = document.getElementById('staffResultTime').value;
-      const patti = document.getElementById('staffResultPatti').value;
-      const result = document.getElementById('staffResultValue').value;
-      if(time && patti && result) {
-        db.ref('results').push({time, patti, result});
-        calculateWinnings({time, patti, result});
-      }
-    });
-
-    // লাইভ বেট দেখানো
-    function loadLiveBets() {
-      db.ref('bets').on('value', snap => {
-        const data = snap.val();
-        const list = document.getElementById('liveBetList');
-        list.innerHTML = '';
-        if(data) {
-          Object.entries(data).forEach(([userId, bets]) => {
-            Object.values(bets).forEach(bet => {
-              list.innerHTML += `<div class="bet-row">👤${userId} | 🕒${bet.time} | পাত্তি:${bet.patti} | সিঙ্গেল:${bet.single} | 💰${bet.amount}</div>`;
-            });
-          });
-        } else list.innerHTML = 'কোনো বেট নেই';
-      });
-    }
-
-    // অটো উইনিং ক্যালকুলেশন
-    function calculateWinnings(publishedResult) {
-      db.ref('bets').once('value').then(snap => {
-        const allBets = snap.val();
-        if(!allBets) return;
-        for(const [userId, userBets] of Object.entries(allBets)) {
-          Object.values(userBets).forEach(bet => {
-            let winAmount = 0;
-            if(bet.patti && bet.patti === publishedResult.patti) {
-              winAmount = (bet.amount || 0) * 11.5;
-            } else if(bet.single && publishedResult.result && bet.single === publishedResult.result.slice(-1)) {
-              winAmount = (bet.amount || 0) * 9;
-            }
-            if(winAmount > 0) {
-              db.ref('wallets/' + userId + '/winningBalance').transaction(cur => (cur||0) + winAmount);
-            }
-          });
-        }
-      });
-    }
-
-  })();
-</script>
-</
+    // পাবলিশ রেজাল্ট
+    document.getElementById('publishBtn').onclick = () => {
+      const time = document.getElementById('resTime').value;
+      const patti = document.getElementById('resPatti').value;
+      const result = document.getElementById('resVal').value;
+      
+      db.ref('results').push({time, patti, result});
+      alert('রেজাল্ট পাবলিশ হয়েছে!');
+    };
+  </script>
+</body>
+</html>
