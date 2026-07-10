@@ -1,31 +1,29 @@
 /* --- ১. গ্লোবাল সেটিংস --- */
-body { margin: 0; padding: 0; font-family: sans-serif; background-size: cover; background-position: center; background-repeat: no-repeat; }
+body { margin: 0; padding: 0; font-family: sans-serif; background-size: cover; background-position: center; }
 
-/* --- ২. হেডার সেকশন (ইনডেক্স) --- */
+/* --- ২. হেডার সেকশন --- */
 .header { background: rgba(0, 0, 0, 0.8); color: white; padding: 20px; text-align: center; }
 
-/* --- ৩. নোটিশ বার (ইনডেক্স) --- */
-.notice { background: #FFD700; padding: 10px; text-align: center; font-weight: bold; color: #000; }
+/* --- ৩. নোটিশ বার --- */
+.notice { background: #FFD700; padding: 10px; text-align: center; font-weight: bold; }
 
-/* --- ৪. ন্যাভিগেশন বাটন (টিপস ও পাতি চার্ট) (ইনডেক্স) --- */
-.nav-buttons { margin: 20px; display: flex; justify-content: center; gap: 15px; align-items: center; }
+/* --- ৪. ন্যাভিগেশন বাটন --- */
+.nav-buttons { margin: 20px; display: flex; justify-content: center; gap: 15px; }
 .btn { background: #17a2b8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; }
 
-/* --- ৫. লাইভ ইন্ডিকেটর বাটন (ইনডেক্স) --- */
+/* --- ৫. লাইভ ইন্ডিকেটর --- */
 .live-indicator { color: red; font-weight: bold; border: 2px solid red; padding: 5px 10px; border-radius: 5px; }
-.live-active { color: #00ff00; border-color: #00ff00; animation: pulse 1.5s infinite; }
 
-/* --- ৬. রেজাল্ট সেকশন (ইনডেক্স) --- */
+/* --- ৬. রেজাল্ট সেকশন (ইমেজের গ্রিড লেআউট অনুযায়ী) --- */
 .result-section { background: rgba(255, 255, 255, 0.9); margin: 20px auto; width: 90%; padding: 20px; border-radius: 10px; }
-.result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
-.card { border: 1px solid #ddd; padding: 15px; text-align: center; background: #f9f9f9; border-radius: 5px; }
+.result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.card { border: 1px solid #ddd; padding: 15px; text-align: center; background: #fff; border-radius: 5px; }
 
-/* --- ৭. ফুটর সেকশন (ইনডেক্স) --- */
-.footer { text-align: center; color: white; padding: 10px; margin-top: 20px; }
+/* --- ৭. ফুটর --- */
+.footer { text-align: center; color: #333; padding: 10px; margin-top: 20px; }
 
-/* --- ৮. অ্যাডমিন প্যানেল স্টাইল (অ্যাডমিন) --- */
-.admin-container { padding: 30px; background: #eee; min-height: 100vh; }
-.admin-input-group { margin-bottom: 15px; border-bottom: 2px solid #ccc; padding-bottom: 10px; }
+/* --- ৮. অ্যাডমিন প্যানেল (ভবিষ্যৎ ব্যবহারের জন্য) --- */
+.admin-container { padding: 30px; background: #eee; }
 
 /* --- ৯. অ্যানিমেশন (সবাই ব্যবহার করবে) --- */
 @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
