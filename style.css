@@ -1,25 +1,82 @@
+/* গ্লোবাল সেটিংস */
 :root {
-  --primary-gold: #facc15;
-  --bg-dark: #0b1120;
-  --card-bg: rgba(255, 255, 255, 0.08);
-  --text-light: #e2e8f0;
+    --bg-dark: #0b1120;
+    --card-bg: #1e293b;
+    --text-light: #f8fafc;
+    --gold: #facc15;
+    --green: #22c55e;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--bg-dark);
-  color: var(--text-light);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .container { width: 100%; max-width: 500px; }
-.card { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 15px; border: 1px solid rgba(255,215,0,0.2); }
-.input-box { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: none; }
-.btn { width: 100%; padding: 12px; background: var(--primary-gold); border-radius: 10px; font-weight: bold; cursor: pointer; border: none; }
-.hidden { display: none !important; }
+
+/* কার্ড স্টাইল */
+.card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    border: 1px solid #334155;
+}
+
+/* লোগো অ্যানিমেশন */
+.logo-animation {
+    text-align: center;
+    color: var(--gold);
+    text-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* টেবিল স্টাইল */
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.result-table th, .result-table td {
+    padding: 12px;
+    border-bottom: 1px solid #334155;
+    text-align: center;
+}
+
+/* বাটন ও ইনপুট */
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px 0;
+    background: #0f172a;
+    border: 1px solid #475569;
+    color: white;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--gold);
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn:hover { background: #eab308; }
