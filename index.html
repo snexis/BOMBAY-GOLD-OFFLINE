@@ -3,36 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOMBAY GOLD - Live Result</title>
+    <title>BOMBAY GOLD - Premium Live Result</title>
     
+    <!-- গুগল ফন্ট (প্রিমিয়াম লুকের জন্য) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- ফায়ারবেস লাইব্রেরি সিডিএন -->
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-storage-compat.js"></script>
-   
-    <link rel="stylesheet" href="style.css">
 
+    <style>
+        /* সম্পূর্ণ প্রিমিয়াম গোল্ডেন ও ডার্ক থিম ডিজাইন */
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+            color: #f3f4f6;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            transition: background 0.5s ease-in-out;
+        }
+
+        /* টপ নোটিফিকেশন বার */
+        .top-notice {
+            background: linear-gradient(90deg, #b45309, #f59e0b, #b45309);
+            color: #000;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            display: none;
+            border-bottom: 1px solid #fef08a;
+        }
+
+        /* হেডার এরিয়া ও গ্লাস মরফিজম ইফেক্ট */
+        .header-area {
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 35px 20px;
+            border-bottom: 2px solid #ea580c;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+
+        /* বম্বে গোল্ড মেইন টাইটেল - মেটালিক গোল্ড শাইন অ্যানিমেশন */
+        .brand-title {
+            font-family: 'Cinzel', serif;
+            font-size: 48px;
+            font-weight: 900;
+            margin: 0 0 10px 0;
+            letter-spacing: 3px;
+            display: block;
+            
+            /* থ্রিডি গোল্ডেন গ্রেডিয়েন্ট */
+            background: linear-gradient(to right, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            /* গোল্ডেন গ্লো ইফেক্ট */
+            filter: drop-shadow(0px 4px 12px rgba(212, 175, 55, 0.5));
+            animation: goldShine 4s linear infinite;
+        }
+
+        @keyframes goldShine {
+            to { background-position: 200% center; }
+        }
+
+        /* লাইভ বাটন - যা নিখুঁতভাবে নিভে আর জ্বলবে (Glowing Neon Pulse) */
+        .live-badge {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 30px;
+            display: inline-block;
+            letter-spacing: 1px;
+            border: 1px solid #fca5a5;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.7);
+            animation: liveBlink 1.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes liveBlink {
+            0% {
+                opacity: 0.3;
+                transform: scale(0.95);
+                box-shadow: 0 0 4px rgba(220, 38, 38, 0.3);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1.05);
+                box-shadow: 0 0 25px rgba(220, 38, 38, 1);
+            }
+        }
+
+        .sub-text {
+            margin: 15px 0 0 0; 
+            color: #d1d5db; 
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* লাক্সারি বাটন কন্টেইনার */
+        .btn-container {
+            margin: 35px auto;
+            max-width: 550px;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 15px;
+        }
+
+        .action-btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            width: 42%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        /* টিপস বাটন - রয়্যাল ব্লু ও গোল্ড গ্লো */
+        .btn-tips { 
+            background: linear-gradient(135deg, #1d4ed8, #1e3a8a); 
+            border: 1px solid #60a5fa;
+            box-shadow: 0 4px 20px rgba(29, 78, 216, 0.4);
+        }
+        .btn-tips:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(96, 165, 250, 0.6);
+            border-color: #fef08a;
+        }
+
+        /* পাত্তি চার্ট বাটন - রয়্যাল পার্পেল ও গোল্ড গ্লো */
+        .btn-patti { 
+            background: linear-gradient(135deg, #6b21a8, #4c1d95); 
+            border: 1px solid #c084fc;
+            box-shadow: 0 4px 20px rgba(107, 33, 168, 0.4);
+        }
+        .btn-patti:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(192, 132, 252, 0.6);
+            border-color: #fef08a;
+        }
+
+        /* লাইভ রেজাল্ট কন্টেইনার হোল্ডার */
+        #tables-holder {
+            padding: 10px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* জাভাস্ক্রিপ্ট দ্বারা তৈরি হওয়া টেবিল কার্ডের নতুন প্রিমিয়াম স্টাইল */
+        .results-card {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            margin-bottom: 35px;
+            overflow: hidden;
+            border: 1px solid #b45309; /* গোল্ডেন বর্ডার */
+        }
+
+        .date-header {
+            background: linear-gradient(90deg, #78350f, #b45309, #78350f);
+            color: #fef08a;
+            text-align: center;
+            padding: 14px;
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #b45309;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            background: transparent;
+        }
+
+        .result-table th {
+            background: #1f2937;
+            color: #fbbf24; /* গোল্ডেন হেডার টেক্সট */
+            padding: 14px 10px;
+            font-size: 15px;
+            font-weight: 700;
+            border-bottom: 2px solid #b45309;
+            border-right: 1px solid #374151;
+            white-space: nowrap;
+        }
+
+        .result-table td {
+            padding: 16px 10px;
+            font-size: 16px;
+            border-bottom: 1px solid #374151;
+            border-right: 1px solid #374151;
+        }
+
+        .result-table th:last-child, 
+        .result-table td:last-child {
+            border-right: none;
+        }
+
+        /* পাত্তি লাইনের কালার */
+        .patti-row td {
+            color: #e5e7eb;
+            font-weight: 600;
+            background: rgba(31, 41, 55, 0.4);
+        }
+
+        /* সিঙ্গেল লাইনের লাক্সারি গোল্ডেন নম্বর স্টাইল */
+        .single-row td {
+            color: #fef08a;
+            font-size: 26px;
+            font-weight: 900;
+            background: rgba(251, 191, 36, 0.1);
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+    </style>
 </head>
 <body>
 
+    <!-- টপ নোটিফিকেশন বার -->
     <div id="notification-bar" class="top-notice"></div>
 
+    <!-- হেডার এরিয়া -->
     <div class="header-area">
         <h1 class="brand-title">BOMBAY GOLD</h1>
-        <div class="live-badge">● LIVE</div>
-   <p class="sub-text">সরাসরি লাইভ কাজ করা শুরু করে দেবে</p>
+        <div class="live-badge">● LIVE RESULT</div>
+        <p class="sub-text">সরাসরি লাইভ কাজ করা শুরু করে দেবে</p>
     </div>
 
+    <!-- কুইক অ্যাকশন বাটন সমূহ -->
     <div class="btn-container">
         <a id="tips-link" href="#" target="_blank" class="action-btn btn-tips">Tips</a>
         <a id="patti-link" href="#" target="_blank" class="action-btn btn-patti">Patti Chart</a>
     </div>
 
+    <!-- ডাইনামিক লাইভ রেজাল্ট টেবিল হোল্ডার এরিয়া -->
     <div id="tables-holder">
-        <p style="font-size: 18px; color: #cbd5e1;">Loading live results...</p>
+        <p style="font-size: 18px; color: #fbbf24; margin-top: 50px;">Loading premium live results...</p>
     </div>
 
-    <script src="js/firebase-config.js"></script>
+    <!-- ফায়ারবেস কনফিগ ও মেইন লাইভ অ্যাপ্লিকেশন জাভাস্ক্রিপ্ট -->
+    <script src="firebase-config.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
