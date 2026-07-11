@@ -13,26 +13,45 @@
 </head>
 <body>
     <div class="header">
-        <h1>Welcome to Bombay Gold Fatafat</h1>
-    </div>
-    
-    <h2>Today's Live Result</h2>
-    <table id="resultTable">
-        <thead>
-            <tr>
-                <th>তারিখ</th>
-                <th>সময়</th>
-                <th>রেজাল্ট</th>
-            </tr>
-        </thead>
-        <tbody id="resultBody"></tbody>
-    </table>
+        <h2>Welcome to Bombay Gold Fatafat</h2>
+         <h3>Today's Live Result</h3>
+  <div id="displayArea"></div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
+<script>
+    var firebaseConfig = { /* আপনার কনফিগারেশন */ };
+    firebase.initializeApp(firebaseConfig);
 
-        cconst firebaseConfig = {
+    firebase.database().ref('allResults/').on('value', function(snapshot) {
+        var data = snapshot.val();
+        var displayArea = document.getElementById("displayArea");
+        displayArea.innerHTML = ""; // আগের টেবিল ক্লিয়ার করা
+
+        // ডাটাগুলোকে তারিখ অনুযায়ী গ্রুপ করা হচ্ছে
+        var groupedData = {};
+        for (var key in data) {
+            var item = data[key];
+            if (!groupedData[item.date]) groupedData[item.date] = [];
+            groupedData[item.date].push(item);
+        }
+
+        // গ্রুপ করা ডাটাগুলো দিয়ে টেবিল তৈরি
+        for (var date in groupedData) {
+            var rows = groupedData[date];
+            var html = `<h3>${date}</h3><table border="1"><tr><th>সময়</th><th>রেজাল্ট</th></tr>`;
+            
+            rows.forEach(function(r) {
+                html += `<tr><td>${r.time}</td><td>${r.result}</td></tr>`;
+            });
+            
+            html += `</table>`;
+            displayArea.innerHTML += html;
+        }
+    });
+</script>
+        <script type="module">
+       cconst firebaseConfig = {
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
