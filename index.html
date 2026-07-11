@@ -2,73 +2,82 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>Bombay Gold Fatafat - Live Result</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond Fatafat Live Result</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background-color: #f0f2f5; margin: 0; }
-        .header { background-color: #004a99; color: white; padding: 15px; }
-        .table-container { width: 95%; margin: 20px auto; }
-        table { width: 100%; border-collapse: collapse; background: white; margin-bottom: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background-color: #004a99; color: white; }
-        h3 { background: #eee; padding: 10px; margin-bottom: 0; }
+        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; margin: 0; }
+        .header { background: #0056b3; color: white; padding: 20px; }
+        .live-btn { padding: 5px 15px; border-radius: 20px; color: white; font-weight: bold; }
+        .live-active { background-color: green; }
+        .live-inactive { background-color: red; }
+        .result-container { margin: 20px auto; width: 90%; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background: #007bff; color: white; }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
+
     <div class="header">
-        <h2>Welcome to Bombay Gold Fatafat</h2>
-        <h3>Today's Live Result</h3>
+        <h1>Diamond Fatafat</h1>
+        <h2>Today Live Result</h2>
     </div>
 
-    <div class="table-container" id="displayArea"></div>
-
-    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
+    <div class="result-container" id="main-section">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>Today's Live Game Results</h3>
+            <span id="live-indicator" class="live-btn live-inactive">LIVE</span>
+        </div>
+        <div id="results-table-container"></div>
+    </div>
 
     <script>
-        // আপনার কনফিগারেশন
-        var firebaseConfig = {
-            apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
-            authDomain: "live-result-b9155.firebaseapp.com",
+        const firebaseConfig = {
+            apiKey: "AIzaSyABwusy3oZXqh353loJ1QorBsUMWxQF08I",
             databaseURL: "https://live-result-b9155-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "live-result-b9155",
-            storageBucket: "live-result-b9155.firebasestorage.app",
-            messagingSenderId: "495121483481",
-            appId: "1:495121483481:web:8e8bf65c71ea3d31ec60c8"
+            projectId: "live-result-b9155"
         };
-        
         firebase.initializeApp(firebaseConfig);
-        var database = firebase.database();
+        const db = firebase.database();
 
-        // ডাটাবেস থেকে ডাটা আনা
-        database.ref('allResults/').on('value', function(snapshot) {
-            var data = snapshot.val();
-            var displayArea = document.getElementById("displayArea");
-            displayArea.innerHTML = ""; // আগের টেবিল ক্লিয়ার করা
-
-            if (!data) {
-                displayArea.innerHTML = "<p>কোনো রেজাল্ট পাওয়া যায়নি।</p>";
-                return;
-            }
-
-            // ডাটাগুলোকে তারিখ অনুযায়ী গ্রুপ করা হচ্ছে
-            var groupedData = {};
-            for (var key in data) {
-                var item = data[key];
-                if (!groupedData[item.date]) groupedData[item.date] = [];
-                groupedData[item.date].push(item);
-            }
-
-            // গ্রুপ করা ডাটাগুলো দিয়ে টেবিল তৈরি
-            for (var date in groupedData) {
-                var rows = groupedData[date];
-                var html = `<h3>${date}</h3><table border="1"><tr><th>সময়</th><th>রেজাল্ট</th></tr>`;
+        db.ref('settings').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if(data) {
+                const liveBtn = document.getElementById('live-indicator');
+                const mainSec = document.getElementById('main-section');
                 
-                rows.forEach(function(r) {
-                    html += `<tr><td>${r.time}</td><td>${r.result}</td></tr>`;
+                if(data.isLive) {
+                    liveBtn.className = "live-btn live-active";
+                    liveBtn.innerText = "LIVE (ON)";
+                } else {
+                    liveBtn.className = "live-btn live-inactive";
+                    liveBtn.innerText = "OFF";
+                }
+                mainSec.style.display = data.showResults ? "block" : "none";
+            }
+        });
+
+        db.ref('results').on('value', (snapshot) => {
+            const resultsData = snapshot.val();
+            const container = document.getElementById('results-table-container');
+            container.innerHTML = ""; 
+
+            if(resultsData) {
+                Object.keys(resultsData).reverse().forEach(date => {
+                    let dateHtml = `<h4>Date: ${date}</h4><table><tr>`;
+                    let dataRow = `<tr>`;
+                    const times = resultsData[date];
+                    for (let time in times) {
+                        dateHtml += `<th>${time}</th>`;
+                        dataRow += `<td>${times[time].patti}<br><b>${times[time].single}</b></td>`;
+                    }
+                    dateHtml += `</tr>${dataRow}</tr></table>`;
+                    container.innerHTML += dateHtml;
                 });
-                
-                html += `</table>`;
-                displayArea.innerHTML += html;
+            } else {
+                container.innerHTML = "<p>No results found.</p>";
             }
         });
     </script>
