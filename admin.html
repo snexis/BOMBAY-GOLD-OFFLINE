@@ -1,62 +1,49 @@
 <!DOCTYPE html>
 <html>
-<head><title>Admin Panel</title></head>
+<head>
+    <title>Admin Panel</title>
+</head>
 <body>
-    <<h3>রেজাল্ট যোগ করুন</h3>
-<input type="date" id="dateInput"> <input type="text" id="timeInput" placeholder="সময় (যেমন: 10:20 AM)">
-<input type="text" id="resultInput" placeholder="রেজাল্ট (যেমন: 270-9)">
-<button onclick="addData()">পাবলিশ করুন</button>
+    <h3>রেজাল্ট যোগ করুন</h3>
+    <input type="date" id="dateInput">
+    <input type="text" id="timeInput" placeholder="সময় (যেমন: 10:20 AM)">
+    <input type="text" id="resultInput" placeholder="রেজাল্ট (যেমন: 270-9)">
+    <button onclick="saveData()">পাবলিশ করুন</button>
 
-<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
-<script>
-    var firebaseConfig = { /* আপনার কনফিগারেশন */ };
-    firebase.initializeApp(firebaseConfig);
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
 
-    function addData() {
-        var date = document.getElementById("dateInput").value;
-        var time = document.getElementById("timeInput").value;
-        var res = document.getElementById("resultInput").value;
-
-        // ডাটাবেসে একটি নতুন এন্ট্রি পুশ করা হচ্ছে
-        firebase.database().ref('allResults/').push({
-            date: date,
-            time: time,
-            result: res
-        }).then(() => alert("যোগ করা হয়েছে!"));
-    }
-    <body style="text-align: center; margin-top: 50px;">
-    <h2>অ্যাডমিন লগইন</h2>
-    <input type="password" id="pass" placeholder="পাসওয়ার্ড লিখুন">
-    <button onclick="check()">লগইন</button>
     <script>
-        function check() {
-            if(document.getElementById("pass").value === "12345") { // এখানে আপনার পাসওয়ার্ড দিন
-                window.location.href = "admin.html";
-            } else { alert("ভুল পাসওয়ার্ড!"); }
-        }
-    </script>
-</body>
-</script>
+        // আপনার দেওয়া কনফিগারেশন ঠিক করে বসানো হয়েছে
+        var firebaseConfig = {
+            apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
+            authDomain: "live-result-b9155.firebaseapp.com",
+            databaseURL: "https://live-result-b9155-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "live-result-b9155",
+            storageBucket: "live-result-b9155.firebasestorage.app",
+            messagingSenderId: "495121483481",
+            appId: "1:495121483481:web:8e8bf65c71ea3d31ec60c8",
+            measurementId: "G-DFDW40QF8"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        var database = firebase.database();
 
-const firebaseConfig = {// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
-  authDomain: "live-result-b9155.firebaseapp.com",
-  databaseURL: "https://live-result-b9155-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "live-result-b9155",
-  storageBucket: "live-result-b9155.firebasestorage.app",
-  messagingSenderId: "495121483481",
-  appId: "1:495121483481:web:8e8bf65c71ea3d31ec60c8",
-  measurementId: "G-DFDW40QF8};
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        function saveData() {
+            var date = document.getElementById("dateInput").value;
+            var time = document.getElementById("timeInput").value;
+            var res = document.getElementById("resultInput").value;
 
-        window.save = function() {
-            push(ref(db, 'results/'), {
-                date: document.getElementById("date").value,
-                time: document.getElementById("time").value,
-                result: document.getElementById("res").value
-            }).then(() => alert("আপডেট সফল হয়েছে!"));
+            // ডাটাবেসে পুশ করা হচ্ছে
+            firebase.database().ref('results/').push({
+                date: date,
+                time: time,
+                result: res
+            }).then(function() {
+                alert("আপডেট সফল হয়েছে!");
+            }).catch(function(error) {
+                alert("ভুল হয়েছে: " + error.message);
+            });
         }
     </script>
 </body>
