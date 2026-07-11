@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin Panel</title></head>
+<body>
+    <h2>রেজাল্ট আপডেট করুন</h2>
+    <input type="text" id="date" placeholder="তারিখ (যেমন: 11/07/2026)">
+    <input type="text" id="time" placeholder="সময় (যেমন: 10:20 AM)">
+    <input type="text" id="res" placeholder="রেজাল্ট (যেমন: 270-9)">
+    <button onclick="save()">সেভ করুন</button>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = { /* আপনার firebaseConfig এখানে দিন */ };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.save = function() {
+            push(ref(db, 'results/'), {
+                date: document.getElementById("date").value,
+                time: document.getElementById("time").value,
+                result: document.getElementById("res").value
+            }).then(() => alert("আপডেট সফল হয়েছে!"));
+        }
+    </script>
+</body>
+</html>
