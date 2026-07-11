@@ -1,19 +1,51 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <link rel="stylesheet" href="style.css">
-    <title>BOMBAY GOLD</title>
+    <meta charset="UTF-8">
+    <title>Bombay Gold Fatafat - Live Result</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background-color: #f0f2f5; }
+        .header { background-color: #004a99; color: white; padding: 15px; }
+        table { width: 95%; margin: 20px auto; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #004a99; color: white; }
+    </style>
 </head>
 <body>
-    <div class="container" style="text-align: center;">
-        <h1>BOMBAY GOLD</h1>
-        <div id="live-indicator" class="off-blink" style="display:inline-block; padding:5px 20px;">OFFLINE</div>
-        <div id="result-board"></div>
-        <button class="btn" style="width:200px; margin-top:20px;" onclick="location.href='admin.html'">LOGIN</button>
+    <div class="header">
+        <h1>Welcome to Bombay Gold Fatafat</h1>
     </div>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="app.js"></script>
-    <script>window.onload = loadMainPage();</script>
+    
+    <h2>Today's Live Result</h2>
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>তারিখ</th>
+                <th>সময়</th>
+                <th>রেজাল্ট</th>
+            </tr>
+        </thead>
+        <tbody id="resultBody"></tbody>
+    </table>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = { /* আপনার firebaseConfig এখানে দিন */ };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const resultRef = ref(db, 'results/');
+        onValue(resultRef, (snapshot) => {
+            const data = snapshot.val();
+            const tbody = document.getElementById("resultBody");
+            tbody.innerHTML = "";
+            for (let id in data) {
+                let row = `<tr><td>${data[id].date}</td><td>${data[id].time}</td><td>${data[id].result}</td></tr>`;
+                tbody.innerHTML += row;
+            }
+        });
+    </script>
 </body>
 </html>
