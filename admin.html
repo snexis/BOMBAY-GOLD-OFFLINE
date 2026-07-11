@@ -2,16 +2,102 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>Main Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Admin Panel - BOMBAY GOLD</title>
     <style>
-        body { font-family: Arial; padding: 20px; background: #e9ecef; }
-        .admin-card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; }
-        input, button { padding: 10px; margin: 5px; }
-        .success { color: green; font-weight: bold; }
-        .btn-red { background: red; color: white; border: none; cursor: pointer; }
-        .btn-green { background: green; color: white; border: none; cursor: pointer; }
-        .hidden { display: none; }
+        /* মডার্ন ও কালারফুল ডিজাইন স্টাইল */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', Arial, sans-serif; }
+        
+        body { 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
+            padding: 20px; 
+            min-height: 100vh;
+        }
+        
+        h2 { 
+            text-align: center; 
+            color: #000851; 
+            margin-bottom: 25px; 
+            font-size: 28px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .admin-card { 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 25px; 
+            margin: 0 auto 25px auto; 
+            border-radius: 12px; 
+            max-width: 650px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: transform 0.2s ease;
+        }
+        
+        .admin-card:hover { transform: translateY(-2px); }
+        
+        h3 { color: #2c3e50; margin-bottom: 15px; font-size: 18px; border-left: 4px solid #667eea; padding-left: 10px; }
+        
+        input { 
+            width: calc(100% - 10px); 
+            padding: 12px; 
+            margin: 8px 5px; 
+            border: 2px solid #dfe6e9; 
+            border-radius: 8px; 
+            font-size: 15px;
+            outline: none;
+            transition: border 0.3s;
+        }
+        
+        input:focus { border-color: #667eea; }
+        
+        button { 
+            padding: 12px 20px; 
+            margin: 8px 5px; 
+            border: none; 
+            border-radius: 8px; 
+            color: white; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+        
+        button:hover { transform: translateY(-1px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+        
+        /* ইউনিক গ্রেডিয়েন্ট বাটন কালার */
+        button:not(.btn-green):not(.btn-red) {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-green { background: linear-gradient(45deg, #00b09b, #96c93d); }
+        .btn-red { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
+        
+        .success { color: #27ae60; font-weight: bold; margin-left: 10px; display: inline-block; }
+        .hidden { display: none !important; }
+        
+        #display-code { 
+            font-size: 24px; 
+            color: #2980b9; 
+            font-weight: bold; 
+            letter-spacing: 3px; 
+            background: #e8f4f8; 
+            padding: 10px; 
+            display: inline-block; 
+            border-radius: 6px; 
+            margin-top: 10px;
+            border: 2px dashed #3498db;
+        }
+        
+        #login-sec { max-width: 400px; text-align: center; margin-top: 50px; }
+        #login-sec input { width: 100%; margin: 10px 0; }
+        #login-sec button { width: 100%; margin: 10px 0; }
     </style>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -20,7 +106,6 @@
 
     <h2>Main Admin Control Panel</h2>
 
-    <!-- Login Section -->
     <div id="login-sec" class="admin-card">
         <h3>Admin Login</h3>
         <input type="email" id="admin-email" placeholder="Admin Email">
@@ -28,14 +113,16 @@
         <button class="btn-green" onclick="loginAdmin()">Login</button>
     </div>
 
-    <!-- Dashboard Section (Hidden by default) -->
     <div id="dashboard-sec" class="hidden">
-        <button class="btn-red" onclick="logoutAdmin()" style="float:right;">Logout</button>
+        <div style="max-width: 650px; margin: 0 auto 10px auto; overflow: hidden;">
+            <button class="btn-red" onclick="logoutAdmin()" style="float:right; margin: 0;">Logout</button>
+        </div>
+        
         <div class="admin-card">
             <h3>🔒 Sub-Admin Access Control</h3>
             <p id="request-status" style="font-weight: bold; color: gray;">No pending request...</p>
             <button id="generate-btn" class="btn-green hidden" onclick="generateAccessCode()">Grant Access & Generate Code</button>
-            <p id="display-code" style="font-size: 24px; color: blue; font-weight: bold; letter-spacing: 2px;"></p>
+            <div id="display-code" class="hidden"></div>
         </div>
 
         <div class="admin-card">
@@ -57,27 +144,25 @@
         <div class="admin-card">
             <h3>3. Delete Result</h3>
             <input type="date" id="del-date" required>
-            <input type="text" id="del-time" placeholder="Time to delete">
+            <input type="text" id="del-time" placeholder="Time to delete (Optional)">
             <button class="btn-red" onclick="deleteResult()">Delete Date/Time</button>
         </div>
     </div>
 
     <script>
-       const firebaseConfig = {
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
-  authDomain: "live-result-b9155.firebaseapp.com",
-  databaseURL: "https://live-result-b9155-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "live-result-b9155",
-  storageBucket: "live-result-b9155.firebasestorage.app",
-  messagingSenderId: "495121483481",
-  appId: "1:495121483481:web:8e8bf65c71ea3d31ec60c8",
-  measurementId: "G-DFDW40QF87"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
+        // ফায়ারবেস কনফিগারেশন (সঠিক এবং পরিচ্ছন্ন)
+        const firebaseConfig = {
+            apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
+            authDomain: "live-result-b9155.firebaseapp.com",
+            databaseURL: "https://live-result-b9155-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "live-result-b9155",
+            storageBucket: "live-result-b9155.firebasestorage.app",
+            messagingSenderId: "495121483481",
+            appId: "1:495121483481:web:8e8bf65c71ea3d31ec60c8",
+            measurementId: "G-DFDW40QF87"
+        };
+
+        // ফায়ারবেস ইনিশিয়ালাইজেশন
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         const auth = firebase.auth();
@@ -86,6 +171,12 @@ const auth = firebase.auth();
         function loginAdmin() {
             const email = document.getElementById('admin-email').value;
             const pass = document.getElementById('admin-pass').value;
+            
+            if(!email || !pass) {
+                alert("দয়া করে ইমেইল এবং পাসওয়ার্ড লিখুন।");
+                return;
+            }
+
             auth.signInWithEmailAndPassword(email, pass).then(() => {
                 document.getElementById('login-sec').classList.add('hidden');
                 document.getElementById('dashboard-sec').classList.remove('hidden');
@@ -113,34 +204,39 @@ const auth = firebase.auth();
                     statusText.innerText = "No pending request...";
                     statusText.style.color = "gray";
                     genBtn.classList.add('hidden');
-                    document.getElementById('display-code').innerText = "";
                 }
             });
 
             // Toggle Settings
             let currentIsLive = true;
             let currentShowRes = true;
+            
             db.ref('settings').on('value', snap => {
                 if(snap.val()) {
                     currentIsLive = snap.val().isLive;
                     currentShowRes = snap.val().showResults;
                 }
             });
-            document.getElementById('toggleLiveBtn').addEventListener('click', () => {
+            
+            document.getElementById('toggleLiveBtn').onclick = function() {
                 db.ref('settings').update({ isLive: !currentIsLive });
-            });
-            document.getElementById('toggleSectionBtn').addEventListener('click', () => {
+            };
+            
+            document.getElementById('toggleSectionBtn').onclick = function() {
                 db.ref('settings').update({ showResults: !currentShowRes });
-            });
+            };
         }
 
         function generateAccessCode() {
             const randomCode = Math.floor(100000 + Math.random() * 900000).toString(); 
+            const displayBox = document.getElementById('display-code');
+
             db.ref('auth_data').update({
                 generated_code: randomCode,
                 sub_admin_request: false 
             }).then(() => {
-                document.getElementById('display-code').innerText = "Code: " + randomCode;
+                displayBox.innerText = "Code: " + randomCode;
+                displayBox.classList.remove('hidden');
             });
         }
 
@@ -151,22 +247,38 @@ const auth = firebase.auth();
             const single = document.getElementById('res-single').value;
             const status = document.getElementById('submit-status');
 
-            if(!date || !time || !patti || !single) return;
+            if(!date || !time || !patti || !single) {
+                alert("সবগুলো ঘর পূরণ করুন!");
+                return;
+            }
+
             db.ref(`results/${date}/${time}`).set({ patti: patti, single: single })
             .then(() => {
                 status.innerHTML = "✔ Successfully Added!";
                 status.className = "success";
+                // ইনপুট ক্লিয়ার করা (তারিখ বাদে)
+                document.getElementById('res-time').value = "";
+                document.getElementById('res-patti').value = "";
+                document.getElementById('res-single').value = "";
                 setTimeout(() => status.innerHTML = "", 3000);
-            });
+            }).catch(err => alert("Error: " + err.message));
         }
 
         function deleteResult() {
             const date = document.getElementById('del-date').value;
             const time = document.getElementById('del-time').value;
-            if(!date) return;
-            if(confirm(`আপনি কি নিশ্চিত যে আপনি ডেটা মুছতে চান?`)) {
+            
+            if(!date) {
+                alert("দয়া করে তারিখ সিলেক্ট করুন!");
+                return;
+            }
+            
+            if(confirm(`আপনি কি নিশ্চিত যে আপনি এই ডেটা মুছতে চান?`)) {
                 let refPath = time ? `results/${date}/${time}` : `results/${date}`;
-                db.ref(refPath).remove().then(() => alert("Data Deleted!"));
+                db.ref(refPath).remove().then(() => {
+                    alert("Data Deleted Successfully!");
+                    document.getElementById('del-time').value = "";
+                }).catch(err => alert("Error: " + err.message));
             }
         }
     </script>
