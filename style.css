@@ -1,342 +1,177 @@
-/* ==========================================================================
-   Google Fonts & Global Variables (ইউনিক কালার ও থিম কন্ট্রোল)
-   ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-
+/* Premium Global CSS Engine - BOMBAY GOLD */
 :root {
-    --bg-gradient: linear-gradient(135deg, #f3f4f7 0%, #e3e7f1 100%);
-    --header-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-    --primary-gradient: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
-    --green-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    --red-gradient: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
-    
-    --card-bg: rgba(255, 255, 255, 0.88);
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --border-color: rgba(226, 232, 240, 0.8);
-    
-    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 20px 35px -10px rgba(0, 0, 0, 0.1);
-    
-    --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    --bg-main: #090d16;
+    --card-bg: rgba(30, 41, 59, 0.7);
+    --card-hover: rgba(47, 63, 90, 0.85);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --neon-green: #10b981;
+    --neon-red: #ef4444;
+    --neon-blue: #3b82f6;
+    --gold: #f59e0b;
+    --border-glow: rgba(255, 255, 255, 0.08);
+    --glass-blur: blur(12px);
 }
 
-/* ==========================================================================
-   Global Reset & Body Styles
-   ========================================================================== */
+/* Reset & Smooth Scrolling */
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 body {
-    background: var(--bg-gradient);
+    background-color: var(--bg-main);
     color: var(--text-main);
     min-height: 100vh;
-    padding-bottom: 60px;
-    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    transition: background 0.5s ease;
+    padding: 20px 0;
 }
 
-h1, h2, h3, h4 {
-    font-weight: 700;
-    color: #0f172a;
-    letter-spacing: -0.5px;
-}
-
-/* ==========================================================================
-   Header Section (Main Website - আকর্ষণীয় মডার্ন কার্ভ লুক)
-   ========================================================================== */
-.header {
-    background: var(--header-gradient);
-    color: white;
-    padding: 40px 20px;
-    text-align: center;
-    box-shadow: var(--shadow-md);
-    border-bottom-left-radius: 30px;
-    border-bottom-right-radius: 30px;
-    margin-bottom: 35px;
-    position: relative;
-    overflow: hidden;
-}
-
-.header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -20%;
-    width: 60%;
-    height: 200%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: rotate(30deg);
-    pointer-events: none;
-}
-
-.header h1 {
-    color: #fff;
-    font-size: 2.8rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    text-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.header h2 {
-    color: #ffd700;
-    font-weight: 400;
-    font-size: 1.4rem;
-    margin-top: 5px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* ==========================================================================
-   Cards & Containers (গ্লাস-মরফিজম ও প্রিমিয়াম শ্যাডো ইফেক্ট)
-   ========================================================================== */
-.result-container, .admin-card, .card {
-    background: var(--card-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    margin: 25px auto;
+/* Common Container Architecture */
+.app-container {
     width: 92%;
-    max-width: 750px;
-    padding: 35px;
-    border-radius: 20px;
-    box-shadow: var(--shadow-md);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    transition: var(--transition);
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.result-container:hover, .admin-card:hover, .card:hover {
-    transform: translateY(-6px) scale(1.005);
-    box-shadow: var(--shadow-lg);
-    border-color: rgba(255, 255, 255, 0.9);
+.auth-container {
+    width: 100%;
+    max-width: 450px;
+    margin: auto;
 }
 
-/* ==========================================================================
-   Live Button Indicators (পালস গ্লো লাইভ ইফেক্ট)
-   ========================================================================== */
-.live-btn {
+/* Neon Glassmorphism Card System */
+.premium-card {
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border-glow);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.premium-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* Typography & Titles */
+.panel-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 10px;
+}
+
+.panel-title i {
+    color: var(--gold);
+}
+
+/* Smart Flexible Grid Engine (Auto-adjusting Rows) */
+.dynamic-row-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 15px;
+}
+
+/* Premium Form Elements */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+input, select, textarea {
+    width: 100%;
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #ffffff;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+/* High-End Button System */
+.btn-premium {
+    background: var(--neon-blue);
+    color: #ffffff;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    transition: background 0.2s, transform 0.1s;
+    width: 100%;
+}
+
+.btn-premium:active {
+    transform: scale(0.98);
+}
+
+.btn-success { background: var(--neon-green); }
+.btn-success:hover { background: #0d9488; }
+.btn-danger { background: var(--neon-red); }
+
+/* Custom Component Badges */
+.live-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     padding: 8px 22px;
     border-radius: 30px;
-    color: white;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
     font-size: 13px;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    display: inline-block;
-}
-
-.live-active {
-    background: var(--green-gradient);
-    animation: pulseGlow 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
-}
-
-.live-inactive {
-    background: var(--red-gradient);
-}
-
-@keyframes pulseGlow {
-    0%, 100% { 
-        box-shadow: 0 0 10px rgba(56, 239, 125, 0.5), 0 0 20px rgba(17, 153, 142, 0.3);
-        transform: scale(1);
-    }
-    50% { 
-        box-shadow: 0 0 25px rgba(56, 239, 125, 0.8), 0 0 35px rgba(17, 153, 142, 0.5);
-        transform: scale(1.03);
-    }
-}
-
-/* ==========================================================================
-   Tables Section (ক্লিন ও সুপার রেসপন্সিভ টেবিল ডিজাইন)
-   ========================================================================== */
-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    margin-top: 25px;
-    margin-bottom: 25px;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
-}
-
-th, td {
-    padding: 16px 18px;
-    text-align: center;
-    transition: var(--transition);
-}
-
-th {
-    background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
-    color: white;
-    font-weight: 600;
-    font-size: 15px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    border-bottom: 2px solid rgba(0,0,0,0.1);
-}
-
-td {
-    background-color: #ffffff;
-    color: var(--text-main);
-    font-size: 15px;
-    font-weight: 500;
-    border-bottom: 1px solid var(--border-color);
-}
-
-tr:last-child td {
-    border-bottom: none;
-}
-
-tr:nth-child(even) td {
-    background-color: #f8fafc;
-}
-
-tr:hover td {
-    background-color: #f1f5f9;
-    color: #000;
-}
-
-td b {
-    font-size: 1.8rem;
-    color: #ef4444;
-    display: block;
-    margin-top: 6px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-}
-
-/* ==========================================================================
-   Inputs & Forms Styles
-   ========================================================================== */
-input[type="text"], input[type="date"], input[type="email"], input[type="password"] {
-    width: 100%;
-    padding: 14px 18px;
-    margin: 12px 0;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 500;
-    outline: none;
-    background: #ffffff;
-    color: var(--text-main);
-    transition: var(--transition);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
-}
-
-input:focus {
-    border-color: #3b82f6;
-    background: #fff;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15), inset 0 2px 4px rgba(0,0,0,0.01);
-}
-
-/* ==========================================================================
-   Buttons (অ্যাডমিন বাটন গ্লোসি ইফেক্ট)
-   ========================================================================== */
-button {
-    width: 100%;
-    padding: 14px 28px;
-    margin: 12px 0;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    transition: var(--transition);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    display: inline-block;
-}
-
-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-button:active {
-    transform: translateY(-1px);
-}
-
-/* জেনেরিক ডিফল্ট পার্পল-ব্লু বাটন */
-button:not(.btn-green):not(.btn-red) {
-    background: var(--primary-gradient);
-}
-
-.btn-green {
-    background: var(--green-gradient);
-}
-
-.btn-red {
-    background: var(--red-gradient);
-}
-
-/* ==========================================================================
-   Utility & Specific Classes
-   ========================================================================== */
-.hidden {
-    display: none !important;
-}
-
-.success {
-    color: #10b981;
-    font-weight: 600;
-    margin-top: 12px;
-    display: block;
-    font-size: 15px;
-    animation: fadeIn 0.4s ease;
-}
-
-#display-code {
-    background: #f0fdf4;
-    padding: 18px;
-    border-radius: 12px;
-    border: 2px dashed #10b981;
-    display: inline-block;
-    margin-top: 18px;
-    font-size: 26px;
     font-weight: 700;
-    color: #16a34a;
-    letter-spacing: 4px;
-    box-shadow: var(--shadow-sm);
+    text-transform: uppercase;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
+.badge-active {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--neon-green);
+    animation: neonPulse 1.8s infinite alternate;
 }
 
-/* ==========================================================================
-   Responsive Design (সব ডিভাইসের জন্য ১০০% পারফেক্ট)
-   ========================================================================== */
-@media (max-width: 600px) {
-    .header {
-        padding: 30px 15px;
-        border-bottom-left-radius: 20px;
-        border-bottom-right-radius: 20px;
-        margin-bottom: 25px;
-    }
-    .header h1 { font-size: 2rem; letter-spacing: 1.5px; }
-    .header h2 { font-size: 1.1rem; }
-    
-    .result-container, .admin-card, .card { 
-        width: 94%; 
-        padding: 22px; 
-        margin: 15px auto;
-    }
-    
-    th, td { 
-        padding: 12px 10px; 
-        font-size: 13px; 
-    }
-    td b { font-size: 1.4rem; }
-    
-    input, button { 
-        padding: 12px 16px;
-        font-size: 14px;
-    }
+.badge-inactive {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--neon-red);
+}
+
+@keyframes neonPulse {
+    0% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+    100% { box-shadow: 0 0 22px rgba(16, 185, 129, 0.8); }
 }
