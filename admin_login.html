@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin Login</title></head>
+<body style="text-align: center; margin-top: 50px;">
+    <h2>অ্যাডমিন লগইন</h2>
+    <input type="password" id="pass" placeholder="পাসওয়ার্ড লিখুন">
+    <button onclick="check()">লগইন</button>
+    <script>
+        function check() {
+            if(document.getElementById("pass").value === "12345") { // এখানে আপনার পাসওয়ার্ড দিন
+                window.location.href = "admin.html";
+            } else { alert("ভুল পাসওয়ার্ড!"); }
+        }
+    </script>
+</body>
+</html>
