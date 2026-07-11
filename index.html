@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
     <link rel="stylesheet" href="style.css">
     <title>BOMBAY GOLD</title>
 </head>
 <body>
-    <div class="container">
-        <h1>BOMBAY GOLD <span id="live-dot" class="status-dot"></span></h1>
-        <marquee id="notice"></marquee>
+    <div class="container" style="text-align: center;">
+        <h1>BOMBAY GOLD</h1>
+        <div id="live-indicator" class="off-blink" style="display:inline-block; padding:5px 20px;">OFFLINE</div>
         <div id="result-board"></div>
+        <button class="btn" style="width:200px; margin-top:20px;" onclick="location.href='admin.html'">LOGIN</button>
     </div>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="main-script.js"></script>
+    <script src="app.js"></script>
+    <script>window.onload = loadMainPage();</script>
 </body>
 </html>
