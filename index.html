@@ -3,95 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOMBAY-GOLD</title>
+    <title>BOMBAY GOLD - Live Results</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; margin: 0; }
-        .header { background: #0056b3; color: white; padding: 20px; }
-        .live-btn { padding: 5px 15px; border-radius: 20px; color: white; font-weight: bold; }
-        .live-active { background-color: green; }
-        .live-inactive { background-color: red; }
-        .result-container { margin: 20px auto; width: 90%; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        th { background: #007bff; color: white; }
+        :root {
+            --bg-fallback: #090d16;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-color: #f8fafc;
+            --neon-green: #10b981;
+            --neon-red: #ef4444;
+            --gold: #f59e0b;
+            --border-glow: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-fallback);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+
+        /* Running Marquee Headline */
+        .headline-container {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-glow);
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        /* Glassmorphism Header Setup */
+        .main-header {
+            width: 90%;
+            max-width: 1200px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .main-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+            margin-bottom: 10px;
+        }
+
+        /* Unique Glowing Live Button Badge */
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px currentColor;
+            transition: all 0.4s ease;
+        }
+
+        .live-on {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--neon-green);
+            animation: pulse-green 1.5s infinite alternate;
+        }
+
+        .live-off {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--neon-red);
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.5); }
+            100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.9); }
+        }
+
+        /* Banner CMS Space */
+        .promo-banner {
+            width: 90%;
+            max-width: 1200px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .promo-banner img {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--border-glow);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Results Dynamic Container Layout */
+        .results-section {
+            width: 90%;
+            max-width: 1200px;
+            margin-bottom: 50px;
+        }
+
+        .date-block {
+            margin-top: 30px;
+        }
+
+        .date-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Smart Responsive Layout Auto-fitting Grid Rows */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .result-time {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .result-values {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .val-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .patti-box {
+            flex: 2;
+        }
+        .single-box {
+            flex: 1;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .val-box span {
+            display: block;
+            font-size: 10px;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .val-box strong {
+            font-size: 20px;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .single-box strong {
+            color: var(--gold);
+        }
+
+        /* Hidden Notice Message Box */
+        .hidden-notice {
+            text-align: center;
+            padding: 50px 20px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px dashed var(--neon-red);
+            font-size: 18px;
+            color: #cbd5e1;
+            display: none;
+        }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
-    <div class="header">
-        <h1>BOMBAY-GOLD</h1>
-        <h2>Today Live Result</h2>
+    <!-- Top Scrolling Notice Bar -->
+    <div class="headline-container" id="noticeContainer">
+        <marquee behavior="scroll" direction="left" id="marqueeView">লোডিং নোটিশ...</marquee>
     </div>
 
-    <div class="result-container" id="main-section">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3>Today's Live Game Results</h3>
-            <span id="live-indicator" class="live-btn live-inactive">LIVE</span>
+    <!-- Website Header Section -->
+    <header class="main-header">
+        <h1 id="headerTextView">BOMBAY GOLD</h1>
+        <div id="liveBadgeView" class="live-badge live-off">
+            <i class="fa-solid fa-circle"></i> <span id="liveLabelView">অফলাইন</span>
         </div>
-        <div id="results-table-container"></div>
+    </header>
+
+    <!-- Marketing / System Banner CMS -->
+    <div class="promo-banner" id="bannerContainer">
+        <img id="bannerImageView" src="" alt="Advertisement Banner">
     </div>
 
-    <script>
-        // ফায়ারবেস কনফিগ
+    <!-- Main Live Dynamic Results Panel -->
+    <main class="results-section">
+        <div id="resultsDisplayWrapper"></div>
+        <div id="resultsHiddenMessage" class="hidden-notice">
+            <i class="fa-solid fa-eye-slash" style="color: var(--neon-red); font-size: 30px; display:block; margin-bottom:10px;"></i>
+            ফলাফল প্রদর্শন সাময়িকভাবে স্থগিত আছে। খুব শীঘ্রই আবার লাইভ করা হবে।
+        </div>
+    </main>
+
+    <!-- FIREBASE CLIENT IMPLEMENTATION MODULE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // আপনার ফায়ারবেস কনফিগারেশন এখানে পেস্ট করবেন
         const firebaseConfig = {
-            apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
-            authDomain: "live-result-b9155.firebaseapp.com",
-            databaseURL: "https://live-result-b9155-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "live-result-b9155",
-            storageBucket: "live-result-b9155.firebasestorage.app",
-            messagingSenderId: "495121483481",
-            appId: "1:495121483481:web:8e8bf65c71ea3d31ec60c8"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
-        // ফায়ারবেস ইনিশিয়ালাইজেশন
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // লাইভ সেকশন কন্ট্রোল
-        db.ref('settings').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if(data) {
-                const liveBtn = document.getElementById('live-indicator');
-                const mainSec = document.getElementById('main-section');
+        // ডেট ফরম্যাট রূপান্তর ইঞ্জিন: YYYY-MM-DD থেকে DD/MM/YYYY
+        function convertToIndianDateFormat(dateString) {
+            if(!dateString || !dateString.includes('-')) return dateString;
+            const parts = dateString.split('-'); // [YYYY, MM, DD]
+            return `${parts[2]}/${parts[1]}/${parts[0]}`; // DD/MM/YYYY
+        }
+
+        // রিয়েল-টাইম ডাটাবেস লিসেনার রেন্ডারিং ইঞ্জিন
+        function startLiveSync() {
+            // ১. CMS লেআউট ও কালার সিনক্রোনাইজেশন
+            onValue(ref(db, "config/cms"), (snapshot) => {
+                const cms = snapshot.val() || {};
+                if(cms.headerText) document.getElementById("headerTextView").innerText = cms.headerText;
+                if(cms.liveLabel) document.getElementById("liveLabelView").innerText = cms.liveLabel;
+                if(cms.bgColor) document.body.style.backgroundColor = cms.bgColor;
                 
-                if(data.isLive) {
-                    liveBtn.className = "live-btn live-active";
-                    liveBtn.innerText = "LIVE (ON)";
+                const bannerBox = document.getElementById("bannerContainer");
+                if(cms.bannerUrl && cms.bannerUrl.trim() !== "") {
+                    document.getElementById("bannerImageView").src = cms.bannerUrl;
+                    bannerBox.style.display = "block";
                 } else {
-                    liveBtn.className = "live-btn live-inactive";
-                    liveBtn.innerText = "OFF";
+                    bannerBox.style.display = "none";
                 }
-                mainSec.style.display = data.showResults ? "block" : "none";
-            }
-        });
+            });
 
-        // রেজাল্ট দেখানো
-        db.ref('results').on('value', (snapshot) => {
-            const resultsData = snapshot.val();
-            const container = document.getElementById('results-table-container');
-            container.innerHTML = ""; 
+            // ২. নোটিশ স্ক্রোলার সিঙ্ক
+            onValue(ref(db, "config/marqueeText"), (snapshot) => {
+                const notice = snapshot.val();
+                if(notice) {
+                    document.getElementById("marqueeView").innerText = notice;
+                    document.getElementById("noticeContainer").style.display = "block";
+                } else {
+                    document.getElementById("noticeContainer").style.display = "none";
+                }
+            });
 
-            if(resultsData) {
-                Object.keys(resultsData).reverse().forEach(date => {
-                    let dateHtml = `<h4>Date: ${date}</h4><table><tr>`;
-                    let dataRow = `<tr>`;
-                    const times = resultsData[date];
-                    for (let time in times) {
-                        // সিকিউরিটি বা অ্যাডমিন কি থাকলে তা স্কিপ করা
-                        if (time !== 'admin_key' && time !== 'deleted') {
-                            dateHtml += `<th>${time}</th>`;
-                            dataRow += `<td>${times[time].patti || ''}<br><b>${times[time].single || ''}</b></td>`;
-                        }
-                    }
-                    dateHtml += `</tr>${dataRow}</tr></table>`;
-                    container.innerHTML += dateHtml;
+            // ৩. লাইভ ইন্ডিকেটর ও মেইন রেজাল্ট হাইড/শো লজিক
+            onValue(ref(db, "config/systemControls"), (snapshot) => {
+                const controls = snapshot.val() || {};
+                const isLive = controls.isLive || false;
+                const showResults = controls.showResults || false;
+
+                const badge = document.getElementById("liveBadgeView");
+                if(isLive) {
+                    badge.className = "live-badge live-on";
+                } else {
+                    badge.className = "live-badge live-off";
+                }
+
+                const wrapper = document.getElementById("resultsDisplayWrapper");
+                const hiddenMsg = document.getElementById("resultsHiddenMessage");
+
+                if(showResults) {
+                    wrapper.style.display = "block";
+                    hiddenMsg.style.display = "none";
+                } else {
+                    wrapper.style.display = "none";
+                    hiddenMsg.style.display = "block";
+                }
+            });
+
+            // ৪. ডায়নামিক অটো-ফিটিং রেজাল্ট রেন্ডারার
+            onValue(ref(db, "results"), (snapshot) => {
+                const data = snapshot.val() || {};
+                const wrapper = document.getElementById("resultsDisplayWrapper");
+                wrapper.innerHTML = "";
+
+                // তারিখগুলো উল্টো ক্রমানুসারে সাজানো (নতুন দিন আগে আসবে)
+                const sortedDates = Object.keys(data).sort().reverse();
+
+                if(sortedDates.length === 0) {
+                    wrapper.innerHTML = `<div style="text-align:center;color:#64748b;padding:30px;">কোনো লাইভ রেজাল্ট ডাটা পাওয়া যায়নি।</div>`;
+                    return;
+                }
+
+                sortedDates.forEach(dateStr => {
+                    const displayDate = convertToIndianDateFormat(dateStr); // দিন/মাস/বছর ফরম্যাট কার্যকর
+                    const slotsData = data[dateStr];
+
+                    const dateBlock = document.createElement("div");
+                    dateBlock.className = "date-block";
+
+                    let gridHTML = `
+                        <div class="date-title"><i class="fa-regular fa-calendar-check"></i> তারিখ: ${displayDate}</div>
+                        <div class="results-grid">
+                    `;
+
+                    // প্রতিটি তারিখের টাইম স্লট অনুযায়ী ডাটা কার্ড রেন্ডার
+                    Object.keys(slotsData).forEach(timeKey => {
+                        const result = slotsData[timeKey];
+                        gridHTML += `
+                            <div class="result-card">
+                                <div class="result-time">${timeKey}</div>
+                                <div class="results-values">
+                                    <div class="val-box patti-box">
+                                        <span>পাত্তি</span>
+                                        <strong>${result.patti || '---'}</strong>
+                                    </div>
+                                    <div class="val-box single-box">
+                                        <span>সিঙ্গেল</span>
+                                        <strong>${result.single || '-'}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    gridHTML += `</div>`;
+                    dateBlock.innerHTML = gridHTML;
+                    wrapper.appendChild(dateBlock);
                 });
-            } else {
-                container.innerHTML = "<p>No results found.</p>";
-            }
-        });
+            });
+        }
+
+        startLiveSync();
     </script>
 </body>
 </html>
