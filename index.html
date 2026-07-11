@@ -1,37 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BOMBAY GOLD - Live Result</title>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
+    <title>BOMBAY GOLD</title>
 </head>
-<body id="main-body">
-
-  <div id="notification-bar" class="top-notice">Loading announcements...</div>
-
-  <div class="container">
-    <div class="header-area">
-      <div id="logo-holder"></div>
-      <h1 class="brand-title" id="site-title">BOMBAY GOLD</h1>
-      <div id="live-indicator" class="live-badge-off">● LIVE OFF</div>
-      <p class="welcome-note" id="welcome-text">Loading welcome note...</p>
+<body>
+    <div class="container">
+        <h1>BOMBAY GOLD <span id="live-dot" class="status-dot"></span></h1>
+        <marquee id="notice"></marquee>
+        <div id="result-board"></div>
     </div>
-
-    <div class="btn-container">
-      <a href="#" id="tips-link" class="action-btn btn-tips">Tips</a>
-      <a href="#" id="patti-link" class="action-btn btn-patti">Patti Chart</a>
-    </div>
-
-    <div id="tables-holder">
-      <div class="loading-text">লাইভ রেজাল্ট লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</div>
-    </div>
-  </div>
-
-  <script src="firebase-config.js"></script>
-  <script src="app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="main-script.js"></script>
 </body>
 </html>
