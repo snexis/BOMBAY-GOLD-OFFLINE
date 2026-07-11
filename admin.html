@@ -3,284 +3,524 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Admin Panel - BOMBAY GOLD</title>
+    <title>Premium Main Admin Control Center</title>
+    <!-- Google Fonts & FontAwesome for Premium Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* মডার্ন ও কালারফুল ডিজাইন স্টাইল */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', Arial, sans-serif; }
-        
-        body { 
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); 
-            padding: 20px; 
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        
-        h2 { 
-            text-align: center; 
-            color: #000851; 
-            margin-bottom: 25px; 
-            font-size: 28px;
+
+        /* Top Premium Navigation Bar */
+        header {
+            background-color: var(--bg-card);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .timeout-badge {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
-        
-        .admin-card { 
-            background: rgba(255, 255, 255, 0.95); 
-            padding: 25px; 
-            margin: 0 auto 25px auto; 
-            border-radius: 12px; 
-            max-width: 650px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            border: 1px solid rgba(255,255,255,0.5);
-            transition: transform 0.2s ease;
-        }
-        
-        .admin-card:hover { transform: translateY(-2px); }
-        
-        h3 { color: #2c3e50; margin-bottom: 15px; font-size: 18px; border-left: 4px solid #667eea; padding-left: 10px; }
-        
-        input { 
-            width: calc(100% - 10px); 
-            padding: 12px; 
-            margin: 8px 5px; 
-            border: 2px solid #dfe6e9; 
-            border-radius: 8px; 
-            font-size: 15px;
-            outline: none;
-            transition: border 0.3s;
-        }
-        
-        input:focus { border-color: #667eea; }
-        
-        button { 
-            padding: 12px 20px; 
-            margin: 8px 5px; 
-            border: none; 
-            border-radius: 8px; 
-            color: white; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+        .btn-logout {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
             transition: all 0.2s;
         }
-        
-        button:hover { transform: translateY(-1px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-        
-        /* ইউনিক গ্রেডিয়েন্ট বাটন কালার */
-        button:not(.btn-green):not(.btn-red) {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+
+        .btn-logout:hover {
+            opacity: 0.9;
         }
-        
-        .btn-green { background: linear-gradient(45deg, #00b09b, #96c93d); }
-        .btn-red { background: linear-gradient(45deg, #ff416c, #ff4b2b); }
-        
-        .success { color: #27ae60; font-weight: bold; margin-left: 10px; display: inline-block; }
-        .hidden { display: none !important; }
-        
-        #display-code { 
-            font-size: 24px; 
-            color: #2980b9; 
-            font-weight: bold; 
-            letter-spacing: 3px; 
-            background: #e8f4f8; 
-            padding: 10px; 
-            display: inline-block; 
-            border-radius: 6px; 
+
+        /* Dashboard Main Layout */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(12, 180°C); /* grid setup mapping layout components */
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+            padding: 25px;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        /* Grid Spans for Clean Organization */
+        .col-4 { grid-column: span 4; }
+        .col-6 { grid-column: span 6; }
+        .col-8 { grid-column: span 8; }
+        .col-12 { grid-column: span 12; }
+
+        /* Form Controls styling */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Status Toggle Action Buttons */
+        .status-btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-status {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .status-active {
+            background-color: var(--success) !important;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .status-inactive {
+            background-color: var(--danger) !important;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-primary-action {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
             margin-top: 10px;
-            border: 2px dashed #3498db;
+            transition: background 0.2s;
         }
-        
-        #login-sec { max-width: 400px; text-align: center; margin-top: 50px; }
-        #login-sec input { width: 100%; margin: 10px 0; }
-        #login-sec button { width: 100%; margin: 10px 0; }
+
+        .btn-primary-action:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Fixed Time Slots Configuration CSS */
+        .slots-config-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .slot-input-card {
+            background: var(--bg-main);
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        /* Compact side-aligned Utility Box */
+        .compact-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .compact-row .form-group {
+            flex: 1;
+        }
+
+        /* Security Token view display */
+        .token-display-box {
+            background-color: var(--bg-main);
+            border: 1px dashed var(--warning);
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 18px;
+            color: var(--warning);
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 1024px) {
+            .col-4, .col-6, .col-8, .col-12 {
+                grid-column: span 12;
+            }
+        }
     </style>
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
-    <h2>Main Admin Control Panel</h2>
-
-    <div id="login-sec" class="admin-card">
-        <h3>Admin Login</h3>
-        <input type="email" id="admin-email" placeholder="Admin Email">
-        <input type="password" id="admin-pass" placeholder="Password">
-        <button class="btn-green" onclick="loginAdmin()">Login</button>
-    </div>
-
-    <div id="dashboard-sec" class="hidden">
-        <div style="max-width: 650px; margin: 0 auto 10px auto; overflow: hidden;">
-            <button class="btn-red" onclick="logoutAdmin()" style="float:right; margin: 0;">Logout</button>
+    <!-- Top Premium Navigation Bar -->
+    <header>
+        <h1><i class="fa-solid fa-shield-halved"></i> BOMBAY GOLD - MAIN ADMIN MODULE</h1>
+        <div class="header-actions">
+            <div class="timeout-badge" id="timeoutCounter">
+                <i class="fa-regular fa-clock"></i> অটো লগআউট: ৬০:০০ মিনিট
+            </div>
+            <button class="btn-logout" onclick="triggerSignOut()">
+                <i class="fa-solid fa-power-off"></i> লগআউট
+            </button>
         </div>
+    </header>
+
+    <!-- Dashboard Main Layout -->
+    <div class="dashboard-container">
         
-        <div class="admin-card">
-            <h3>🔒 Sub-Admin Access Control</h3>
-            <p id="request-status" style="font-weight: bold; color: gray;">No pending request...</p>
-            <button id="generate-btn" class="btn-green hidden" onclick="generateAccessCode()">Grant Access & Generate Code</button>
-            <div id="display-code" class="hidden"></div>
+        <!-- MODULE 1: WEBSITE SYSTEM STATUS CONTROLS -->
+        <div class="card col-4">
+            <div class="card-title"><i class="fa-solid fa-sliders"></i> ওয়েবসাইট লাইভ ও ডিসপ্লে স্ট্যাটাস</div>
+            <div class="status-btn-group">
+                <button id="btnLiveStatus" class="btn-status status-inactive" onclick="toggleSystemLive()">
+                    <i class="fa-solid fa-tower-broadcast"></i>
+                    <span id="txtLiveStatus">লাইভ ওয়ান: অফলাইন</span>
+                </button>
+                <button id="btnResultSection" class="btn-status status-inactive" onclick="toggleResultSection()">
+                    <i class="fa-solid fa-eye-slash"></i>
+                    <span id="txtResultSection">ফলাফল উইন্ডো: হাইড</span>
+                </button>
+            </div>
+            
+            <div class="form-group" style="margin-top: 15px;">
+                <label>লাইভ স্ক্রোলিং নোটিশ / হেডলাইন টেক্সট</label>
+                <textarea id="marqueeText" rows="2" placeholder="ওয়েবসাইটে যে লেখাটি স্ক্রোল করবে তা এখানে লিখুন..."></textarea>
+                <button class="btn-primary-action" onclick="saveMarquee()"><i class="fa-solid fa-floppy-disk"></i> নোটিশ আপডেট করুন</button>
+            </div>
         </div>
 
-        <div class="admin-card">
-            <h3>1. Website Controls</h3>
-            <button id="toggleLiveBtn" class="btn-green">Toggle Live Status</button>
-            <button id="toggleSectionBtn" class="btn-red">Hide/Show Result Section</button>
+        <!-- MODULE 2: FIXED TIME SLOTS CONFIGURATION -->
+        <div class="card col-8">
+            <div class="card-title"><i class="fa-solid fa-business-time"></i> গেম টাইম স্লট কনফিগারেশন (ফিক্সড ওয়ান-টাইম সেটিংস)</div>
+            <div class="compact-row">
+                <div class="form-group">
+                    <label>মোট গেম স্লটের সংখ্যা নির্ধারণ করুন</label>
+                    <select id="totalSlotsCount" onchange="generateSlotInputs(this.value)">
+                        <option value="4">৪ টি স্লট</option>
+                        <option value="8" selected>৮ টি স্লট</option>
+                        <option value="12">১২ টি স্লট</option>
+                        <option value="16">১৬ টি স্লট</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                    <button class="btn-primary-action" style="margin-top:0;" onclick="saveConfiguredSlots()">
+                        <i class="fa-solid fa-circle-check"></i> টাইম স্লটসমূহ ফিক্সড সেভ করুন
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Dynamic Injection of Slot Inputs via JS Engine -->
+            <div class="slots-config-grid" id="slotsInputContainer"></div>
         </div>
 
-        <div class="admin-card">
-            <h3>2. Add / Edit Result</h3>
-            <input type="date" id="res-date" required>
-            <input type="text" id="res-time" placeholder="Time (e.g. 10:20 AM)" required>
-            <input type="text" id="res-patti" placeholder="Patti (e.g. 456)" required>
-            <input type="text" id="res-single" placeholder="Single (e.g. 5)" required>
-            <button onclick="submitResult()">Submit Result</button>
-            <span id="submit-status"></span>
+        <!-- MODULE 3: RESULT MANAGEMENT PANEL -->
+        <div class="card col-8">
+            <div class="card-title"><i class="fa-solid fa-square-plus"></i> ডেইলি লাইভ রেজাল্ট আপলোডার</div>
+            <div class="compact-row">
+                <div class="form-group">
+                    <label>রেজাল্ট প্রকাশের তারিখ</label>
+                    <input type="date" id="resultDate">
+                </div>
+                <div class="form-group">
+                    <label>নির্ধারিত টাইম স্লট সিলেক্ট করুন</label>
+                    <select id="resultTimeSelect">
+                        <!-- Instantly Populated from Configured Database Slots -->
+                        <option value="">-- প্রথমে টাইম স্লট সেট করুন --</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="compact-row" style="margin-top: 10px;">
+                <div class="form-group">
+                    <label>পাত্তি এন্ট্রি (Patti - e.g. 456)</label>
+                    <input type="text" id="pattiInput" placeholder="যেমন: 456">
+                </div>
+                <div class="form-group">
+                    <label>সিঙ্গেল এন্ট্রি (Single - e.g. 5)</label>
+                    <input type="text" id="singleInput" placeholder="যেমন: 5">
+                </div>
+            </div>
+            
+            <button class="btn-primary-action" onclick="submitGameResult()">
+                <i class="fa-solid fa-cloud-arrow-up"></i> ইনস্ট্যান্ট রেজাল্ট পাবলিশ করুন
+            </button>
         </div>
 
-        <div class="admin-card">
-            <h3>3. Delete Result</h3>
-            <input type="date" id="del-date" required>
-            <input type="text" id="del-time" placeholder="Time to delete (Optional)">
-            <button class="btn-red" onclick="deleteResult()">Delete Date/Time</button>
+        <!-- MODULE 4: COMPACT CLEAN UTILITY OPERATIONS -->
+        <div class="card col-4">
+            <div class="card-title"><i class="fa-solid fa-trash-can"></i> ডেস্ট্রয় ডাটা ইউটিলিটি</div>
+            <div class="form-group">
+                <label>টার্গেট ডেট সিলেক্ট করুন</label>
+                <input type="date" id="deleteTargetDate">
+            </div>
+            <div class="form-group">
+                <label>নির্দিষ্ট টাইম (ঐচ্ছিক)</label>
+                <select id="deleteTargetTime">
+                    <option value="ALL">সম্পূর্ণ দিনের সব রেজাল্ট মুছুন</option>
+                </select>
+            </div>
+            <button class="btn-primary-action" style="background-color: var(--danger);" onclick="deleteSelectedResult()">
+                <i class="fa-solid fa-dumpster"></i> ডাটা চিরতরে মুছে ফেলুন
+            </button>
         </div>
+
+        <!-- MODULE 5: ADVANCED SUB-ADMIN COMMAND CENTER -->
+        <div class="card col-6">
+            <div class="card-title"><i class="fa-solid fa-users-gear"></i> সাব-অ্যাডমিন একাউন্ট ও সিকিউরিটি জেনারেটর</div>
+            <div class="form-group">
+                <label>সাব-অ্যাডমিন ইমেইল আইডি</label>
+                <input type="email" id="subAdminEmail" placeholder="যেমন: sub@diamond.com">
+            </div>
+            <div class="form-group">
+                <label>সিকিউর এক্সেস পাসওয়ার্ড</label>
+                <input type="password" id="subAdminPassword" placeholder="কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড">
+            </div>
+            <button class="btn-primary-action" style="background-color: var(--warning); color: black;" onclick="createNewSubAdmin()">
+                <i class="fa-solid fa-user-plus"></i> সিকিউর সাব-অ্যাডমিন তৈরি করুন
+            </button>
+
+            <div style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px;">
+                <label>লাইভ ২-স্টেপ ভেরিফিকেশন কোড (আজকের সেশনের জন্য)</label>
+                <div class="token-display-box" id="securityTokenBox">------</div>
+                <p style="font-size: 11px; color: var(--text-muted); margin-top: 5px; text-align: center;">
+                    সাব-অ্যাডমিন লগইন করার সময় এই কোডটি ইনপুট না দিলে প্যানেলে ঢুকতে পারবে না।
+                </p>
+            </div>
+        </div>
+
+        <!-- MODULE 6: WEBSITE LAYOUT & ASSETS CMS -->
+        <div class="card col-6">
+            <div class="card-title"><i class="fa-solid fa-window-restore"></i> মেইন ওয়েবসাইট হেডার ও ব্যানার কন্ট্রোলার (CMS)</div>
+            <div class="form-group">
+                <label>ওয়েবসাইট মেইন হেডার অ্যানাউন্সমেন্ট</label>
+                <input type="text" id="cmsHeaderText" placeholder="যেমন: BOMBAY GOLD - Today Live Result">
+            </div>
+            <div class="compact-row">
+                <div class="form-group">
+                    <label>লাইভ ২ডি টেক্সট লেবেল</label>
+                    <input type="text" id="cmsLiveLabel" placeholder="যেমন: Live 2D / Live Game">
+                </div>
+                <div class="form-group">
+                    <label>থিম ব্যাকগ্রাউন্ড কালার কোড</label>
+                    <input type="text" id="cmsBgColor" placeholder="যেমন: #0f172a">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>বিজ্ঞাপন ব্যানার ইমেজ ইউআরএল (Image URL)</label>
+                <input type="url" id="cmsBannerUrl" placeholder="https://example.com/banner.jpg">
+            </div>
+            <button class="btn-primary-action" onclick="updateWebsiteAssets()"><i class="fa-solid fa-globe"></i> মেইন ওয়েবসাইট লেআউট আপডেট করুন</button>
+        </div>
+
     </div>
 
-    <script>
-        // ফায়ারবেস কনফিগারেশন (সঠিক এবং পরিচ্ছন্ন)
+    <!-- CORE SYSTEM INTEGRATION & FIREBASE ENGINE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // আপনার ফায়ারবেস কনফিগারেশন ডাটা এখানে পেস্ট করুন
         const firebaseConfig = {
-            apiKey: "AIzaSyABwusy3oZXqh3531oJlQorBsUMWxQF08I",
-            authDomain: "live-result-b9155.firebaseapp.com",
-            databaseURL: "https://live-result-b9155-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "live-result-b9155",
-            storageBucket: "live-result-b9155.firebasestorage.app",
-            messagingSenderId: "495121483481",
-            appId: "1:495121483481:web:8e8bf65c71ea3d31ec60c8",
-            measurementId: "G-DFDW40QF87"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
-        // ফায়ারবেস ইনিশিয়ালাইজেশন
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
 
-        // 1. Authentication Logic
-        function loginAdmin() {
-            const email = document.getElementById('admin-email').value;
-            const pass = document.getElementById('admin-pass').value;
-            
-            if(!email || !pass) {
-                alert("দয়া করে ইমেইল এবং পাসওয়ার্ড লিখুন।");
-                return;
-            }
+        // গ্লোবাল স্টেট ট্র্যাকিং ভেরিয়েবল
+        let currentLiveStatus = false;
+        let currentResultVisibility = false;
+        let globalTimeSlots = [];
 
-            auth.signInWithEmailAndPassword(email, pass).then(() => {
-                document.getElementById('login-sec').classList.add('hidden');
-                document.getElementById('dashboard-sec').classList.remove('hidden');
-                initDashboard();
-            }).catch(err => alert("Error: " + err.message));
-        }
-
-        function logoutAdmin() {
-            auth.signOut().then(() => location.reload());
-        }
-
-        // 2. Dashboard Logic
-        function initDashboard() {
-            // Sub-Admin Request Listener
-            db.ref('auth_data/sub_admin_request').on('value', snap => {
-                const isRequested = snap.val();
-                const statusText = document.getElementById('request-status');
-                const genBtn = document.getElementById('generate-btn');
-
-                if(isRequested) {
-                    statusText.innerText = "🚨 Sub-Admin is requesting access!";
-                    statusText.style.color = "red";
-                    genBtn.classList.remove('hidden');
+        // ১. সিকিউরিটি গেটওয়ে: শুধুমাত্র অথরাইজড মেইন অ্যাডমিন এক্সেস এনফোর্সমেন্ট
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                if (user.email !== "admin@diamond.com") {
+                    alert("অনারাইজড এক্সেস! আপনি মেইন অ্যাডমিন নন।");
+                    window.location.href = "login.html";
                 } else {
-                    statusText.innerText = "No pending request...";
-                    statusText.style.color = "gray";
-                    genBtn.classList.add('hidden');
+                    initializeDashboardSync();
+                    resetIdleTimer();
+                }
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // ২. সিকিউরিটি প্যারামিটার: ১ ঘণ্টার প্রফেশনাল অটো-লগআউট সিস্টেম (Session Management)
+        let idleTime = 0;
+        const maxIdleMinutes = 60;
+
+        function resetIdleTimer() {
+            idleTime = 0;
+        }
+
+        window.onload = resetIdleTimer;
+        window.onmousemove = resetIdleTimer;
+        window.onmousedown = resetIdleTimer;
+        window.onclick = resetIdleTimer;
+        window.onkeydown = resetIdleTimer;
+
+        setInterval(() => {
+            idleTime++;
+            let remainingMinutes = maxIdleMinutes - idleTime;
+            
+            if (remainingMinutes <= 0) {
+                alert("নিরাপত্তার স্বার্থে ১ ঘণ্টা নিষ্ক্রিয় থাকার কারণে অটো-লগআউট করা হলো।");
+                triggerSignOut();
+            } else {
+                document.getElementById("timeoutCounter").innerHTML = `<i class="fa-regular fa-clock"></i> অটো লগআউট: ${remainingMinutes}:00 মিনিট`;
+            }
+        }, 60000); // প্রতি মিনিটে আপডেট হবে
+
+        window.triggerSignOut = function() {
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
+            });
+        };
+
+        // ৩. রিয়েল-টাইম ডাটাবেস সিঙ্ক ইঞ্জিন (Visual State Persistence)
+        function initializeDashboardSync() {
+            // আজকের ডিফল্ট ডেট সেট
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById("resultDate").value = today;
+            document.getElementById("deleteTargetDate").value = today;
+
+            // সিস্টেম স্ট্যাটাস মনিটরিং
+            onValue(ref(db, "config/systemControls"), (snapshot) => {
+                const data = snapshot.val() || {};
+                
+                // লাইভ স্ট্যাটাস বাটন কালার টগল
+                currentLiveStatus = data.isLive || false;
+                const btnLive = document.getElementById("btnLiveStatus");
+                if (currentLiveStatus) {
+                    btnLive.className = "btn-status status-active";
+                    document.getElementById("txtLiveStatus").innerText = "লাইভ ওয়ান: একটিভ";
+                } else {
+                    btnLive.className = "btn-status status-inactive";
+                    document.getElementById("txtLiveStatus").innerText = "লাইভ ওয়ান: অফলাইন";
+                }
+
+                // শো/হাইড রেজাল্ট বাটন কালার টগল
+                currentResultVisibility = data.showResults || false;
+                const btnResult = document.getElementById("btnResultSection");
+                if (currentResultVisibility) {
+                    btnResult.className = "btn-status status-active";
+                    document.getElementById("txtResultSection").innerText = "ফলাফল উইন্ডো: দৃশ্যমান";
+                } else {
+                    btnResult.className = "btn-status status-inactive";
+                    document.getElementById("txtResultSection").innerText = "ফলাফল উইন্ডো: হাইড";
                 }
             });
 
-            // Toggle Settings
-            let currentIsLive = true;
-            let currentShowRes = true;
-            
-            db.ref('settings').on('value', snap => {
-                if(snap.val()) {
-                    currentIsLive = snap.val().isLive;
-                    currentShowRes = snap.val().showResults;
-                }
-            });
-            
-            document.getElementById('toggleLiveBtn').onclick = function() {
-                db.ref('settings').update({ isLive: !currentIsLive });
-            };
-            
-            document.getElementById('toggleSectionBtn').onclick = function() {
-                db.ref('settings').update({ showResults: !currentShowRes });
-            };
-        }
-
-        function generateAccessCode() {
-            const randomCode = Math.floor(100000 + Math.random() * 900000).toString(); 
-            const displayBox = document.getElementById('display-code');
-
-            db.ref('auth_data').update({
-                generated_code: randomCode,
-                sub_admin_request: false 
-            }).then(() => {
-                displayBox.innerText = "Code: " + randomCode;
-                displayBox.classList.remove('hidden');
-            });
-        }
-
-        function submitResult() {
-            const date = document.getElementById('res-date').value;
-            const time = document.getElementById('res-time').value;
-            const patti = document.getElementById('res-patti').value;
-            const single = document.getElementById('res-single').value;
-            const status = document.getElementById('submit-status');
-
-            if(!date || !time || !patti || !single) {
-                alert("সবগুলো ঘর পূরণ করুন!");
-                return;
-            }
-
-            db.ref(`results/${date}/${time}`).set({ patti: patti, single: single })
-            .then(() => {
-                status.innerHTML = "✔ Successfully Added!";
-                status.className = "success";
-                // ইনপুট ক্লিয়ার করা (তারিখ বাদে)
-                document.getElementById('res-time').value = "";
-                document.getElementById('res-patti').value = "";
-                document.getElementById('res-single').value = "";
-                setTimeout(() => status.innerHTML = "", 3000);
-            }).catch(err => alert("Error: " + err.message));
-        }
-
-        function deleteResult() {
-            const date = document.getElementById('del-date').value;
-            const time = document.getElementById('del-time').value;
-            
-            if(!date) {
-                alert("দয়া করে তারিখ সিলেক্ট করুন!");
-                return;
-            }
-            
-            if(confirm(`আপনি কি নিশ্চিত যে আপনি এই ডেটা মুছতে চান?`)) {
-                let refPath = time ? `results/${date}/${time}` : `results/${date}`;
-                db.ref(refPath).remove().then(() => {
-                    alert("Data Deleted Successfully!");
-                    document.getElementById('del-time').value = "";
-                }).catch(err => alert("Error: " + err.message));
-            }
-        }
-    </script>
-</body>
-</html>
+            // নোটিশ স্ক্রোল টেক্সট লোড
+            onVal
