@@ -1,0 +1,11 @@
+<div class="container">
+    <h3>Sub-Admin Entry</h3>
+    <input id="verify-code" placeholder="Enter Verify Code">
+    <select id="row-count" onchange="generateRows()">
+        <option value="8">8 Rows</option><option value="20">20 Rows</option>
+    </select>
+    <div id="entry-area"></div>
+    <button onclick="submitAll()" class="btn">Submit All</button>
+</div>
+<script src="firebase-config.js"></script>
+<script src="sub-admin-script.js"></script>
