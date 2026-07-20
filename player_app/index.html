@@ -5,111 +5,204 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Client - Locked System</title>
     <style>
-        /* ????????? ?????-???? ? ????? ??? */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0b1426; color: #ffffff; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* ??????? ???????? */
-        .sidebar { width: 240px; background-color: #111e36; padding: 20px; display: flex; flex-direction: column; border-right: 2px solid #1a2d52; }
-        .sidebar h2 { font-size: 22px; margin-bottom: 30px; text-align: center; color: #00ffcc; letter-spacing: 1px; }
-        .menu-item { padding: 12px 15px; margin-bottom: 10px; background: #172a4a; border-radius: 6px; cursor: pointer; transition: 0.3s; text-align: left; }
-        .menu-item:hover, .menu-item.active { background: #00ffcc; color: #0b1426; font-weight: bold; }
-
-        /* ???? ???????? ????? */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        
-        /* ?? ?????????? ??? (????????? ? ?????) */
-        .top-bar { background-color: #111e36; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1a2d52; }
-        .status-box { display: flex; gap: 20px; }
-        .info-card { background: #172a4a; padding: 10px 20px; border-radius: 8px; border: 1px solid #00ffcc; min-width: 150px; text-align: center; }
-        .info-card span { display: block; font-size: 12px; color: #8a9fc4; }
-        .info-card strong { font-size: 18px; color: #00ffcc; }
-
-        /* ??? ????? ????? ?????? (AZ-2200-X 22 Rows Matrix) */
-        .game-container { padding: 25px; flex: 1; }
-        .patti-table { width: 100%; border-collapse: collapse; background: #111e36; border-radius: 8px; overflow: hidden; }
-        .patti-table th, .patti-table td { border: 1px solid #1a2d52; padding: 8px; text-align: center; }
-        .row-header { background: #172a4a; font-weight: bold; color: #00ffcc; min-width: 80px; }
-        .patti-box { background: #0f1c33; cursor: pointer; transition: 0.2s; min-width: 75px; }
-        .patti-box:hover { background: #223e6b; border: 1px solid #00ffcc; }
-        .box-content small { color: #8a9fc4; font-size: 10px; }
-        .box-content strong { color: #ffffff; font-size: 13px; }
-
-        /* ???????? ?????????-???? ??? ??????? ?? (The Online Illusion) */
-        .network-lock-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(139, 0, 0, 0.95); display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 9999;
-            color: white; font-size: 24px; font-weight: bold; display: none; /* ?????????? ???? ????? */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #0b132b;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
         }
-        .lock-box { background: #000; padding: 40px; border-radius: 12px; border: 3px solid #ff3333; text-align: center; box-shadow: 0 0 20px #ff0000; }
-        .spinner { border: 4px solid rgba(255,255,255,0.3); width: 40px; height: 40px; border-radius: 50%; border-left-color: #fff; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .game-container {
+            display: flex;
+            gap: 20px;
+        }
+        /* বাঁদিকের কন্ট্রোল প্যানেল */
+        .sidebar {
+            width: 250px;
+            background-color: #1c2541;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .sidebar h2 {
+            color: #4ade80;
+            font-size: 22px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .mode-btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #3a506b;
+            border: none;
+            color: white;
+            text-align: left;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .mode-btn:hover, .mode-btn.active {
+            background-color: #4ade80;
+            color: #0b132b;
+        }
+        /* ডানদিকের মেইন গেম ম্যাট্রিক্স গ্রিড */
+        .main-content {
+            flex-grow: 1;
+            background-color: #1c2541;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3a506b;
+            padding-bottom: 10px;
+        }
+        .timer {
+            color: #ff9f1c;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .matrix-cell {
+            background-color: #0b132b;
+            border: 1px solid #3a506b;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            transition: 0.2s;
+        }
+        .matrix-cell:hover {
+            border-color: #4ade80;
+            background-color: #112240;
+        }
+        .cell-id {
+            color: #4ade80;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .cell-data {
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+        .cell-word {
+            font-weight: bold;
+            color: #38bdf8;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- ?. ???????? ?????? ????????? ??? ?? ??????? -->
-    <div id="networkLock" class="network-lock-overlay">
-        <div class="lock-box">
-            <div class="spinner"></div>
-            <p style="margin-bottom: 10px;">????? ????????? ??????!</p>
-            <span style="font-size: 14px; color: #ffcccc; font-weight: normal;">????????? ???? ??????? ????? ???? ?????? ??? ?????...</span>
-        </div>
-    </div>
-
-    <!-- ?. ??????? ???????? ??????? -->
+<div class="game-container">
+    <!-- ল্যাঙ্গুয়েজ ও মোড সিলেকশন প্যানেল -->
     <div class="sidebar">
         <h2>GAME MATRIX</h2>
-        <div class="menu-item active">??? ?????</div>
-        <div class="menu-item" id="commissionBtn">????? ??????????</div>
-        <div class="menu-item">???? ???????</div>
-        <div class="menu-item">?? ???</div>
-    </div>
-
-    <!-- ?. ???? ????????? ????? -->
-    <div class="main-content">
-        <!-- ?? ????????? ? ????? ??????? ??? -->
-        <div class="top-bar">
-            <div class="timer-area">
-                <span style="color:#8a9fc4;">??????? ??? ????:</span>
-                <strong id="gameTimer" style="color: #ffcc00; font-size: 18px; margin-left: 5px;">00:00</strong>
-            </div>
-            <div class="status-box">
-                <div class="info-card">
-                    <span>???????? ?????????</span>
-                    <strong id="playerWallet">??.??</strong>
-                </div>
-                <div class="info-card" style="border-color: #ffcc00;">
-                    <span>????? ?????</span>
-                    <strong id="playerCommission">??.??</strong>
-                </div>
-            </div>
-        </div>
-
-        <!-- ???????? ??? ????? ????????? (?? ?? ???????????) -->
-        <div class="game-container">
-            <div id="game-board-container">
-                <!-- JavaScript-?? ??????? ????? ?? ?? � ?? ?????? ????? ??????? ??? -->
-            </div>
-        </div>
-    </div>
-
-    <!-- ??? ?????? ?????? ???? ??? ??? -->
-    <script src="app.js"></script>
-    <script>
-        // ??? ??? ????? ???? ???? ????? ??????? ???
-        window.onload = function() {
-            if(typeof loadGameBoard === 'function') {
-                loadGameBoard();
-            }
-        };
+        <button class="mode-btn active" onclick="switchMode('both')">BOTH MODE (উভয় মোড)</button>
+        <button class="mode-btn" onclick="switchMode('word')">WORD MODE (ওয়ার্ড মোড)</button>
+        <button class="mode-btn" onclick="switchMode('digit')">DIGIT MODE (ডিজিট মোড)</button>
         
-        // ????? ??????????? ????? ???? ????? ?????? ?????????
-        document.getElementById('commissionBtn').onclick = function() {
-            let currentComm = document.getElementById('playerCommission').innerText;
-            alert("????? ??????? ????? ????? ?????: " + currentComm);
-        };
-    </script>
+        <div style="margin-top: 20px; border-top: 1px solid #3a506b; padding-top: 15px;">
+            <p style="font-size: 13px; color: #8892b0;">অপশন সেটিংস:</p>
+            <button class="mode-btn" style="background-color: #2a3439;">SINGLE OPTION</button>
+            <button class="mode-btn" style="background-color: #2a3439;">BOTH OPTION</button>
+        </div>
+    </div>
+
+    <!-- গেম ড্যাশবোর্ড গ্রিড -->
+    <div class="main-content">
+        <div class="header-status">
+            <h3 id="current-mode-title" style="margin: 0; color: #38bdf8;">কারেন্ট মোড: BOTH MODE</h3>
+            <div class="timer">সিস্টেম টাইম: <span id="time-display">00:00</span></div>
+        </div>
+
+        <!-- গেমের ডেটা গ্রিড টেবিল -->
+        <div class="matrix-grid" id="matrix-container">
+            <!-- জাভাস্ক্রিপ্ট দিয়ে ডেটা এখানে লোড হবে -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // গেমের ডেটা লিস্ট (Pat, Wrd ইত্যাদি)
+    const gameData = [
+        { id: "1 (A)", pat: "100", wrd: "AXZ" },
+        { id: "1 (B)", pat: "678", wrd: "BKP" },
+        { id: "1 (C)", pat: "777", wrd: "LMO" },
+        { id: "1 (D)", pat: "560", wrd: "RST" },
+        { id: "1 (E)", pat: "470", wrd: "TUV" },
+        { id: "2 (A)", pat: "200", wrd: "BCA" },
+        { id: "2 (B)", pat: "345", wrd: "CAB" },
+        { id: "2 (C)", pat: "444", wrd: "DAB" },
+        { id: "2 (D)", pat: "570", wrd: "DAC" },
+        { id: "2 (E)", pat: "480", wrd: "EAC" },
+        { id: "3 (A)", pat: "300", wrd: "CAG" },
+        { id: "3 (B)", pat: "120", wrd: "DAG" },
+        { id: "3 (C)", pat: "111", wrd: "EAG" },
+        { id: "3 (D)", pat: "580", wrd: "FAG" },
+        { id: "3 (E)", pat: "490", wrd: "GAG" }
+    ];
+
+    let currentMode = 'both';
+
+    function renderMatrix() {
+        const container = document.getElementById('matrix-container');
+        container.innerHTML = '';
+
+        gameData.forEach(item => {
+            const cell = document.createElement('div');
+            cell.className = 'matrix-cell';
+
+            let content = `<div class="cell-id">${item.id}</div>`;
+            
+            if (currentMode === 'both') {
+                content += `<div class="cell-data">Pat: ${item.pat}</div>`;
+                content += `<div class="cell-data">Wrd: <span class="cell-word">${item.wrd}</span></div>`;
+            } else if (currentMode === 'digit') {
+                content += `<div class="cell-data" style="font-size: 18px; color: #ff9f1c;">Pat: ${item.pat}</div>`;
+            } else if (currentMode === 'word') {
+                content += `<div class="cell-word" style="font-size: 18px;">Wrd: ${item.wrd}</div>`;
+            }
+
+            cell.innerHTML = content;
+            container.appendChild(cell);
+        });
+    }
+
+    function switchMode(mode) {
+        currentMode = mode;
+        document.getElementById('current-mode-title').innerText = `কারেন্ট মোড: ${mode.toUpperCase()} MODE`;
+        
+        // বাটন অ্যাক্টিভ কালার চেঞ্জ
+        const buttons = document.querySelectorAll('.sidebar .mode-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        renderMatrix();
+    }
+
+    // টাইমার ফাংশন (লাইভ ঘড়ি)
+    setInterval(() => {
+        const now = new Date();
+        const timeStr = now.toTimeString().split(' ')[0].substring(0, 5);
+        document.getElementById('time-display').innerText = timeStr;
+    }, 1000);
+
+    // প্রথমবার পেজ লোড হলে ম্যাট্রিক্স দেখাবে
+    renderMatrix();
+</script>
+
 </body>
 </html>
