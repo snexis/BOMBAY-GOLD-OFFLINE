@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অ্যাডমিন লগইন - সিকিউর পোর্টাল</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f172a;
+            color: #cbd5e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-card {
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            width: 300px;
+            text-align: center;
+        }
+        input [type="password"] {
+            width: 90%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #475569;
+            background-color: #334155;
+            color: white;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover { background-color: #2563eb; }
+        .error { color: #ef4444; margin-top: 10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <h2>অ্যাডমিন প্যানেল</h2>
+    <p>সিকিউরিটি পাসকোড দিন</p>
+    <input type="password" id="passcode" placeholder="পাসকোড লিখুন">
+    <button onclick="verifyAuth()">প্রবেশ করুন</button>
+    <p id="error-msg" class="error"></p>
+</div>
+
+<script>
+    function verifyAuth() {
+        const passcode = document.getElementById('passcode').value;
+        const errorMsg = document.getElementById('error-msg');
+        
+        // ডেমো পাসকোড হিসেবে 'admin123' রাখা হয়েছে
+        if (passcode === 'admin123') {
+            window.location.href = 'sys-auth-x92.html';
+        } else {
+            errorMsg.innerText = 'ভুল পাসকোড! আবার চেষ্টা করুন।';
+        }
+    }
+</script>
+
+</body>
+</html>
