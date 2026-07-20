@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Client - Locked System</title>
+    <style>
+        /* প্রফেশনাল ডার্ক-ব্লু ও গেমিং থিম */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0b1426; color: #ffffff; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* সাইডবার নেভিগেশন */
+        .sidebar { width: 240px; background-color: #111e36; padding: 20px; display: flex; flex-direction: column; border-right: 2px solid #1a2d52; }
+        .sidebar h2 { font-size: 22px; margin-bottom: 30px; text-align: center; color: #00ffcc; letter-spacing: 1px; }
+        .menu-item { padding: 12px 15px; margin-bottom: 10px; background: #172a4a; border-radius: 6px; cursor: pointer; transition: 0.3s; text-align: left; }
+        .menu-item:hover, .menu-item.active { background: #00ffcc; color: #0b1426; font-weight: bold; }
+
+        /* মেইন কন্টেন্ট এরিয়া */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        
+        /* টপ ড্যাশবোর্ড বার (ব্যালেন্স ও কমিশন) */
+        .top-bar { background-color: #111e36; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1a2d52; }
+        .status-box { display: flex; gap: 20px; }
+        .info-card { background: #172a4a; padding: 10px 20px; border-radius: 8px; border: 1px solid #00ffcc; min-width: 150px; text-align: center; }
+        .info-card span { display: block; font-size: 12px; color: #8a9fc4; }
+        .info-card strong { font-size: 18px; color: #00ffcc; }
+
+        /* গেম বোর্ড টেবিল স্টাইল (AZ-2200-X 22 Rows Matrix) */
+        .game-container { padding: 25px; flex: 1; }
+        .patti-table { width: 100%; border-collapse: collapse; background: #111e36; border-radius: 8px; overflow: hidden; }
+        .patti-table th, .patti-table td { border: 1px solid #1a2d52; padding: 8px; text-align: center; }
+        .row-header { background: #172a4a; font-weight: bold; color: #00ffcc; min-width: 80px; }
+        .patti-box { background: #0f1c33; cursor: pointer; transition: 0.2s; min-width: 75px; }
+        .patti-box:hover { background: #223e6b; border: 1px solid #00ffcc; }
+        .box-content small { color: #8a9fc4; font-size: 10px; }
+        .box-content strong { color: #ffffff; font-size: 13px; }
+
+        /* পারফেক্ট ইন্টারনেট-কাটা লাল স্ক্রিন লক (The Online Illusion) */
+        .network-lock-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(139, 0, 0, 0.95); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            color: white; font-size: 24px; font-weight: bold; display: none; /* ডিফল্টভাবে হাইড থাকবে */
+        }
+        .lock-box { background: #000; padding: 40px; border-radius: 12px; border: 3px solid #ff3333; text-align: center; box-shadow: 0 0 20px #ff0000; }
+        .spinner { border: 4px solid rgba(255,255,255,0.3); width: 40px; height: 40px; border-radius: 50%; border-left-color: #fff; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- ১. এনিডেস্ক স্টাইল নেটওয়ার্ক লাল লক স্ক্রিন -->
+    <div id="networkLock" class="network-lock-overlay">
+        <div class="lock-box">
+            <div class="spinner"></div>
+            <p style="margin-bottom: 10px;">সংযোগ বিচ্ছিন্ন হয়েছে!</p>
+            <span style="font-size: 14px; color: #ffcccc; font-weight: normal;">সার্ভারের সাথে পুনরায় সংযোগ করার চেষ্টা করা হচ্ছে...</span>
+        </div>
+    </div>
+
+    <!-- ২. সাইডবার নেভিগেশন প্যানেল -->
+    <div class="sidebar">
+        <h2>GAME MATRIX</h2>
+        <div class="menu-item active">গেম বোর্ড</div>
+        <div class="menu-item" id="commissionBtn">কমিশন ড্যাশবোর্ড</div>
+        <div class="menu-item">বাজি রিপোর্ট</div>
+        <div class="menu-item">লগ আউট</div>
+    </div>
+
+    <!-- ৩. মেইন ইন্টারফেস এরিয়া -->
+    <div class="main-content">
+        <!-- টপ ব্যালেন্স ও কমিশন ডিসপ্লে বার -->
+        <div class="top-bar">
+            <div class="timer-area">
+                <span style="color:#8a9fc4;">পরবর্তী ড্র বাজি:</span>
+                <strong id="gameTimer" style="color: #ffcc00; font-size: 18px; margin-left: 5px;">00:00</strong>
+            </div>
+            <div class="status-box">
+                <div class="info-card">
+                    <span>প্লেয়ার ব্যালেন্স</span>
+                    <strong id="playerWallet">৳০.০০</strong>
+                </div>
+                <div class="info-card" style="border-color: #ffcc00;">
+                    <span>জমানো কমিশন</span>
+                    <strong id="playerCommission">৳০.০০</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- ডাইনামিক গেম বোর্ড কন্টেইনার (২২ রো ম্যাট্রিক্স) -->
+        <div class="game-container">
+            <div id="game-board-container">
+                <!-- JavaScript-এর মাধ্যমে এখানে ২২ রো × ২২ কলামের টেবিল রেন্ডার হবে -->
+            </div>
+        </div>
+    </div>
+
+    <!-- গেম ইঞ্জিন ফাইলটি লিংক করা হলো -->
+    <script src="app.js"></script>
+    <script>
+        // পেজ লোড হওয়ার সাথে সাথে বোর্ড জেনারেট হবে
+        window.onload = function() {
+            if(typeof loadGameBoard === 'function') {
+                loadGameBoard();
+            }
+        };
+        
+        // কমিশন ড্যাশবোর্ডে ক্লিক করলে দেখার সিম্পল অ্যালার্ট
+        document.getElementById('commissionBtn').onclick = function() {
+            let currentComm = document.getElementById('playerCommission').innerText;
+            alert("আপনার বর্তমান টোটাল জমানো কমিশন: " + currentComm);
+        };
+    </script>
+</body>
+</html>
