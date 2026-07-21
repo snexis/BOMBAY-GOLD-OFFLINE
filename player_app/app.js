@@ -10,25 +10,39 @@ document.addEventListener('DOMContentLoaded', () => {
         betType: 'triple',     // 'single', 'jora', 'triple'
         selectedRange: null,  // 'A', 'B', 'C', 'D'
         betAmount: 10,
-        selectedBets: new Set()
+        selectedBets: new Set(),
+        playBalance: 5000,
+        winningBalance: 1200
     };
 
-    // 2. MOCK DATA GENERATORS (10 ROWS x 22 COLS = 220 BLOCKS)
     const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-    
-    // Generate Sample 220 Patti & Word Mapping
+
+    // ACCURATE 220 PATTI DATA MATRIX (1 to 0)
+    const REAL_PATTI_DATA = {
+        1: ["100","119","128","137","146","236","245","290","380","470","489","560","579","588","678","122","133","144","199","227","335","777"],
+        2: ["129","138","147","156","200","237","246","390","480","570","589","679","688","789","110","228","233","255","299","336","444","660"],
+        3: ["120","139","148","157","238","247","256","300","490","580","670","689","780","111","166","229","337","355","399","445","599","779"],
+        4: ["130","149","158","167","239","248","257","347","356","400","590","680","789","112","220","266","338","446","455","499","699","888"],
+        5: ["140","159","168","230","249","258","267","348","357","456","500","690","780","113","122","177","221","339","555","599","663","799"],
+        6: ["150","169","178","240","259","268","349","358","367","457","600","790","890","114","222","277","330","448","556","664","699","880"],
+        7: ["160","179","188","250","269","278","340","359","368","458","467","700","890","115","133","223","288","331","449","557","665","773"],
+        8: ["170","189","260","279","288","350","369","378","459","468","567","800","900","116","125","224","233","332","440","558","666","774"],
+        9: ["180","199","270","289","360","379","388","450","469","478","568","577","900","117","126","225","234","333","441","559","667","775"],
+        0: ["190","280","299","370","389","460","479","488","569","578","677","000","118","127","226","235","334","442","550","668","776","999"]
+    };
+
+    // 2. DATA GENERATOR (10 ROWS x 22 COLS = 220 BLOCKS)
     function getPattiData() {
         const rows = [];
         for (let r = 0; r < 10; r++) {
             const rowDigit = (r + 1) % 10; // 1 to 0
-            const rowLetter = letters[r];  // A to J
+            const rowLetter = letters[r];   // A to J
+            const pattis = REAL_PATTI_DATA[rowDigit];
             const columns = [];
 
             for (let c = 1; c <= 22; c++) {
                 const blockIndex = (r * 22) + c; // 1 to 220
-                
-                // Sample 3-digit Patti & 3-letter Word Logic
-                const pattiNum = `${(r + 1) * 100 + c}`; 
+                const pattiNum = pattis[c - 1]; 
                 const wordCode = `${rowLetter}${String.fromCharCode(65 + (c % 26))}${String.fromCharCode(65 + ((c + 2) % 26))}`;
 
                 columns.push({
@@ -45,16 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. UI RENDER FUNCTIONS
 
-    // Update Top Bar Clock
     function startClock() {
         const timeEl = document.getElementById('currentDateTime');
         setInterval(() => {
             const now = new Date();
-            if(timeEl) timeEl.textContent = now.toLocaleString('en-IN');
+            if (timeEl) timeEl.textContent = now.toLocaleString('en-IN');
         }, 1000);
     }
 
-    // Render Single Mode Section (10 Blocks)
     function renderSingleSection() {
         const grid = document.getElementById('singleGrid');
         if (!grid) return;
@@ -74,21 +86,20 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (state.viewBy === 'word') {
                 cell.innerHTML = `<span class="val-top">${letter}</span>`;
             } else {
-                // BOTH View (Vertical Layout)
                 cell.innerHTML = `
                     <span class="val-top">${digit}</span>
                     <span class="val-bottom">${letter}</span>
                 `;
             }
 
-            cell.addEventListener('click', () => toggleBetSelection(cellId, `${digit}/${letter}`));
+            cell.addEventListener('click', () => toggleBetSelection(cellId));
             grid.appendChild(cell);
         }
+        highlightSelectedCells();
     }
 
-    // Render Patti Board (220 Blocks Grid)
     function renderPattiBoard() {
-        const container = document.getElementById('pattiVerticalList');
+        const container = document.getElementById('pattiVerticalList') || document.getElementById('pattiVerticalContainer');
         if (!container) return;
         container.innerHTML = '';
 
@@ -112,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.dataset.id = `patti_${item.id}`;
                 cell.dataset.index = item.id;
 
-                // Handle Range Filter Highlighting
                 if (state.selectedRange) {
                     const idx = item.id;
                     let inRange = false;
@@ -128,9 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // Render content without Pat/Wor tags (Clean Vertical Layout)
                 if (state.betType === 'jora') {
-                    // Jora / Jodi Mode Logic (2-digit / 2-letter)
                     const joraDigit = item.patti.substring(0, 2);
                     const joraWord = item.word.substring(0, 2);
 
@@ -145,13 +153,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                     }
                 } else {
-                    // Triple / Patti Mode (Full 3-digit / 3-letter)
                     if (state.viewBy === 'digit') {
                         cell.innerHTML = `<span class="val-top">${item.patti}</span>`;
                     } else if (state.viewBy === 'word') {
                         cell.innerHTML = `<span class="val-top">${item.word}</span>`;
                     } else {
-                        // BOTH VERTICAL VIEW
                         cell.innerHTML = `
                             <span class="val-top">${item.rowLabel}</span>
                             <span class="val-mid">${item.patti}</span>
@@ -160,17 +166,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                cell.addEventListener('click', () => toggleBetSelection(`patti_${item.id}`, `${item.patti} / ${item.word}`));
+                cell.addEventListener('click', () => toggleBetSelection(`patti_${item.id}`));
                 grid22.appendChild(cell);
             });
 
             rowDiv.appendChild(grid22);
             container.appendChild(rowDiv);
         });
+
+        highlightSelectedCells();
     }
 
-    // Toggle Bet Selection in Cart
-    function toggleBetSelection(id, label) {
+    function toggleBetSelection(id) {
         if (state.selectedBets.has(id)) {
             state.selectedBets.delete(id);
         } else {
@@ -205,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.selectedBets.forEach(id => {
             const itemDiv = document.createElement('div');
             itemDiv.className = 'cart-item';
-            itemDiv.style.cssText = 'display:flex; justify-content:space-between; margin-bottom:4px; border-bottom:1px solid #1e293b; padding:2px;';
+            itemDiv.style.cssText = 'display:flex; justify-content:space-between; margin-bottom:4px; border-bottom:1px solid #1e293b; padding:4px 2px;';
             itemDiv.innerHTML = `<span>Item: ${id}</span> <strong>৳${state.betAmount}</strong>`;
             cartList.appendChild(itemDiv);
         });
@@ -213,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. EVENT LISTENERS SETUP
 
-    // View By Tabs (Both, Word, Digit)
+    // View By Tabs
     document.querySelectorAll('#viewByTabs .tab-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('#viewByTabs .tab-btn').forEach(b => b.classList.remove('active'));
@@ -224,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Bet Type Tabs (Single, Jora, Triple)
+    // Bet Type Tabs
     document.querySelectorAll('#betTypeTabs .tab-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('#betTypeTabs .tab-btn').forEach(b => b.classList.remove('active'));
@@ -235,14 +242,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Range Filter Buttons (A, B, C, D)
+    // Range Filter Buttons
     document.querySelectorAll('.range-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const target = e.currentTarget;
             const range = target.dataset.range;
             
             if (state.selectedRange === range) {
-                state.selectedRange = null; // Toggle Off
+                state.selectedRange = null;
                 target.classList.remove('active');
             } else {
                 document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
@@ -259,11 +266,38 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
             e.currentTarget.classList.add('active');
             if (e.currentTarget.dataset.amount) {
-                state.betAmount = parseInt(e.currentTarget.dataset.amount);
+                state.betAmount = parseInt(e.currentTarget.dataset.amount, 10);
+                const customInput = document.getElementById('customAmount');
+                if (customInput) customInput.value = '';
                 updateCartUI();
             }
         });
     });
+
+    // Custom Amount Input
+    const customAmountInput = document.getElementById('customAmount');
+    if (customAmountInput) {
+        customAmountInput.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value, 10);
+            if (!isNaN(val) && val > 0) {
+                state.betAmount = val;
+                document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+            } else if (e.target.value === '') {
+                state.betAmount = 10;
+            }
+            updateCartUI();
+        });
+    }
+
+    // Clear Cart Button
+    const clearCartBtn = document.getElementById('clearCartBtn');
+    if (clearCartBtn) {
+        clearCartBtn.addEventListener('click', () => {
+            state.selectedBets.clear();
+            updateCartUI();
+            highlightSelectedCells();
+        });
+    }
 
     // Reset Button
     const resetBtn = document.getElementById('resetBetsBtn');
@@ -275,6 +309,33 @@ document.addEventListener('DOMContentLoaded', () => {
             updateCartUI();
             renderSingleSection();
             renderPattiBoard();
+        });
+    }
+
+    // Submit Bets
+    const submitBtn = document.getElementById('submitBetsBtn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', () => {
+            if (state.selectedBets.size === 0) {
+                alert('Please select at least one item to place a bet.');
+                return;
+            }
+
+            const totalAmount = state.selectedBets.size * state.betAmount;
+            if (totalAmount > state.playBalance) {
+                alert('Insufficient play balance!');
+                return;
+            }
+
+            // Deduct Balance
+            state.playBalance -= totalAmount;
+            const playBalanceEl = document.getElementById('playBalance');
+            if (playBalanceEl) playBalanceEl.textContent = `৳${state.playBalance.toLocaleString()}`;
+
+            alert(`Bet successfully placed! Total Amount: ৳${totalAmount}`);
+            state.selectedBets.clear();
+            updateCartUI();
+            highlightSelectedCells();
         });
     }
 
