@@ -1,26 +1,25 @@
 /* ==========================================================================
-   A2Z GAME DASHBOARD - DARK NAVY THEME (STYLE.CSS)
+   A2Z GAME DASHBOARD - COMPLETE DARK NAVY STYLESHEET (STYLE.CSS)
    ========================================================================== */
 
-/* 1. GLOBAL RESETS & VARS */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 :root {
-    --bg-dark-main: #060c21;
-    --bg-card-dark: #0a1435;
-    --bg-sidebar: #060e28;
+    --bg-dark-main: #050b1e;
+    --bg-card-dark: #0a1330;
+    --bg-sidebar: #070e24;
     --accent-blue: #1d4ed8;
     --accent-blue-hover: #2563eb;
     --accent-gold: #f59e0b;
     --text-light: #ffffff;
     --text-muted: #94a3b8;
     --border-color: #1e293b;
-    --grid-border: #1e3a8a;
+    --grid-border: #1d3557;
     --success-green: #10b981;
     --danger-red: #ef4444;
 }
@@ -32,7 +31,13 @@ body {
     overflow-x: hidden;
 }
 
-/* 2. TOP HEADER BAR */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 1. TOP HEADER */
 .top-header {
     background-color: var(--bg-card-dark);
     display: flex;
@@ -49,7 +54,7 @@ body {
 }
 
 .profile-icon {
-    font-size: 32px;
+    font-size: 30px;
     color: var(--accent-gold);
 }
 
@@ -60,7 +65,7 @@ body {
 
 .user-name {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .current-date-time {
@@ -70,13 +75,13 @@ body {
 
 .header-stats {
     display: flex;
-    gap: 15px;
+    gap: 12px;
 }
 
 .stat-box {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--border-color);
-    padding: 6px 14px;
+    padding: 6px 12px;
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -84,7 +89,7 @@ body {
 }
 
 .stat-box i {
-    font-size: 18px;
+    font-size: 16px;
     color: var(--accent-gold);
 }
 
@@ -95,7 +100,7 @@ body {
 }
 
 .stat-box strong {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-light);
 }
 
@@ -105,27 +110,27 @@ body {
 }
 
 .logout-btn {
-    background-color: transparent;
+    background: transparent;
     border: 1px solid var(--danger-red);
     color: var(--danger-red);
-    padding: 6px 14px;
+    padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.2s;
+    font-weight: bold;
 }
 
 .logout-btn:hover {
-    background-color: var(--danger-red);
+    background: var(--danger-red);
     color: #fff;
 }
 
-/* 3. MAIN WRAPPER (3 COLUMNS) */
+/* 2. MAIN LAYOUT GRID (3 COLUMNS) */
 .main-wrapper {
     display: grid;
-    grid-template-columns: 220px 1fr 300px;
+    grid-template-columns: 220px 1fr 290px;
     gap: 10px;
     padding: 10px;
-    min-height: calc(100vh - 65px);
+    flex-grow: 1;
 }
 
 /* LEFT SIDEBAR */
@@ -143,7 +148,7 @@ body {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
 }
 
 .nav-item {
@@ -155,12 +160,12 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    transition: all 0.2s;
 }
 
 .nav-item:hover, .nav-item.active {
     background-color: var(--accent-blue);
-    color: var(--text-light);
+    color: #fff;
+    font-weight: bold;
 }
 
 .live-draw-card {
@@ -168,7 +173,6 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 10px;
-    margin-top: 15px;
 }
 
 .card-header {
@@ -190,17 +194,15 @@ body {
     color: var(--text-muted);
 }
 
-.card-body p span {
-    color: var(--text-light);
-}
+.card-body p span { color: var(--text-light); }
 
 .view-history-btn {
     width: 100%;
     margin-top: 8px;
     padding: 6px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     border: none;
-    color: var(--text-light);
+    color: #fff;
     border-radius: 4px;
     font-size: 11px;
     cursor: pointer;
@@ -215,14 +217,13 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    overflow-x: auto;
 }
 
 .board-top-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.3);
     padding: 8px 12px;
     border-radius: 6px;
 }
@@ -230,7 +231,7 @@ body {
 .action-buttons {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .print-btn {
@@ -248,9 +249,20 @@ body {
     font-weight: bold;
 }
 
+.view-by-selector, .bet-type-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.label {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
 .tab-group {
     display: flex;
-    background-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.06);
     padding: 2px;
     border-radius: 4px;
 }
@@ -260,23 +272,22 @@ body {
     border: none;
     color: var(--text-muted);
     padding: 5px 12px;
-    font-size: 12px;
+    font-size: 11px;
     cursor: pointer;
     border-radius: 3px;
 }
 
 .tab-btn.active {
     background-color: var(--accent-blue);
-    color: var(--text-light);
+    color: #fff;
     font-weight: bold;
 }
 
-/* MATRIX GRID LAYOUTS */
+/* MATRIX GRID LAYOUT (220 BLOCKS) */
 .section-title {
     font-size: 12px;
     color: var(--accent-gold);
     margin-bottom: 8px;
-    letter-spacing: 0.5px;
 }
 
 .single-grid {
@@ -286,79 +297,81 @@ body {
     margin-bottom: 15px;
 }
 
-.cell-box {
-    background-color: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--grid-border);
-    border-radius: 4px;
-    padding: 6px 2px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.15s;
-    user-select: none;
-}
-
-.cell-box:hover {
-    background-color: rgba(29, 78, 216, 0.3);
-    border-color: var(--accent-blue-hover);
-}
-
-.cell-box.selected {
-    background-color: var(--accent-blue) !important;
-    border-color: #fff !important;
-    box-shadow: 0 0 8px rgba(37, 99, 235, 0.8);
-}
-
-.val-top {
-    font-weight: bold;
-    font-size: 13px;
-    color: var(--text-light);
-    display: block;
-}
-
-.val-mid {
-    font-size: 12px;
-    color: var(--accent-gold);
-    display: block;
-}
-
-.val-bottom {
-    font-size: 11px;
-    color: var(--text-muted);
-    display: block;
-}
-
-/* 22 COLS VERTICAL PATTI LIST */
 .patti-vertical-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    max-height: 520px;
+    overflow-y: auto;
+    padding-right: 4px;
 }
 
 .patti-row {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: rgba(0, 0, 0, 0.2);
     padding: 6px;
     border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .row-label {
     font-size: 11px;
     font-weight: bold;
     color: var(--accent-gold);
+    margin-bottom: 4px;
 }
 
 .cols-22-grid {
     display: grid;
-    grid-template-columns: repeat(22, minmax(45px, 1fr));
+    grid-template-columns: repeat(22, minmax(38px, 1fr));
     gap: 4px;
+}
+
+/* INDIVIDUAL CELL BOX */
+.cell-box {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--grid-border);
+    border-radius: 3px;
+    padding: 4px 1px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.1s;
+    user-select: none;
+}
+
+.cell-box:hover {
+    background-color: rgba(29, 78, 216, 0.4);
+    border-color: #fff;
+}
+
+.cell-box.selected {
+    background-color: var(--accent-blue) !important;
+    border-color: #fff !important;
+    box-shadow: 0 0 6px rgba(37, 99, 235, 0.9);
+}
+
+.val-top {
+    font-weight: bold;
+    font-size: 11px;
+    color: #fff;
+    display: block;
+}
+
+.val-mid {
+    font-size: 10px;
+    color: var(--accent-gold);
+    display: block;
+}
+
+.val-bottom {
+    font-size: 9px;
+    color: var(--text-muted);
+    display: block;
 }
 
 .board-bottom-notice {
     font-size: 11px;
     color: var(--accent-gold);
-    background-color: rgba(245, 158, 11, 0.1);
+    background-color: rgba(245, 158, 11, 0.08);
     padding: 8px;
     border-radius: 4px;
     text-align: center;
@@ -369,10 +382,10 @@ body {
     background-color: var(--bg-sidebar);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 12px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .panel-box {
@@ -383,7 +396,7 @@ body {
 }
 
 .panel-title {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-muted);
     margin-bottom: 6px;
     text-transform: uppercase;
@@ -396,9 +409,9 @@ body {
 }
 
 .range-btn {
-    background-color: rgba(255, 255, 255, 0.06);
+    background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-color);
-    color: var(--text-light);
+    color: #fff;
     padding: 6px 2px;
     border-radius: 4px;
     cursor: pointer;
@@ -410,8 +423,8 @@ body {
     border-color: #fff;
 }
 
-.range-btn strong { display: block; font-size: 13px; }
-.range-btn small { font-size: 9px; color: var(--text-muted); }
+.range-btn strong { display: block; font-size: 12px; }
+.range-btn small { font-size: 8px; color: var(--text-muted); }
 
 .panel-tab-group {
     display: grid;
@@ -446,9 +459,9 @@ body {
     background-color: rgba(245, 158, 11, 0.1);
     border: 1px solid var(--accent-gold);
     color: var(--accent-gold);
-    padding: 6px 2px;
+    padding: 5px 2px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: 10px;
     cursor: pointer;
     font-weight: bold;
 }
@@ -465,7 +478,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     color: #fff;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .selected-cart-box {
@@ -494,8 +507,8 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     padding: 6px;
-    min-height: 80px;
-    max-height: 120px;
+    min-height: 70px;
+    max-height: 100px;
     overflow-y: auto;
     font-size: 11px;
 }
@@ -503,7 +516,7 @@ body {
 .empty-cart-msg {
     color: var(--text-muted);
     text-align: center;
-    margin-top: 25px;
+    margin-top: 20px;
     font-size: 10px;
 }
 
@@ -514,7 +527,7 @@ body {
 }
 
 .action-btn {
-    padding: 10px;
+    padding: 8px;
     border: none;
     border-radius: 4px;
     font-weight: bold;
