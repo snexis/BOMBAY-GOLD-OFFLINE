@@ -1,108 +1,285 @@
-// ==========================================
-// SYSTEM LOCK CODE: ATOZ-HYBRID-SYS-2026-X9
-// ARCHITECTURE FRAME: AZ-2200-X (22 ROWS x 10 COLS)
-// STATUS: DEPLOYED IN CLIENT-SIDE ENGINE
-// ==========================================
+/* ==========================================================================
+   A2Z GAME DASHBOARD - DYNAMIC BOARD ENGINE (APP.JS)
+   ========================================================================== */
 
-// ? ???? ? ??????? ?????? ???? ????????? ??? ??????? ???
-const BOARD_ROWS = [
-    {label: '1', cat: 'A'}, {label: '2', cat: 'B'}, {label: '3', cat: 'C'},
-    {label: '4', cat: 'D'}, {label: '5', cat: 'E'}, {label: '6', cat: 'F'},
-    {label: '7', cat: 'G'}, {label: '8', cat: 'H'}, {label: '9', cat: 'I'}, {label: '0', cat: 'J'}
-];
-
-// ??????? ??????? ??????? ?????? ???? ????
-const PATTI_DATA = {
-    '1': ['100', '678', '777', '560', '470', '380', '290', '119', '137', '236', '146', '669', '579', '399', '588', '489', '245', '155', '227', '344', '335', '128'],
-    '2': ['200', '345', '444', '570', '480', '390', '660', '129', '237', '336', '246', '679', '255', '147', '228', '499', '688', '778', '138', '156', '110', '569'],
-    '3': ['300', '120', '111', '580', '490', '670', '238', '139', '337', '157', '346', '689', '355', '247', '256', '166', '599', '148', '788', '445', '229', '779'],
-    '4': ['400', '789', '888', '590', '130', '680', '248', '149', '347', '158', '446', '699', '455', '266', '112', '356', '239', '338', '257', '220', '770', '167'],
-    '5': ['500', '456', '555', '140', '230', '690', '258', '159', '357', '799', '267', '780', '447', '366', '113', '122', '177', '249', '339', '889', '348', '168'],
-    '6': ['600', '123', '222', '150', '330', '240', '268', '169', '367', '448', '899', '178', '790', '466', '358', '880', '114', '556', '259', '349', '457', '277'],
-    '7': ['700', '890', '999', '160', '340', '250', '278', '179', '377', '467', '115', '124', '223', '566', '557', '368', '359', '449', '269', '133', '188', '458'],
-    '8': ['800', '567', '666', '170', '350', '260', '288', '189', '116', '233', '459', '125', '224', '477', '990', '134', '558', '369', '378', '440', '279', '468'],
-    '9': ['900', '234', '333', '180', '360', '270', '450', '199', '117', '469', '126', '667', '478', '135', '225', '144', '379', '559', '289', '388', '577', '568'],
-    '0': ['000', '127', '190', '280', '370', '460', '550', '235', '118', '578', '145', '479', '668', '299', '334', '488', '389', '226', '569', '677', '136', '244']
-};
-
-// ?????? ?????? ??????? ????[cite: 3]
-const WORD_MAPPING = {
-    'A': ['AXZ', 'BKP', 'LMO', 'RST', 'TUV', 'WXY', 'NOP', 'ABC', 'EFG', 'HIJ', 'KLM', 'QRS', 'UVW', 'XYZ', 'DEF', 'GHI', 'JKL', 'MNO', 'PQR', 'STU', 'VWX', 'ZAB'],
-    'B': ['BCA', 'CAB', 'DAB', 'DAC', 'EAC', 'FAD', 'GAD', 'HAD', 'JAD', 'KAD', 'LAD', 'MAD', 'NAD', 'PAD', 'RAD', 'SAD', 'TAD', 'VAD', 'WAD', 'YAD', 'ZAD', 'BAG'],
-    'C': ['CAG', 'DAG', 'EAG', 'FAG', 'GAG', 'HAG', 'JAG', 'KAG', 'LAG', 'MAG', 'NAG', 'PAG', 'RAG', 'SAG', 'TAG', 'VAG', 'WAG', 'YAG', 'ZAG', 'BAK', 'CAK', 'DAK'],
-    'D': ['EAK', 'FAK', 'GAK', 'HAK', 'JAK', 'KAK', 'LAK', 'MAK', 'NAK', 'PAK', 'RAK', 'SAK', 'TAK', 'VAK', 'WAK', 'YAK', 'ZAK', 'BAL', 'CAL', 'DAL', 'EAL', 'FAL'],
-    'E': ['GAL', 'HAL', 'JAL', 'KAL', 'LAL', 'MAL', 'NAL', 'PAL', 'RAL', 'SAL', 'TAL', 'VAL', 'WAL', 'YAL', 'ZAL', 'BAM', 'CAM', 'DAM', 'EAM', 'FAM', 'GAM', 'HAM'],
-    'F': ['JAM', 'KAM', 'LAM', 'MAM', 'NAM', 'PAM', 'RAM', 'SAM', 'TAM', 'VAM', 'WAM', 'YAM', 'ZAM', 'BAN', 'CAN', 'DAN', 'EAN', 'FAN', 'GAN', 'HAN', 'JAN', 'KAN'],
-    'G': ['LAN', 'MAN', 'NAN', 'PAN', 'RAN', 'SAN', 'TAN', 'VAN', 'WAN', 'YAN', 'ZAN', 'BAP', 'CAP', 'DAP', 'EAP', 'FAP', 'GAP', 'HAP', 'JAP', 'KAP', 'LAP', 'MAP'],
-    'H': ['NAP', 'PAP', 'RAP', 'SAP', 'TAP', 'VAP', 'WAP', 'YAP', 'ZAP', 'BAR', 'CAR', 'DAR', 'EAR', 'FAR', 'GAR', 'HAR', 'JAR', 'KAR', 'LAR', 'MAR', 'NAR', 'PAR'],
-    'I': ['RAR', 'SAR', 'TAR', 'VAR', 'WAR', 'YAR', 'ZAR', 'BAS', 'CAS', 'DAS', 'EAS', 'FAS', 'GAS', 'HAS', 'JAS', 'KAS', 'LAS', 'MAS', 'NAS', 'PAS', 'RAS', 'SAS'],
-    'J': ['TAS', 'VAS', 'WAS', 'YAS', 'ZAS', 'BAT', 'CAT', 'DAT', 'EAT', 'FAT', 'GAT', 'HAT', 'JAT', 'KAT', 'LAT', 'MAT', 'NAT', 'PAT', 'RAT', 'SAT', 'TAT', 'VAT']
-};
-
-// ??? ????? ???????? ????????? ??? (?? ?????? ?????)[cite: 3]
-function loadGameBoard() {
-    const container = document.getElementById('game-board-container');
-    if (!container) return;
+document.addEventListener('DOMContentLoaded', () => {
     
-    let html = `<table class="patti-table">`;
+    // 1. STATE MANAGEMENT
+    const state = {
+        viewBy: 'both',       // 'both', 'word', 'digit'
+        betType: 'triple',     // 'single', 'jora', 'triple'
+        selectedRange: null,  // 'A', 'B', 'C', 'D'
+        betAmount: 10,
+        selectedBets: new Set()
+    };
+
+    // 2. MOCK DATA GENERATORS (10 ROWS x 22 COLS = 220 BLOCKS)
+    const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
     
-    BOARD_ROWS.forEach(row => {
-        html += `<tr><td class="row-header">${row.label} (${row.cat})</td>`;
-        
-        let pattiList = PATTI_DATA[row.label] || [];
-        let wordList = WORD_MAPPING[row.cat] || [];
-        
-        // ???? ?????? ??? ?????? ???? ????[cite: 3]
-        for(let i = 0; i < 22; i++) {
-            let patti = pattiList[i] || '000';
-            let word = wordList[i] || 'AAA';
-            
-            html += `
-            <td class="patti-box" onclick="placeBet('${row.label}', '${i}', '${patti}', '${word}')">
-                <div class="box-content">
-                    <small>Pat: ${patti}</small><br>
-                    <strong>Wrd: ${word}</strong>
-                </div>
-            </td>`;
+    // Generate Sample 220 Patti & Word Mapping
+    function getPattiData() {
+        const rows = [];
+        for (let r = 0; r < 10; r++) {
+            const rowDigit = (r + 1) % 10; // 1 to 0
+            const rowLetter = letters[r];  // A to J
+            const columns = [];
+
+            for (let c = 1; c <= 22; c++) {
+                const blockIndex = (r * 22) + c; // 1 to 220
+                
+                // Sample 3-digit Patti & 3-letter Word Logic
+                const pattiNum = `${(r + 1) * 100 + c}`; 
+                const wordCode = `${rowLetter}${String.fromCharCode(65 + (c % 26))}${String.fromCharCode(65 + ((c + 2) % 26))}`;
+
+                columns.push({
+                    id: blockIndex,
+                    rowLabel: `${rowDigit}/${rowLetter}`,
+                    patti: pattiNum,
+                    word: wordCode
+                });
+            }
+            rows.push({ digit: rowDigit, letter: rowLetter, cols: columns });
         }
-        html += `</tr>`;
+        return rows;
+    }
+
+    // 3. UI RENDER FUNCTIONS
+
+    // Update Top Bar Clock
+    function startClock() {
+        const timeEl = document.getElementById('currentDateTime');
+        setInterval(() => {
+            const now = new Date();
+            if(timeEl) timeEl.textContent = now.toLocaleString('en-IN');
+        }, 1000);
+    }
+
+    // Render Single Mode Section (10 Blocks)
+    function renderSingleSection() {
+        const grid = document.getElementById('singleGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        for (let i = 0; i < 10; i++) {
+            const digit = (i + 1) % 10;
+            const letter = letters[i];
+            const cellId = `single_${digit}_${letter}`;
+            
+            const cell = document.createElement('div');
+            cell.className = 'cell-box';
+            cell.dataset.id = cellId;
+
+            if (state.viewBy === 'digit') {
+                cell.innerHTML = `<span class="val-top">${digit}</span>`;
+            } else if (state.viewBy === 'word') {
+                cell.innerHTML = `<span class="val-top">${letter}</span>`;
+            } else {
+                // BOTH View (Vertical Layout)
+                cell.innerHTML = `
+                    <span class="val-top">${digit}</span>
+                    <span class="val-bottom">${letter}</span>
+                `;
+            }
+
+            cell.addEventListener('click', () => toggleBetSelection(cellId, `${digit}/${letter}`));
+            grid.appendChild(cell);
+        }
+    }
+
+    // Render Patti Board (220 Blocks Grid)
+    function renderPattiBoard() {
+        const container = document.getElementById('pattiVerticalList');
+        if (!container) return;
+        container.innerHTML = '';
+
+        const data = getPattiData();
+
+        data.forEach((row) => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'patti-row';
+
+            const rowTitle = document.createElement('div');
+            rowTitle.className = 'row-label';
+            rowTitle.textContent = `LINE ${row.digit} (${row.letter})`;
+            rowDiv.appendChild(rowTitle);
+
+            const grid22 = document.createElement('div');
+            grid22.className = 'cols-22-grid';
+
+            row.cols.forEach((item) => {
+                const cell = document.createElement('div');
+                cell.className = 'cell-box';
+                cell.dataset.id = `patti_${item.id}`;
+                cell.dataset.index = item.id;
+
+                // Handle Range Filter Highlighting
+                if (state.selectedRange) {
+                    const idx = item.id;
+                    let inRange = false;
+                    if (state.selectedRange === 'A' && idx >= 1 && idx <= 55) inRange = true;
+                    if (state.selectedRange === 'B' && idx >= 56 && idx <= 110) inRange = true;
+                    if (state.selectedRange === 'C' && idx >= 111 && idx <= 165) inRange = true;
+                    if (state.selectedRange === 'D' && idx >= 166 && idx <= 220) inRange = true;
+
+                    if (!inRange) {
+                        cell.style.opacity = '0.2';
+                    } else {
+                        cell.style.opacity = '1';
+                    }
+                }
+
+                // Render content without Pat/Wor tags (Clean Vertical Layout)
+                if (state.betType === 'jora') {
+                    // Jora / Jodi Mode Logic (2-digit / 2-letter)
+                    const joraDigit = item.patti.substring(0, 2);
+                    const joraWord = item.word.substring(0, 2);
+
+                    if (state.viewBy === 'digit') {
+                        cell.innerHTML = `<span class="val-top">${joraDigit}</span>`;
+                    } else if (state.viewBy === 'word') {
+                        cell.innerHTML = `<span class="val-top">${joraWord}</span>`;
+                    } else {
+                        cell.innerHTML = `
+                            <span class="val-top">${joraDigit}</span>
+                            <span class="val-bottom">${joraWord}</span>
+                        `;
+                    }
+                } else {
+                    // Triple / Patti Mode (Full 3-digit / 3-letter)
+                    if (state.viewBy === 'digit') {
+                        cell.innerHTML = `<span class="val-top">${item.patti}</span>`;
+                    } else if (state.viewBy === 'word') {
+                        cell.innerHTML = `<span class="val-top">${item.word}</span>`;
+                    } else {
+                        // BOTH VERTICAL VIEW
+                        cell.innerHTML = `
+                            <span class="val-top">${item.rowLabel}</span>
+                            <span class="val-mid">${item.patti}</span>
+                            <span class="val-bottom">${item.word}</span>
+                        `;
+                    }
+                }
+
+                cell.addEventListener('click', () => toggleBetSelection(`patti_${item.id}`, `${item.patti} / ${item.word}`));
+                grid22.appendChild(cell);
+            });
+
+            rowDiv.appendChild(grid22);
+            container.appendChild(rowDiv);
+        });
+    }
+
+    // Toggle Bet Selection in Cart
+    function toggleBetSelection(id, label) {
+        if (state.selectedBets.has(id)) {
+            state.selectedBets.delete(id);
+        } else {
+            state.selectedBets.add(id);
+        }
+        updateCartUI();
+        highlightSelectedCells();
+    }
+
+    function highlightSelectedCells() {
+        document.querySelectorAll('.cell-box').forEach(cell => {
+            if (state.selectedBets.has(cell.dataset.id)) {
+                cell.classList.add('selected');
+            } else {
+                cell.classList.remove('selected');
+            }
+        });
+    }
+
+    function updateCartUI() {
+        const countEl = document.getElementById('selectedCount');
+        const cartList = document.getElementById('cartItemsList');
+        if (countEl) countEl.textContent = state.selectedBets.size;
+
+        if (!cartList) return;
+        if (state.selectedBets.size === 0) {
+            cartList.innerHTML = '<div class="empty-cart-msg">Your selections will appear here</div>';
+            return;
+        }
+
+        cartList.innerHTML = '';
+        state.selectedBets.forEach(id => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'cart-item';
+            itemDiv.style.cssText = 'display:flex; justify-content:space-between; margin-bottom:4px; border-bottom:1px solid #1e293b; padding:2px;';
+            itemDiv.innerHTML = `<span>Item: ${id}</span> <strong>৳${state.betAmount}</strong>`;
+            cartList.appendChild(itemDiv);
+        });
+    }
+
+    // 4. EVENT LISTENERS SETUP
+
+    // View By Tabs (Both, Word, Digit)
+    document.querySelectorAll('#viewByTabs .tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('#viewByTabs .tab-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            state.viewBy = e.target.dataset.view;
+            renderSingleSection();
+            renderPattiBoard();
+        });
     });
-    
-    html += `</table>`;
-    container.innerHTML = html;
-}
 
-// ???? ???? ?????? ??? ????
-function placeBet(rowLabel, colIndex, patti, word) {
-    // ??? ????????? ?? ???? ??? ???? ??? ???? ?? (??? ??????? ???? ?????)
-    if (!navigator.onLine) {
-        alert("??????? ??????? ???! ???? ??? ????? ???");
-        return;
+    // Bet Type Tabs (Single, Jora, Triple)
+    document.querySelectorAll('#betTypeTabs .tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('#betTypeTabs .tab-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            state.betType = e.target.dataset.type;
+            renderSingleSection();
+            renderPattiBoard();
+        });
+    });
+
+    // Range Filter Buttons (A, B, C, D)
+    document.querySelectorAll('.range-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.currentTarget;
+            const range = target.dataset.range;
+            
+            if (state.selectedRange === range) {
+                state.selectedRange = null; // Toggle Off
+                target.classList.remove('active');
+            } else {
+                document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+                target.classList.add('active');
+                state.selectedRange = range;
+            }
+            renderPattiBoard();
+        });
+    });
+
+    // Chip Amount Selectors
+    document.querySelectorAll('.chip-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            if (e.currentTarget.dataset.amount) {
+                state.betAmount = parseInt(e.currentTarget.dataset.amount);
+                updateCartUI();
+            }
+        });
+    });
+
+    // Reset Button
+    const resetBtn = document.getElementById('resetBetsBtn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            state.selectedBets.clear();
+            state.selectedRange = null;
+            document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+            updateCartUI();
+            renderSingleSection();
+            renderPattiBoard();
+        });
     }
-    console.log(`Bet Action -> Line: ${rowLabel}, Col: ${colIndex}, Pat: ${patti}, Wrd: ${word}`);
-    alert(`????? ?????? ??????? ????:\n????: ${rowLabel}\n????: ${patti}\n??????: ${word}`);
-}
 
-// ==========================================
-// ?? THE ONLINE ILLUSION (NET DETECTOR)
-// ==========================================
-
-function checkNetworkStatus() {
-    const lockOverlay = document.getElementById('networkLock');
-    if (!lockOverlay) return;
-
-    if (navigator.onLine) {
-        // ????????? ????? ??? ????, ??? ??????? ????
-        lockOverlay.style.display = 'none';
-    } else {
-        // ????????? ???? ????? ?????????? ??? ??? ??????? ?? ??
-        lockOverlay.style.display = 'flex';
-    }
-}
-
-// ????? ? ??????? ???? ??????????? ????? ??? ???? ???????? ???
-setInterval(checkNetworkStatus, 1000);
-
-// ?????????? ?????? ????????? ?????? ???????
-window.addEventListener('online', checkNetworkStatus);
-window.addEventListener('offline', checkNetworkStatus);
+    // INITIALIZATION
+    startClock();
+    renderSingleSection();
+    renderPattiBoard();
+});
