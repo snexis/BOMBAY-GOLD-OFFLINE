@@ -6,6 +6,432 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 1. STATE MANAGEMENT
     const state = {
+        viewBy: 'both',              // 'both', 'word', 'digit'
+        betType: 'triple',            // 'single', 'jora', 'triple'
+        selectedRange: null,         // 'A', 'B', 'C', 'D'
+        selectedChipPoints: 10,       // Default chip point value
+        selectedBets: new Map(),     // Map<cellId, points>
+        userPoints: {
+            playPoints: 5000,
+            winningPoints: 1200,
+            rewardPoints: 50
+        },
+        profile: {
+            name: "Admin User",
+            id: "ADM-1001"
+        }
+    };
+
+    const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+
+    // ACCURATE 220 PATTI DATA MATRIX (COLUMN-BASED 1 TO 0, 22 ROWS EACH)
+    const REAL_PATTI_DATA = {
+        1: ["100","119","128","137","146","236","245","290","380","470","489","560","579","588","678","122","133","144","199","227","335","777"],
+        2: ["200","129","138","147","156","237","246","390","480","570","589","679","688","789","110","228","233","255","299","336","444","660"],
+        3: ["300","120","139","148","157","238","247","256","490","580","670","689","780","111","166","229","337","355","399","445","599","779"],
+        4: ["400","130","149","158","167","239","248","257","347","356","590","680","789","112","220","266","338","446","455","499","699","888"],
+        5: ["500","140","159","168","230","249","258","267","348","357","456","690","780","113","122","177","221","339","555","599","663","799"],
+        6: ["600","150","169","178","240","259","268","349","358","367","457","790","890","114","222","277","330","448","556","664","699","880"],
+        7: ["700","160","179","188","250","269","278","340","359","368","458","467","890","115","133","223","288","331","449","557","665","773"],
+        8: ["800","170","189","260","279","288","350","369","378","459","468","567","900","116","125","224","233","332","440","558","666","774"],
+        9: ["900","180","199","270","289","360","379","388","450","469","478","568","577","117","126","225","234","333","441","559","667","775"],
+        0: ["000","190","280","299","370","389","460","479","488","569","578","677","118","127","226","235","334","442","550","668","776","999"]
+    };
+
+    // 2. DATA GENERATOR (10 COLUMNS x 22 ROWS MATRIX)
+    function getPattiData() {
+        const columns = [];
+        const digitsOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+
+        digitsOrder.forEach((colDigit, colIndex) => {
+            const letter = letters[colIndex];
+            const pattis = REAL_PATTI_DATA[colDigit];
+            const items = [];
+
+            for (let r = 0; r < 22; r++) {
+                const blockIndex = (colIndex * 22) + (r + 1);
+                const pattiNum = pattis[r];
+                const wordCode = `${letter}${String.fromCharCode(65 + (r % 26))}${String.fromCharCode(65 + ((r + 2) % 26))}`;
+
+                items.push({
+                    id: blockIndex,
+                    columnDigit: colDigit,
+                    rowLabel: `${colDigit}/${letter}`,
+                    patti: pattiNum,
+                    word: wordCode
+                });
+            }
+            columns.push({ digit: colDigit, letter: letter, items: items });
+        });
+        return columns;
+    }
+
+    // 3. DYNAMIC PROFILE & RESULT ENGINE
+    function syncProfileData(profileObj) {
+        if (!profileObj) return;
+        state.profile = { ...state.profile, ...profileObj };
+        const profileEl = document.getElementById('profileName');
+        if (profileEl) profileEl.textContent = state.profile.name;
+    }
+
+    function syncUserPoints(pointsObj) {
+        if (!pointsObj) return;
+        state.userPoints = { ...state.userPoints, ...pointsObj };
+        
+        const playPtsEl = document.getElementById('playPoints');
+        const winPtsEl = document.getElementById('winningPoints');
+        const rewardPtsEl = document.getElementById('rewardPoints');
+
+        if (playPtsEl) playPtsEl.textContent = `${state.userPoints.playPoints.toLocaleString()} Pts`;
+        if (winPtsEl) winPtsEl.textContent = `${state.userPoints.winningPoints.toLocaleString()} Pts`;
+        if (rewardPtsEl) rewardPtsEl.textContent = `${state.userPoints.rewardPoints.toLocaleString()} Pts`;
+    }
+
+    function renderResultModule(resultData) {
+        const resultContainer = document.getElementById('lastResultDisplay');
+        if (!resultContainer) return;
+
+        if (!resultData) {
+            resultContainer.innerHTML = '<span class="result-placeholder">Awaiting Result...</span>';
+            return;
+        }
+
+        resultContainer.innerHTML = `
+            <div class="result-card">
+                <span class="result-label">Last Winning Patti:</span>
+                <span class="result-value">${resultData.patti || '---'}</span>
+                <span class="result-digit">(${resultData.digit || '-'})</span>
+            </div>
+        `;
+    }
+
+    // 4. UI RENDER FUNCTIONS
+    function startClock() {
+        const timeEl = document.getElementById('currentDateTime');
+        setInterval(() => {
+            const now = new Date();
+            if (timeEl) timeEl.textContent = now.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'medium' });
+        }, 1000);
+    }
+
+    function renderSingleSection() {
+        const grid = document.getElementById('singleGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        for (let i = 0; i < 10; i++) {
+            const digit = (i + 1) % 10;
+            const letter = letters[i];
+            const cellId = `single_${digit}`;
+            
+            const cell = document.createElement('div');
+            cell.className = 'cell-box card-item';
+            cell.dataset.id = cellId;
+            cell.dataset.digit = digit;
+
+            if (state.viewBy === 'digit') {
+                cell.innerHTML = `<span class="val-top">${digit}</span>`;
+            } else if (state.viewBy === 'word') {
+                cell.innerHTML = `<span class="val-top">${letter}</span>`;
+            } else {
+                cell.innerHTML = `
+                    <span class="val-top">${digit}</span>
+                    <span class="val-bottom">${letter}</span>
+                `;
+            }
+
+            attachAccumulatorEvents(cell, cellId, digit.toString());
+            grid.appendChild(cell);
+        }
+        highlightSelectedCells();
+    }
+
+    function renderPattiBoard() {
+        const container = document.getElementById('pattiVerticalList') || document.getElementById('pattiVerticalContainer');
+        if (!container) return;
+        container.innerHTML = '';
+
+        // Update Header Title explicitly to TRIPLE MAIN BOARD
+        const boardHeader = document.getElementById('tripleBoardHeader');
+        if (boardHeader) {
+            boardHeader.textContent = "SECTION 2: TRIPLE MAIN BOARD (220 BLOCKS)";
+        }
+
+        const data = getPattiData();
+
+        const grid10Col = document.createElement('div');
+        grid10Col.className = 'cols-10-board-grid';
+
+        data.forEach((col) => {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'patti-column';
+
+            const colHeader = document.createElement('div');
+            colHeader.className = 'column-header-card';
+            colHeader.textContent = `${col.digit}`;
+            colDiv.appendChild(colHeader);
+
+            col.items.forEach((item) => {
+                const cell = document.createElement('div');
+                cell.className = 'cell-box card-item';
+                const cellId = `patti_${item.id}`;
+                cell.dataset.id = cellId;
+                cell.dataset.patti = item.patti;
+
+                // Range Filter Filtering
+                if (state.selectedRange) {
+                    const idx = item.id;
+                    let inRange = false;
+                    if (state.selectedRange === 'A' && idx >= 1 && idx <= 55) inRange = true;
+                    if (state.selectedRange === 'B' && idx >= 56 && idx <= 110) inRange = true;
+                    if (state.selectedRange === 'C' && idx >= 111 && idx <= 165) inRange = true;
+                    if (state.selectedRange === 'D' && idx >= 166 && idx <= 220) inRange = true;
+
+                    cell.style.opacity = inRange ? '1' : '0.25';
+                    cell.style.pointerEvents = inRange ? 'auto' : 'none';
+                }
+
+                let displayDigit = item.patti;
+                let displayWord = item.word;
+
+                if (state.betType === 'jora') {
+                    displayDigit = item.patti.substring(0, 2);
+                    displayWord = item.word.substring(0, 2);
+                }
+
+                if (state.viewBy === 'digit') {
+                    cell.innerHTML = `<span class="val-top">${displayDigit}</span>`;
+                } else if (state.viewBy === 'word') {
+                    cell.innerHTML = `<span class="val-top">${displayWord}</span>`;
+                } else {
+                    cell.innerHTML = `
+                        <span class="val-mid">${displayDigit}</span>
+                        <span class="val-bottom">${displayWord}</span>
+                    `;
+                }
+
+                attachAccumulatorEvents(cell, cellId, displayDigit);
+                colDiv.appendChild(cell);
+            });
+
+            grid10Col.appendChild(colDiv);
+        });
+
+        container.appendChild(grid10Col);
+        highlightSelectedCells();
+    }
+
+    // 5. ACCUMULATIVE POINT & ANIMATION HANDLER
+    function attachAccumulatorEvents(element, cellId, labelText) {
+        const handleInteraction = (e) => {
+            e.preventDefault();
+
+            const currentPoints = state.selectedBets.get(cellId) || 0;
+            const newPoints = currentPoints + state.selectedChipPoints;
+            state.selectedBets.set(cellId, newPoints);
+
+            // Add animation and green visual highlight class
+            element.classList.add('selected-active', 'pulse-anim');
+            setTimeout(() => element.classList.remove('pulse-anim'), 300);
+
+            // Render accumulated points badge directly on card
+            let badge = element.querySelector('.point-badge');
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'point-badge';
+                element.appendChild(badge);
+            }
+            badge.textContent = `${newPoints}`;
+
+            updateCartUI();
+        };
+
+        element.addEventListener('click', handleInteraction);
+    }
+
+    function highlightSelectedCells() {
+        document.querySelectorAll('.cell-box').forEach(cell => {
+            const cellId = cell.dataset.id;
+            if (state.selectedBets.has(cellId)) {
+                cell.classList.add('selected-active');
+                let badge = cell.querySelector('.point-badge');
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'point-badge';
+                    cell.appendChild(badge);
+                }
+                badge.textContent = `${state.selectedBets.get(cellId)}`;
+            } else {
+                cell.classList.remove('selected-active');
+                const badge = cell.querySelector('.point-badge');
+                if (badge) badge.remove();
+            }
+        });
+    }
+
+    function updateCartUI() {
+        const countEl = document.getElementById('selectedCount');
+        const cartList = document.getElementById('cartItemsList');
+        if (countEl) countEl.textContent = state.selectedBets.size;
+
+        if (!cartList) return;
+        if (state.selectedBets.size === 0) {
+            cartList.innerHTML = '<div class="empty-cart-msg">No selections active</div>';
+            return;
+        }
+
+        cartList.innerHTML = '';
+        state.selectedBets.forEach((points, cellId) => {
+            const cellEl = document.querySelector(`[data-id="${cellId}"]`);
+            let digitLabel = cellId;
+
+            if (cellEl) {
+                digitLabel = cellEl.dataset.patti || cellEl.dataset.digit || cellId;
+            }
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'cart-item';
+            itemDiv.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; border-bottom:1px solid rgba(255,255,255,0.1); padding:4px 6px; font-weight:600;';
+            itemDiv.innerHTML = `<span>Digit: ${digitLabel}</span> <strong style="color:#4ade80;">${points} Pts</strong>`;
+            cartList.appendChild(itemDiv);
+        });
+    }
+
+    // 6. EVENT LISTENERS SETUP
+
+    // View By Tabs
+    document.querySelectorAll('#viewByTabs .tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('#viewByTabs .tab-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            state.viewBy = e.target.dataset.view;
+            renderSingleSection();
+            renderPattiBoard();
+        });
+    });
+
+    // Bet Type Tabs
+    document.querySelectorAll('#betTypeTabs .tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('#betTypeTabs .tab-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            state.betType = e.target.dataset.type;
+            renderSingleSection();
+            renderPattiBoard();
+        });
+    });
+
+    // Range Filter Buttons
+    document.querySelectorAll('.range-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.currentTarget;
+            const range = target.dataset.range;
+            
+            if (state.selectedRange === range) {
+                state.selectedRange = null;
+                target.classList.remove('active');
+            } else {
+                document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+                target.classList.add('active');
+                state.selectedRange = range;
+            }
+            renderPattiBoard();
+        });
+    });
+
+    // Chip Point Selectors
+    document.querySelectorAll('.chip-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            if (e.currentTarget.dataset.amount) {
+                state.selectedChipPoints = parseInt(e.currentTarget.dataset.amount, 10);
+                const customInput = document.getElementById('customAmount');
+                if (customInput) customInput.value = '';
+            }
+        });
+    });
+
+    // Custom Point Input
+    const customAmountInput = document.getElementById('customAmount');
+    if (customAmountInput) {
+        customAmountInput.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value, 10);
+            if (!isNaN(val) && val > 0) {
+                state.selectedChipPoints = val;
+                document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+            } else if (e.target.value === '') {
+                state.selectedChipPoints = 10;
+            }
+        });
+    }
+
+    // Clear Cart Button
+    const clearCartBtn = document.getElementById('clearCartBtn');
+    if (clearCartBtn) {
+        clearCartBtn.addEventListener('click', () => {
+            state.selectedBets.clear();
+            updateCartUI();
+            highlightSelectedCells();
+        });
+    }
+
+    // Reset Button
+    const resetBtn = document.getElementById('resetBetsBtn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            state.selectedBets.clear();
+            state.selectedRange = null;
+            document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+            updateCartUI();
+            renderSingleSection();
+            renderPattiBoard();
+        });
+    }
+
+    // Submit Bets
+    const submitBtn = document.getElementById('submitBetsBtn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', () => {
+            if (state.selectedBets.size === 0) {
+                alert('Please select at least one item to place points.');
+                return;
+            }
+
+            let totalPointsRequired = 0;
+            state.selectedBets.forEach(pts => totalPointsRequired += pts);
+
+            if (totalPointsRequired > state.userPoints.playPoints) {
+                alert('Insufficient play points!');
+                return;
+            }
+
+            // Deduct Play Points
+            state.userPoints.playPoints -= totalPointsRequired;
+            syncUserPoints();
+
+            alert(`Points successfully placed! Total Points: ${totalPointsRequired} Pts`);
+            state.selectedBets.clear();
+            updateCartUI();
+            highlightSelectedCells();
+        });
+    }
+
+    // INITIALIZATION & INITIAL SYNC
+    startClock();
+    syncProfileData();
+    syncUserPoints();
+    renderResultModule({ patti: "100", digit: "1" });
+    renderSingleSection();
+    renderPattiBoard();
+});/* ==========================================================================
+   A2Z GAME DASHBOARD - DYNAMIC BOARD ENGINE (APP.JS)
+   ========================================================================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // 1. STATE MANAGEMENT
+    const state = {
         viewBy: 'both',       // 'both', 'word', 'digit'
         betType: 'triple',     // 'single', 'jora', 'triple'
         selectedRange: null,  // 'A', 'B', 'C', 'D'
