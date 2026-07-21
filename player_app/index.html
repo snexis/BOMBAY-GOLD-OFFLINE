@@ -1,165 +1,230 @@
-// 1 থেকে 0 পর্যন্ত লাইনের মেইন ক্যাটাগরি এবং সিঙ্গেল মান
-const BOARD_ROWS = [
-    {label: '1', cat: 'A'}, {label: '2', cat: 'B'}, {label: '3', cat: 'C'},
-    {label: 4', cat: 'D'}, {label: '5', cat: 'E'}, {label: '6', cat: 'F'},
-    {label: '7', cat: 'G'}, {label: '8', cat: 'H'}, {label: '9', cat: 'I'}, {label: '9', cat: 'J'}
-];
-const PATTI_DATA = {
-   const PATTI_DATA = {
-    '1': ['100', '678', '777', '560', '470', '380', '290', '119', '137', '236', '146', '669', '579', '399', '588', '489', '245', '155', '227', '344', '335', '128'],
-    '2': ['200', '345', '444', '570', '480', '390', '660', '129', '237', '336', '246', '679', '255', '147', '228', '499', '688', '778', '138', '156', '110', '569'],
-    '3': ['300', '120', '111', '580', '490', '670', '238', '139', '337', '157', '346', '689', '355', '247', '256', '166', '599', '148', '788', '445', '229', '779'],
-    '4': ['400', '789', '888', '590', '130', '680', '248', '149', '347', '158', '446', '699', '455', '266', '112', '356', '239', '338', '257', '220', '770', '167'],
-    '5': ['500', '456', '555', '140', '230', '690', '258', '159', '357', '799', '267', '780', '447', '366', '113', '122', '177', '249', '339', '889', '348', '168'],
-    '6': ['600', '123', '222', '150', '330', '240', '268', '169', '367', '448', '899', '178', '790', '466', '358', '880', '114', '556', '259', '349', '457', '277'],
-    '7': ['700', '890', '999', '160', '340', '250', '278', '179', '377', '467', '115', '124', '223', '566', '557', '368', '359', '449', '269', '133', '188', '458'],
-    '8': ['800', '567', '666', '170', '350', '260', '288', '189', '116', '233', '459', '125', '224', '477', '990', '134', '558', '369', '378', '440', '279', '468'],
-    '9': ['900', '234', '333', '180', '360', '270', '450', '199', '117', '469', '126', '667', '478', '135', '225', '144', '379', '559', '289', '388', '577', '568'],
-    '0': ['000', '127', '190', '280', '370', '460', '550', '235', '118', '578', '145', '479', '668', '299', '334', '488', '389', '226', '569', '677', '136', '244']
-};
-};
-// আপনার চার্ট অনুযায়ী ওয়ার্ড ম্যাপিং (A থেকে J)
-const WORD_MAPPING = {
-   const WORD_MAPPING = {
-    'A': ['AXZ', 'BKP', 'LMO', 'RST', 'TUV', 'WXY', 'NOP', 'ABC', 'EFG', 'HIJ', 'KLM', 'QRS', 'UVW', 'XYZ', 'DEF', 'GHI', 'JKL', 'MNO', 'PQR', 'STU', 'VWX', 'ZAB'],
-    'B': ['BCA', 'CAB', 'DAB', 'DAC', 'EAC', 'FAD', 'GAD', 'HAD', 'JAD', 'KAD', 'LAD', 'MAD', 'NAD', 'PAD', 'RAD', 'SAD', 'TAD', 'VAD', 'WAD', 'YAD', 'ZAD', 'BAG'],
-    'C': ['CAG', 'DAG', 'EAG', 'FAG', 'GAG', 'HAG', 'JAG', 'KAG', 'LAG', 'MAG', 'NAG', 'PAG', 'RAG', 'SAG', 'TAG', 'VAG', 'WAG', 'YAG', 'ZAG', 'BAK', 'CAK', 'DAK'],
-    'D': ['EAK', 'FAK', 'GAK', 'HAK', 'JAK', 'KAK', 'LAK', 'MAK', 'NAK', 'PAK', 'RAK', 'SAK', 'TAK', 'VAK', 'WAK', 'YAK', 'ZAK', 'BAL', 'CAL', 'DAL', 'EAL', 'FAL'],
-    'E': ['GAL', 'HAL', 'JAL', 'KAL', 'LAL', 'MAL', 'NAL', 'PAL', 'RAL', 'SAL', 'TAL', 'VAL', 'WAL', 'YAL', 'ZAL', 'BAM', 'CAM', 'DAM', 'EAM', 'FAM', 'GAM', 'HAM'],
-    'F': ['JAM', 'KAM', 'LAM', 'MAM', 'NAM', 'PAM', 'RAM', 'SAM', 'TAM', 'VAM', 'WAM', 'YAM', 'ZAM', 'BAN', 'CAN', 'DAN', 'EAN', 'FAN', 'GAN', 'HAN', 'JAN', 'KAN'],
-    'G': ['LAN', 'MAN', 'NAN', 'PAN', 'RAN', 'SAN', 'TAN', 'VAN', 'WAN', 'YAN', 'ZAN', 'BAP', 'CAP', 'DAP', 'EAP', 'FAP', 'GAP', 'HAP', 'JAP', 'KAP', 'LAP', 'MAP'],
-    'H': ['NAP', 'PAP', 'RAP', 'SAP', 'TAP', 'VAP', 'WAP', 'YAP', 'ZAP', 'BAR', 'CAR', 'DAR', 'EAR', 'FAR', 'GAR', 'HAR', 'JAR', 'KAR', 'LAR', 'MAR', 'NAR', 'PAR'],
-    'I': ['RAR', 'SAR', 'TAR', 'VAR', 'WAR', 'YAR', 'ZAR', 'BAS', 'CAS', 'DAS', 'EAS', 'FAS', 'GAS', 'HAS', 'JAS', 'KAS', 'LAS', 'MAS', 'NAS', 'PAS', 'RAS', 'SAS'],
-    'J': ['TAS', 'VAS', 'WAS', 'YAS', 'ZAS', 'BAT', 'CAT', 'DAT', 'EAT', 'FAT', 'GAT', 'HAT', 'JAT', 'KAT', 'LAT', 'MAT', 'NAT', 'PAT', 'RAT', 'SAT', 'TAT', 'VAT']
-};
-};
-const BOTH_MAPPING = {
-   const BOTH_MAPPING = {
-    const BOTH_MAPPING = {
-    '1': [
-        { pat: '100', wrd: 'AXZ' }, { pat: '678', wrd: 'BKP' }, { pat: '777', wrd: 'LMO' }, { pat: '560', wrd: 'RST' },
-        { pat: '470', wrd: 'TUV' }, { pat: '380', wrd: 'WXY' }, { pat: '290', wrd: 'NOP' }, { pat: '119', wrd: 'ABC' },
-        { pat: '137', wrd: 'EFG' }, { pat: '236', wrd: 'HIJ' }, { pat: '146', wrd: 'KLM' }, { pat: '669', wrd: 'QRS' },
-        { pat: '579', wrd: 'UVW' }, { pat: '399', wrd: 'XYZ' }, { pat: '588', wrd: 'DEF' }, { pat: '489', wrd: 'GHI' },
-        { pat: '245', wrd: 'JKL' }, { pat: '155', wrd: 'MNO' }, { pat: '227', wrd: 'PQR' }, { pat: '344', wrd: 'STU' },
-        { pat: '335', wrd: 'VWX' }, { pat: '128', wrd: 'ZAB' }
-    ],
-    '2': [
-        { pat: '200', wrd: 'BKP' }, { pat: '345', wrd: 'LMO' }, { pat: '444', wrd: 'RST' }, { pat: '570', wrd: 'TUV' },
-        { pat: '480', wrd: 'WXY' }, { pat: '390', wrd: 'NOP' }, { pat: '660', wrd: 'ABC' }, { pat: '129', wrd: 'EFG' },
-        { pat: '237', wrd: 'HIJ' }, { pat: '336', wrd: 'KLM' }, { pat: '246', wrd: 'QRS' }, { pat: '679', wrd: 'UVW' },
-        { pat: '255', wrd: 'XYZ' }, { pat: '147', wrd: 'DEF' }, { pat: '156', wrd: 'GHI' }, { pat: '778', wrd: 'JKL' },
-        { pat: '138', wrd: 'MNO' }, { pat: '688', wrd: 'PQR' }, { pat: '110', wrd: 'STU' }, { pat: '228', wrd: 'VWX' },
-        { pat: '569', wrd: 'ZAB' }, { pat: '156', wrd: 'AXZ' }
-    ],
-    '4': [
-        { pat: '300', wrd: 'LMO' }, { pat: '120', wrd: 'RST' }, { pat: '111', wrd: 'TUV' }, { pat: '580', wrd: 'WXY' },
-        { pat: '490', wrd: 'NOP' }, { pat: '670', wrd: 'ABC' }, { pat: '238', wrd: 'EFG' }, { pat: '139', wrd: 'HIJ' },
-        { pat: '337', wrd: 'KLM' }, { pat: '157', wrd: 'QRS' }, { pat: '346', wrd: 'UVW' }, { pat: '689', wrd: 'XYZ' },
-        { pat: '355', wrd: 'DEF' }, { pat: '247', wrd: 'GHI' }, { pat: '256', wrd: 'JKL' }, { pat: '166', wrd: 'MNO' },
-        { pat: '599', wrd: 'PQR' }, { pat: '148', wrd: 'STU' }, { pat: '788', wrd: 'VWX' }, { pat: '445', wrd: 'ZAB' },
-        { pat: '229', wrd: 'AXZ' }, { pat: '779', wrd: 'BKP' }
-    ],
-    '5': [
-        { pat: '400', wrd: 'RST' }, { pat: '789', wrd: 'TUV' }, { pat: '888', wrd: 'WXY' }, { pat: '590', wrd: 'NOP' },
-        { pat: '130', wrd: 'ABC' }, { pat: '680', wrd: 'EFG' }, { pat: '248', wrd: 'HIJ' }, { pat: '149', wrd: 'KLM' },
-        { pat: '347', wrd: 'QRS' }, { pat: '158', wrd: 'UVW' }, { pat: '446', wrd: 'XYZ' }, { pat: '699', wrd: 'DEF' },
-        { pat: '455', wrd: 'GHI' }, { pat: '266', wrd: 'JKL' }, { pat: '112', wrd: 'MNO' }, { pat: '356', wrd: 'PQR' },
-        { pat: '239', wrd: 'STU' }, { pat: '338', wrd: 'VWX' }, { pat: '257', wrd: 'ZAB' }, { pat: '220', wrd: 'AXZ' },
-        { pat: '770', wrd: 'BKP' }, { pat: '167', wrd: 'LMO' }
-    ],
-    '5': [
-        { pat: '500', wrd: 'TUV' }, { pat: '456', wrd: 'WXY' }, { pat: '555', wrd: 'NOP' }, { pat: '140', wrd: 'ABC' },
-        { pat: '230', wrd: 'EFG' }, { pat: '690', wrd: 'HIJ' }, { pat: '258', wrd: 'KLM' }, { pat: '159', wrd: 'QRS' },
-        { pat: '357', wrd: 'UVW' }, { pat: '799', wrd: 'XYZ' }, { pat: '267', wrd: 'DEF' }, { pat: '780', wrd: 'GHI' },
-        { pat: '447', wrd: 'JKL' }, { pat: '366', wrd: 'MNO' }, { pat: '113', wrd: 'PQR' }, { pat: '122', wrd: 'STU' },
-        { pat: '177', wrd: 'VWX' }, { pat: '249', wrd: 'ZAB' }, { pat: '339', wrd: 'AXZ' }, { pat: '889', wrd: 'BKP' },
-        { pat: '348', wrd: 'LMO' }, { pat: '168', wrd: 'RST' }
-    ],
-    '6': [
-        { pat: '600', wrd: 'WXY' }, { pat: '123', wrd: 'NOP' }, { pat: '222', wrd: 'ABC' }, { pat: '150', wrd: 'EFG' },
-        { pat: '330', wrd: 'HIJ' }, { pat: '240', wrd: 'KLM' }, { pat: '268', wrd: 'QRS' }, { pat: '169', wrd: 'UVW' },
-        { pat: '367', wrd: 'XYZ' }, { pat: '448', wrd: 'DEF' }, { pat: '899', wrd: 'GHI' }, { pat: '178', wrd: 'JKL' },
-        { pat: '790', wrd: 'MNO' }, { pat: '466', wrd: 'PQR' }, { pat: '358', wrd: 'STU' }, { pat: '880', wrd: 'VWX' },
-        { pat: '114', wrd: 'ZAB' }, { pat: '556', wrd: 'AXZ' }, { pat: '259', wrd: 'BKP' }, { pat: '349', wrd: 'LMO' },
-        { pat: '457', wrd: 'RST' }, { pat: '277', wrd: 'TUV' }
-    ],
-    '7': [
-        { pat: '700', wrd: 'NOP' }, { pat: '890', wrd: 'ABC' }, { pat: '999', wrd: 'EFG' }, { pat: '160', wrd: 'HIJ' },
-        { pat: '340', wrd: 'KLM' }, { pat: '250', wrd: 'QRS' }, { pat: '278', wrd: 'UVW' }, { pat: '179', wrd: 'XYZ' },
-        { pat: '377', wrd: 'DEF' }, { pat: '467', wrd: 'GHI' }, { pat: '115', wrd: 'JKL' }, { pat: '124', wrd: 'MNO' },
-        { pat: '223', wrd: 'PQR' }, { pat: '566', wrd: 'STU' }, { pat: '557', wrd: 'VWX' }, { pat: '368', wrd: 'ZAB' },
-        { pat: '359', wrd: 'AXZ' }, { pat: '449', wrd: 'BKP' }, { pat: '269', wrd: 'LMO' }, { pat: '133', wrd: 'RST' },
-        { pat: '188', wrd: 'TUV' }, { pat: '458', wrd: 'WXY' }
-    ],
-    '8': [
-        { pat: '800', wrd: 'ABC' }, { pat: '567', wrd: 'EFG' }, { pat: '666', wrd: 'HIJ' }, { pat: '170', wrd: 'KLM' },
-        { pat: '350', wrd: 'QRS' }, { pat: '260', wrd: 'UVW' }, { pat: '288', wrd: 'XYZ' }, { pat: '189', wrd: 'DEF' },
-        { pat: '116', wrd: 'GHI' }, { pat: '233', wrd: 'JKL' }, { pat: '459', wrd: 'MNO' }, { pat: '125', wrd: 'PQR' },
-        { pat: '224', wrd: 'STU' }, { pat: '477', wrd: 'VWX' }, { pat: '990', wrd: 'ZAB' }, { pat: '134', wrd: 'AXZ' },
-        { pat: '558', wrd: 'BKP' }, { pat: '369', wrd: 'LMO' }, { pat: '378', wrd: 'RST' }, { pat: '440', wrd: 'TUV' },
-        { pat: '279', wrd: 'WXY' }, { pat: '468', wrd: 'NOP' }
-    ],
-    '9': [
-        { pat: '900', wrd: 'EFG' }, { pat: '234', wrd: 'HIJ' }, { pat: '333', wrd: 'KLM' }, { pat: '180', wrd: 'QRS' },
-        { pat: '360', wrd: 'UVW' }, { pat: '270', wrd: 'XYZ' }, { pat: '450', wrd: 'DEF' }, { pat: '199', wrd: 'GHI' },
-        { pat: '117', wrd: 'JKL' }, { pat: '469', wrd: 'MNO' }, { pat: '126', wrd: 'PQR' }, { pat: '667', wrd: 'STU' },
-        { pat: '478', wrd: 'VWX' }, { pat: '135', wrd: 'ZAB' }, { pat: '225', wrd: 'AXZ' }, { pat: '144', wrd: 'BKP' },
-        { pat: '379', wrd: 'LMO' }, { pat: '559', wrd: 'RST' }, { pat: '289', wrd: 'TUV' }, { pat: '388', wrd: 'WXY' },
-        { pat: '577', wrd: 'NOP' }, { pat: '568', wrd: 'ABC' }
-    ],
-    '0': [
-        { pat: '000', wrd: 'HIJ' }, { pat: '127', wrd: 'KLM' }, { pat: '190', wrd: 'QRS' }, { pat: '280', wrd: 'UVW' },
-        { pat: '370', wrd: 'XYZ' }, { pat: '460', wrd: 'DEF' }, { pat: '550', wrd: 'GHI' }, { pat: '235', wrd: 'JKL' },
-        { pat: '118', wrd: 'MNO' }, { pat: '578', wrd: 'PQR' }, { pat: '145', wrd: 'STU' }, { pat: '479', wrd: 'VWX' },
-        { pat: '668', wrd: 'ZAB' }, { pat: '299', wrd: 'AXZ' }, { pat: '334', wrd: 'BKP' }, { pat: '488', wrd: 'LMO' },
-        { pat: '389', wrd: 'RST' }, { pat: '226', wrd: 'TUV' }, { pat: '569', wrd: 'WXY' }, { pat: '677', wrd: 'NOP' },
-        { pat: '136', wrd: 'ABC' }, { pat: '244', wrd: 'EFG' }
-    ]
-};
-    ]
-};
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2Z Game Dashboard - Professional Edition</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
 
-// গেম ইঞ্জিন লুপ আপডেট (বোর্ড রেন্ডারিং)
-function loadGameBoard() {
-    BOARD_ROWS.forEach(row => {
-        let pattiList = PATTI_DATA[row.label]; 
-        let wordList = WORD_MAPPING[row.label]; 
-        
-        // এইচটিএমএল লুপ
-        for(let i = 0; i < 22; i++) {
-            let patti = pattiList[i];
-            let word = wordList[i];
-            // এখন প্রতিটি বক্সে সঠিক পাতি আর তার বিপরীতে সঠিক ওয়ার্ড বসবে
-        }
-    });
-}
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container">
 
-
-function loadGameBoard() {
-    document.getElementById('dashboard-area').style.display = 'none';
-    const container = document.getElementById('game-board-container');
-    container.style.display = 'block';
-
-    let html = `<table class="patti-table">`;
-    BOARD_ROWS.forEach(row => {
-        html += `<tr><td class="row-header">${row.label} (${row.cat})</td>`;
-        for(let i=1; i<=22; i++) {
-            // এখানে ডায়মন্ড ফাটাফাট চার্টের ডেটা অনুযায়ী লুপ হবে
-            html += `
-            <td class="patti-box" onclick="placeBet('${row.label}', '${i}')">
-                <div class="box-content">
-                    <small>Pat: 100</small><br>
-                    <strong>Wrd: AXZ</strong>
+        <!-- 1. TOP HEADER BAR -->
+        <header class="top-header">
+            <div class="user-profile">
+                <i class="fa-solid fa-circle-user profile-icon"></i>
+                <div class="user-info">
+                    <span class="user-name" id="userName">Profile: Raj</span>
+                    <span class="current-date-time" id="currentDateTime">--/--/---- 00:00:00</span>
                 </div>
-            </td>`;
-        }
-        html += `</tr>`;
-    });
-    html += `</table>`;
-    container.innerHTML = html;
-}
+            </div>
 
-function placeBet(row, col) {
-    alert("আপনার বাজিটি এই লাইনের জন্য কনফার্ম করুন।");
-}
+            <div class="header-stats">
+                <div class="stat-box balance-box">
+                    <i class="fa-solid fa-wallet"></i>
+                    <div>
+                        <small>Play Balance</small>
+                        <strong id="playBalance">৳5,000</strong>
+                    </div>
+                </div>
+
+                <div class="stat-box winning-box">
+                    <i class="fa-solid fa-trophy"></i>
+                    <div>
+                        <small>Winning Balance</small>
+                        <strong id="winBalance">৳1,200</strong>
+                    </div>
+                </div>
+
+                <!-- ADDED: LAST RESULT DISPLAY BOX -->
+                <div class="stat-box result-display-box">
+                    <i class="fa-solid fa-square-poll-vertical"></i>
+                    <div>
+                        <small>Last Result</small>
+                        <strong id="lastResultDisplay">100 - AXZ</strong>
+                    </div>
+                </div>
+
+                <div class="stat-box points-box">
+                    <i class="fa-solid fa-star"></i>
+                    <div>
+                        <small>Reward Points</small>
+                        <strong id="rewardPoints">50</strong>
+                    </div>
+                </div>
+            </div>
+
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+        </header>
+
+        <!-- MAIN CONTENT AREA (3-COLUMN LAYOUT) -->
+        <main class="main-wrapper">
+
+            <!-- 2. LEFT SIDEBAR NAVIGATION -->
+            <aside class="left-sidebar">
+                <ul class="nav-menu">
+                    <li class="nav-item active"><i class="fa-solid fa-border-all"></i> <span>Play Board</span></li>
+                    <li class="nav-item"><i class="fa-solid fa-hand-holding-dollar"></i> <span>Withdraw Funds</span></li>
+                    <li class="nav-item"><i class="fa-solid fa-file-invoice"></i> <span>Transaction Report</span></li>
+                    <li class="nav-item"><i class="fa-solid fa-scale-balanced"></i> <span>Account Balance</span></li>
+                    <li class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> <span>Play History</span></li>
+                    <li class="nav-item"><i class="fa-solid fa-chart-line"></i> <span>Results</span></li>
+                    <li class="nav-item"><i class="fa-solid fa-gear"></i> <span>Settings</span></li>
+                    <li class="nav-item"><i class="fa-solid fa-circle-question"></i> <span>Help & Support</span></li>
+                </ul>
+
+                <div class="live-draw-card">
+                    <div class="card-header">
+                        <span>Live Draw Status</span>
+                        <span class="live-badge"><i class="fa-solid fa-circle"></i> LIVE</span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Draw Time:</strong> <span id="drawTime">01:25:30 PM</span></p>
+                        <p><strong>Draw ID:</strong> <span id="drawId">245678</span></p>
+                        <p><strong>Next Draw:</strong> <span id="nextDrawTime">02:00 PM</span></p>
+                    </div>
+                    <button class="view-history-btn"><i class="fa-solid fa-clock"></i> View Draw History</button>
+                </div>
+            </aside>
+
+            <!-- 3. MIDDLE GAME BOARD (DYNAMIC 220 BLOCKS MATRIX) -->
+            <section class="middle-board-area">
+                
+                <!-- BOARD CONTROL BAR -->
+                <div class="board-top-controls">
+                    <div class="action-buttons">
+                        <button class="control-btn print-btn"><i class="fa-solid fa-print"></i> Print</button>
+                        <span class="live-tag"><i class="fa-solid fa-circle"></i> LIVE</span>
+                    </div>
+
+                    <!-- VIEW BY TAB FILTER -->
+                    <div class="view-by-selector">
+                        <span class="label">View By</span>
+                        <div class="tab-group" id="viewByTabs">
+                            <button class="tab-btn active" data-view="both">Both</button>
+                            <button class="tab-btn" data-view="word">Word</button>
+                            <button class="tab-btn" data-view="digit">Digit</button>
+                        </div>
+                    </div>
+
+                    <!-- BET TYPE SELECTOR -->
+                    <div class="bet-type-selector">
+                        <span class="label">Bet Type</span>
+                        <div class="tab-group" id="betTypeTabs">
+                            <button class="tab-btn" data-type="single">Single</button>
+                            <button class="tab-btn" data-type="jora">Jora</button>
+                            <button class="tab-btn active" data-type="triple">Triple</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC BOARD CONTAINER -->
+                <div class="board-matrix-container" id="boardMatrixContainer">
+                    <!-- SECTION 1: SINGLE MODE -->
+                    <div class="board-section" id="singleModeSection">
+                        <h4 class="section-title">SECTION 1: SINGLE MODE</h4>
+                        <div class="single-grid" id="singleGrid"></div>
+                    </div>
+
+                    <!-- SECTION 2: PATTI / MAIN MATRIX (220 BLOCKS / 10 ROWS x 22 COLS) -->
+                    <div class="board-section" id="pattiModeSection">
+                        <h4 class="section-title">SECTION 2: PATTI / MAIN BOARD (220 BLOCKS)</h4>
+                        <div class="patti-vertical-list" id="pattiVerticalList"></div>
+                    </div>
+                </div>
+
+                <!-- BOTTOM NOTICE -->
+                <div class="board-bottom-notice">
+                    <i class="fa-solid fa-bullhorn"></i> Note: Please place your bet before the draw time.
+                </div>
+            </section>
+
+            <!-- 4. RIGHT BET PANEL & FILTERS -->
+            <aside class="right-bet-panel">
+                
+                <!-- NUMBER RANGE FILTER (A, B, C, D - 55 BLOCKS EACH) -->
+                <div class="panel-box range-filter-box">
+                    <h4 class="panel-title">NUMBER RANGE</h4>
+                    <div class="range-buttons-grid">
+                        <button class="range-btn range-a" data-range="A">
+                            <strong>A</strong>
+                            <small>1-55</small>
+                        </button>
+                        <button class="range-btn range-b" data-range="B">
+                            <strong>B</strong>
+                            <small>56-110</small>
+                        </button>
+                        <button class="range-btn range-c" data-range="C">
+                            <strong>C</strong>
+                            <small>111-165</small>
+                        </button>
+                        <button class="range-btn range-d" data-range="D">
+                            <strong>D</strong>
+                            <small>166-220</small>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BET ON SELECTOR -->
+                <div class="panel-box">
+                    <h4 class="panel-title">BET ON</h4>
+                    <div class="panel-tab-group" id="sideBetOnTabs">
+                        <button class="side-tab-btn active" data-value="both">Both</button>
+                        <button class="side-tab-btn" data-value="word">Word</button>
+                        <button class="side-tab-btn" data-value="digit">Digit</button>
+                    </div>
+                </div>
+
+                <!-- BET TYPE SELECTOR (SIDE) -->
+                <div class="panel-box">
+                    <h4 class="panel-title">BET TYPE</h4>
+                    <div class="panel-tab-group" id="sideBetTypeTabs">
+                        <button class="side-tab-btn" data-value="single">Single</button>
+                        <button class="side-tab-btn" data-value="jora">Jora</button>
+                        <button class="side-tab-btn active" data-value="triple">Triple</button>
+                    </div>
+                </div>
+
+                <!-- BET AMOUNT SELECTOR & CUSTOM INPUT -->
+                <div class="panel-box">
+                    <h4 class="panel-title">BET AMOUNT</h4>
+                    <div class="chips-grid">
+                        <button class="chip-btn" data-amount="10">৳10</button>
+                        <button class="chip-btn" data-amount="20">৳20</button>
+                        <button class="chip-btn" data-amount="50">৳50</button>
+                        <button class="chip-btn" data-amount="100">৳100</button>
+                        <button class="chip-btn custom-chip" id="customChipBtn">Custom</button>
+                    </div>
+                    <input type="number" class="custom-amount-input" id="customAmountInput" placeholder="Enter custom amount">
+                </div>
+
+                <!-- SELECTED ITEMS CART -->
+                <div class="panel-box selected-cart-box">
+                    <div class="cart-header">
+                        <span>SELECTED ITEMS (<strong id="selectedCount">0</strong>)</span>
+                        <button class="clear-cart-btn" id="clearCartBtn">Clear All</button>
+                    </div>
+                    <div class="cart-items-list" id="cartItemsList">
+                        <div class="empty-cart-msg">Your selections will appear here</div>
+                    </div>
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="panel-actions">
+                    <button class="action-btn reset-btn" id="resetBetsBtn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                    <button class="action-btn submit-btn" id="submitBetBtn"><i class="fa-solid fa-paper-plane"></i> Submit Bet</button>
+                </div>
+
+            </aside>
+
+        </main>
+    </div>
+
+</body>
+</html>
