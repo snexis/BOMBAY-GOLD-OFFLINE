@@ -1,0 +1,533 @@
+/* ==========================================================================
+   A2Z GAME DASHBOARD - DARK NAVY THEME (STYLE.CSS)
+   ========================================================================== */
+
+/* 1. GLOBAL RESETS & VARS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+:root {
+    --bg-dark-main: #060c21;
+    --bg-card-dark: #0a1435;
+    --bg-sidebar: #060e28;
+    --accent-blue: #1d4ed8;
+    --accent-blue-hover: #2563eb;
+    --accent-gold: #f59e0b;
+    --text-light: #ffffff;
+    --text-muted: #94a3b8;
+    --border-color: #1e293b;
+    --grid-border: #1e3a8a;
+    --success-green: #10b981;
+    --danger-red: #ef4444;
+}
+
+body {
+    background-color: var(--bg-dark-main);
+    color: var(--text-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* 2. TOP HEADER BAR */
+.top-header {
+    background-color: var(--bg-card-dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-icon {
+    font-size: 32px;
+    color: var(--accent-gold);
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.current-date-time {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.header-stats {
+    display: flex;
+    gap: 15px;
+}
+
+.stat-box {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    padding: 6px 14px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stat-box i {
+    font-size: 18px;
+    color: var(--accent-gold);
+}
+
+.stat-box small {
+    display: block;
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.stat-box strong {
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.result-display-box strong {
+    color: var(--success-green);
+    font-weight: 800;
+}
+
+.logout-btn {
+    background-color: transparent;
+    border: 1px solid var(--danger-red);
+    color: var(--danger-red);
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: var(--danger-red);
+    color: #fff;
+}
+
+/* 3. MAIN WRAPPER (3 COLUMNS) */
+.main-wrapper {
+    display: grid;
+    grid-template-columns: 220px 1fr 300px;
+    gap: 10px;
+    padding: 10px;
+    min-height: calc(100vh - 65px);
+}
+
+/* LEFT SIDEBAR */
+.left-sidebar {
+    background-color: var(--bg-sidebar);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.nav-item {
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.nav-item:hover, .nav-item.active {
+    background-color: var(--accent-blue);
+    color: var(--text-light);
+}
+
+.live-draw-card {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px;
+    margin-top: 15px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.live-badge {
+    color: var(--danger-red);
+    font-weight: bold;
+    font-size: 10px;
+}
+
+.card-body p {
+    font-size: 11px;
+    margin-bottom: 4px;
+    color: var(--text-muted);
+}
+
+.card-body p span {
+    color: var(--text-light);
+}
+
+.view-history-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-light);
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+/* MIDDLE BOARD AREA */
+.middle-board-area {
+    background-color: var(--bg-card-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-x: auto;
+}
+
+.board-top-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.print-btn {
+    background-color: var(--accent-gold);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.live-tag {
+    color: var(--danger-red);
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.tab-group {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.08);
+    padding: 2px;
+    border-radius: 4px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 5px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.tab-btn.active {
+    background-color: var(--accent-blue);
+    color: var(--text-light);
+    font-weight: bold;
+}
+
+/* MATRIX GRID LAYOUTS */
+.section-title {
+    font-size: 12px;
+    color: var(--accent-gold);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.single-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+    margin-bottom: 15px;
+}
+
+.cell-box {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--grid-border);
+    border-radius: 4px;
+    padding: 6px 2px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+}
+
+.cell-box:hover {
+    background-color: rgba(29, 78, 216, 0.3);
+    border-color: var(--accent-blue-hover);
+}
+
+.cell-box.selected {
+    background-color: var(--accent-blue) !important;
+    border-color: #fff !important;
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.8);
+}
+
+.val-top {
+    font-weight: bold;
+    font-size: 13px;
+    color: var(--text-light);
+    display: block;
+}
+
+.val-mid {
+    font-size: 12px;
+    color: var(--accent-gold);
+    display: block;
+}
+
+.val-bottom {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: block;
+}
+
+/* 22 COLS VERTICAL PATTI LIST */
+.patti-vertical-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.patti-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 6px;
+    border-radius: 4px;
+}
+
+.row-label {
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--accent-gold);
+}
+
+.cols-22-grid {
+    display: grid;
+    grid-template-columns: repeat(22, minmax(45px, 1fr));
+    gap: 4px;
+}
+
+.board-bottom-notice {
+    font-size: 11px;
+    color: var(--accent-gold);
+    background-color: rgba(245, 158, 11, 0.1);
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* RIGHT BET PANEL */
+.right-bet-panel {
+    background-color: var(--bg-sidebar);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.panel-box {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.panel-title {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+.range-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+}
+
+.range-btn {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    padding: 6px 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.range-btn:hover, .range-btn.active {
+    background-color: var(--accent-blue);
+    border-color: #fff;
+}
+
+.range-btn strong { display: block; font-size: 13px; }
+.range-btn small { font-size: 9px; color: var(--text-muted); }
+
+.panel-tab-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
+.side-tab-btn {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 6px;
+    font-size: 11px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.side-tab-btn.active {
+    background-color: var(--accent-blue);
+    color: #fff;
+    font-weight: bold;
+}
+
+.chips-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.chip-btn {
+    background-color: rgba(245, 158, 11, 0.1);
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    padding: 6px 2px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.chip-btn:hover, .chip-btn.active {
+    background-color: var(--accent-gold);
+    color: #000;
+}
+
+.custom-amount-input {
+    width: 100%;
+    padding: 6px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+}
+
+.selected-cart-box {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-bottom: 6px;
+}
+
+.clear-cart-btn {
+    background: none;
+    border: none;
+    color: var(--danger-red);
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.cart-items-list {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 6px;
+    min-height: 80px;
+    max-height: 120px;
+    overflow-y: auto;
+    font-size: 11px;
+}
+
+.empty-cart-msg {
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 25px;
+    font-size: 10px;
+}
+
+.panel-actions {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 6px;
+}
+
+.action-btn {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.reset-btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.submit-btn {
+    background-color: var(--success-green);
+    color: #fff;
+}
