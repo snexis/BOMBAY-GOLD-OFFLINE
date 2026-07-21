@@ -1,65 +1,165 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <title>Game Interface Structure</title>
-    <style>
-        body { display: flex; font-family: sans-serif; margin: 0; background: #f0f0f0; }
-        .sidebar { width: 200px; background: #333; color: white; height: 100vh; }
-        .main-content { flex: 1; padding: 20px; }
-        .bet-panel { width: 250px; background: #ddd; height: 100vh; }
+// 1 থেকে 0 পর্যন্ত লাইনের মেইন ক্যাটাগরি এবং সিঙ্গেল মান
+const BOARD_ROWS = [
+    {label: '1', cat: 'A'}, {label: '2', cat: 'B'}, {label: '3', cat: 'C'},
+    {label: 4', cat: 'D'}, {label: '5', cat: 'E'}, {label: '6', cat: 'F'},
+    {label: '7', cat: 'G'}, {label: '8', cat: 'H'}, {label: '9', cat: 'I'}, {label: '9', cat: 'J'}
+];
+const PATTI_DATA = {
+   const PATTI_DATA = {
+    '1': ['100', '678', '777', '560', '470', '380', '290', '119', '137', '236', '146', '669', '579', '399', '588', '489', '245', '155', '227', '344', '335', '128'],
+    '2': ['200', '345', '444', '570', '480', '390', '660', '129', '237', '336', '246', '679', '255', '147', '228', '499', '688', '778', '138', '156', '110', '569'],
+    '3': ['300', '120', '111', '580', '490', '670', '238', '139', '337', '157', '346', '689', '355', '247', '256', '166', '599', '148', '788', '445', '229', '779'],
+    '4': ['400', '789', '888', '590', '130', '680', '248', '149', '347', '158', '446', '699', '455', '266', '112', '356', '239', '338', '257', '220', '770', '167'],
+    '5': ['500', '456', '555', '140', '230', '690', '258', '159', '357', '799', '267', '780', '447', '366', '113', '122', '177', '249', '339', '889', '348', '168'],
+    '6': ['600', '123', '222', '150', '330', '240', '268', '169', '367', '448', '899', '178', '790', '466', '358', '880', '114', '556', '259', '349', '457', '277'],
+    '7': ['700', '890', '999', '160', '340', '250', '278', '179', '377', '467', '115', '124', '223', '566', '557', '368', '359', '449', '269', '133', '188', '458'],
+    '8': ['800', '567', '666', '170', '350', '260', '288', '189', '116', '233', '459', '125', '224', '477', '990', '134', '558', '369', '378', '440', '279', '468'],
+    '9': ['900', '234', '333', '180', '360', '270', '450', '199', '117', '469', '126', '667', '478', '135', '225', '144', '379', '559', '289', '388', '577', '568'],
+    '0': ['000', '127', '190', '280', '370', '460', '550', '235', '118', '578', '145', '479', '668', '299', '334', '488', '389', '226', '569', '677', '136', '244']
+};
+};
+// আপনার চার্ট অনুযায়ী ওয়ার্ড ম্যাপিং (A থেকে J)
+const WORD_MAPPING = {
+   const WORD_MAPPING = {
+    'A': ['AXZ', 'BKP', 'LMO', 'RST', 'TUV', 'WXY', 'NOP', 'ABC', 'EFG', 'HIJ', 'KLM', 'QRS', 'UVW', 'XYZ', 'DEF', 'GHI', 'JKL', 'MNO', 'PQR', 'STU', 'VWX', 'ZAB'],
+    'B': ['BCA', 'CAB', 'DAB', 'DAC', 'EAC', 'FAD', 'GAD', 'HAD', 'JAD', 'KAD', 'LAD', 'MAD', 'NAD', 'PAD', 'RAD', 'SAD', 'TAD', 'VAD', 'WAD', 'YAD', 'ZAD', 'BAG'],
+    'C': ['CAG', 'DAG', 'EAG', 'FAG', 'GAG', 'HAG', 'JAG', 'KAG', 'LAG', 'MAG', 'NAG', 'PAG', 'RAG', 'SAG', 'TAG', 'VAG', 'WAG', 'YAG', 'ZAG', 'BAK', 'CAK', 'DAK'],
+    'D': ['EAK', 'FAK', 'GAK', 'HAK', 'JAK', 'KAK', 'LAK', 'MAK', 'NAK', 'PAK', 'RAK', 'SAK', 'TAK', 'VAK', 'WAK', 'YAK', 'ZAK', 'BAL', 'CAL', 'DAL', 'EAL', 'FAL'],
+    'E': ['GAL', 'HAL', 'JAL', 'KAL', 'LAL', 'MAL', 'NAL', 'PAL', 'RAL', 'SAL', 'TAL', 'VAL', 'WAL', 'YAL', 'ZAL', 'BAM', 'CAM', 'DAM', 'EAM', 'FAM', 'GAM', 'HAM'],
+    'F': ['JAM', 'KAM', 'LAM', 'MAM', 'NAM', 'PAM', 'RAM', 'SAM', 'TAM', 'VAM', 'WAM', 'YAM', 'ZAM', 'BAN', 'CAN', 'DAN', 'EAN', 'FAN', 'GAN', 'HAN', 'JAN', 'KAN'],
+    'G': ['LAN', 'MAN', 'NAN', 'PAN', 'RAN', 'SAN', 'TAN', 'VAN', 'WAN', 'YAN', 'ZAN', 'BAP', 'CAP', 'DAP', 'EAP', 'FAP', 'GAP', 'HAP', 'JAP', 'KAP', 'LAP', 'MAP'],
+    'H': ['NAP', 'PAP', 'RAP', 'SAP', 'TAP', 'VAP', 'WAP', 'YAP', 'ZAP', 'BAR', 'CAR', 'DAR', 'EAR', 'FAR', 'GAR', 'HAR', 'JAR', 'KAR', 'LAR', 'MAR', 'NAR', 'PAR'],
+    'I': ['RAR', 'SAR', 'TAR', 'VAR', 'WAR', 'YAR', 'ZAR', 'BAS', 'CAS', 'DAS', 'EAS', 'FAS', 'GAS', 'HAS', 'JAS', 'KAS', 'LAS', 'MAS', 'NAS', 'PAS', 'RAS', 'SAS'],
+    'J': ['TAS', 'VAS', 'WAS', 'YAS', 'ZAS', 'BAT', 'CAT', 'DAT', 'EAT', 'FAT', 'GAT', 'HAT', 'JAT', 'KAT', 'LAT', 'MAT', 'NAT', 'PAT', 'RAT', 'SAT', 'TAT', 'VAT']
+};
+};
+const BOTH_MAPPING = {
+   const BOTH_MAPPING = {
+    const BOTH_MAPPING = {
+    '1': [
+        { pat: '100', wrd: 'AXZ' }, { pat: '678', wrd: 'BKP' }, { pat: '777', wrd: 'LMO' }, { pat: '560', wrd: 'RST' },
+        { pat: '470', wrd: 'TUV' }, { pat: '380', wrd: 'WXY' }, { pat: '290', wrd: 'NOP' }, { pat: '119', wrd: 'ABC' },
+        { pat: '137', wrd: 'EFG' }, { pat: '236', wrd: 'HIJ' }, { pat: '146', wrd: 'KLM' }, { pat: '669', wrd: 'QRS' },
+        { pat: '579', wrd: 'UVW' }, { pat: '399', wrd: 'XYZ' }, { pat: '588', wrd: 'DEF' }, { pat: '489', wrd: 'GHI' },
+        { pat: '245', wrd: 'JKL' }, { pat: '155', wrd: 'MNO' }, { pat: '227', wrd: 'PQR' }, { pat: '344', wrd: 'STU' },
+        { pat: '335', wrd: 'VWX' }, { pat: '128', wrd: 'ZAB' }
+    ],
+    '2': [
+        { pat: '200', wrd: 'BKP' }, { pat: '345', wrd: 'LMO' }, { pat: '444', wrd: 'RST' }, { pat: '570', wrd: 'TUV' },
+        { pat: '480', wrd: 'WXY' }, { pat: '390', wrd: 'NOP' }, { pat: '660', wrd: 'ABC' }, { pat: '129', wrd: 'EFG' },
+        { pat: '237', wrd: 'HIJ' }, { pat: '336', wrd: 'KLM' }, { pat: '246', wrd: 'QRS' }, { pat: '679', wrd: 'UVW' },
+        { pat: '255', wrd: 'XYZ' }, { pat: '147', wrd: 'DEF' }, { pat: '156', wrd: 'GHI' }, { pat: '778', wrd: 'JKL' },
+        { pat: '138', wrd: 'MNO' }, { pat: '688', wrd: 'PQR' }, { pat: '110', wrd: 'STU' }, { pat: '228', wrd: 'VWX' },
+        { pat: '569', wrd: 'ZAB' }, { pat: '156', wrd: 'AXZ' }
+    ],
+    '4': [
+        { pat: '300', wrd: 'LMO' }, { pat: '120', wrd: 'RST' }, { pat: '111', wrd: 'TUV' }, { pat: '580', wrd: 'WXY' },
+        { pat: '490', wrd: 'NOP' }, { pat: '670', wrd: 'ABC' }, { pat: '238', wrd: 'EFG' }, { pat: '139', wrd: 'HIJ' },
+        { pat: '337', wrd: 'KLM' }, { pat: '157', wrd: 'QRS' }, { pat: '346', wrd: 'UVW' }, { pat: '689', wrd: 'XYZ' },
+        { pat: '355', wrd: 'DEF' }, { pat: '247', wrd: 'GHI' }, { pat: '256', wrd: 'JKL' }, { pat: '166', wrd: 'MNO' },
+        { pat: '599', wrd: 'PQR' }, { pat: '148', wrd: 'STU' }, { pat: '788', wrd: 'VWX' }, { pat: '445', wrd: 'ZAB' },
+        { pat: '229', wrd: 'AXZ' }, { pat: '779', wrd: 'BKP' }
+    ],
+    '5': [
+        { pat: '400', wrd: 'RST' }, { pat: '789', wrd: 'TUV' }, { pat: '888', wrd: 'WXY' }, { pat: '590', wrd: 'NOP' },
+        { pat: '130', wrd: 'ABC' }, { pat: '680', wrd: 'EFG' }, { pat: '248', wrd: 'HIJ' }, { pat: '149', wrd: 'KLM' },
+        { pat: '347', wrd: 'QRS' }, { pat: '158', wrd: 'UVW' }, { pat: '446', wrd: 'XYZ' }, { pat: '699', wrd: 'DEF' },
+        { pat: '455', wrd: 'GHI' }, { pat: '266', wrd: 'JKL' }, { pat: '112', wrd: 'MNO' }, { pat: '356', wrd: 'PQR' },
+        { pat: '239', wrd: 'STU' }, { pat: '338', wrd: 'VWX' }, { pat: '257', wrd: 'ZAB' }, { pat: '220', wrd: 'AXZ' },
+        { pat: '770', wrd: 'BKP' }, { pat: '167', wrd: 'LMO' }
+    ],
+    '5': [
+        { pat: '500', wrd: 'TUV' }, { pat: '456', wrd: 'WXY' }, { pat: '555', wrd: 'NOP' }, { pat: '140', wrd: 'ABC' },
+        { pat: '230', wrd: 'EFG' }, { pat: '690', wrd: 'HIJ' }, { pat: '258', wrd: 'KLM' }, { pat: '159', wrd: 'QRS' },
+        { pat: '357', wrd: 'UVW' }, { pat: '799', wrd: 'XYZ' }, { pat: '267', wrd: 'DEF' }, { pat: '780', wrd: 'GHI' },
+        { pat: '447', wrd: 'JKL' }, { pat: '366', wrd: 'MNO' }, { pat: '113', wrd: 'PQR' }, { pat: '122', wrd: 'STU' },
+        { pat: '177', wrd: 'VWX' }, { pat: '249', wrd: 'ZAB' }, { pat: '339', wrd: 'AXZ' }, { pat: '889', wrd: 'BKP' },
+        { pat: '348', wrd: 'LMO' }, { pat: '168', wrd: 'RST' }
+    ],
+    '6': [
+        { pat: '600', wrd: 'WXY' }, { pat: '123', wrd: 'NOP' }, { pat: '222', wrd: 'ABC' }, { pat: '150', wrd: 'EFG' },
+        { pat: '330', wrd: 'HIJ' }, { pat: '240', wrd: 'KLM' }, { pat: '268', wrd: 'QRS' }, { pat: '169', wrd: 'UVW' },
+        { pat: '367', wrd: 'XYZ' }, { pat: '448', wrd: 'DEF' }, { pat: '899', wrd: 'GHI' }, { pat: '178', wrd: 'JKL' },
+        { pat: '790', wrd: 'MNO' }, { pat: '466', wrd: 'PQR' }, { pat: '358', wrd: 'STU' }, { pat: '880', wrd: 'VWX' },
+        { pat: '114', wrd: 'ZAB' }, { pat: '556', wrd: 'AXZ' }, { pat: '259', wrd: 'BKP' }, { pat: '349', wrd: 'LMO' },
+        { pat: '457', wrd: 'RST' }, { pat: '277', wrd: 'TUV' }
+    ],
+    '7': [
+        { pat: '700', wrd: 'NOP' }, { pat: '890', wrd: 'ABC' }, { pat: '999', wrd: 'EFG' }, { pat: '160', wrd: 'HIJ' },
+        { pat: '340', wrd: 'KLM' }, { pat: '250', wrd: 'QRS' }, { pat: '278', wrd: 'UVW' }, { pat: '179', wrd: 'XYZ' },
+        { pat: '377', wrd: 'DEF' }, { pat: '467', wrd: 'GHI' }, { pat: '115', wrd: 'JKL' }, { pat: '124', wrd: 'MNO' },
+        { pat: '223', wrd: 'PQR' }, { pat: '566', wrd: 'STU' }, { pat: '557', wrd: 'VWX' }, { pat: '368', wrd: 'ZAB' },
+        { pat: '359', wrd: 'AXZ' }, { pat: '449', wrd: 'BKP' }, { pat: '269', wrd: 'LMO' }, { pat: '133', wrd: 'RST' },
+        { pat: '188', wrd: 'TUV' }, { pat: '458', wrd: 'WXY' }
+    ],
+    '8': [
+        { pat: '800', wrd: 'ABC' }, { pat: '567', wrd: 'EFG' }, { pat: '666', wrd: 'HIJ' }, { pat: '170', wrd: 'KLM' },
+        { pat: '350', wrd: 'QRS' }, { pat: '260', wrd: 'UVW' }, { pat: '288', wrd: 'XYZ' }, { pat: '189', wrd: 'DEF' },
+        { pat: '116', wrd: 'GHI' }, { pat: '233', wrd: 'JKL' }, { pat: '459', wrd: 'MNO' }, { pat: '125', wrd: 'PQR' },
+        { pat: '224', wrd: 'STU' }, { pat: '477', wrd: 'VWX' }, { pat: '990', wrd: 'ZAB' }, { pat: '134', wrd: 'AXZ' },
+        { pat: '558', wrd: 'BKP' }, { pat: '369', wrd: 'LMO' }, { pat: '378', wrd: 'RST' }, { pat: '440', wrd: 'TUV' },
+        { pat: '279', wrd: 'WXY' }, { pat: '468', wrd: 'NOP' }
+    ],
+    '9': [
+        { pat: '900', wrd: 'EFG' }, { pat: '234', wrd: 'HIJ' }, { pat: '333', wrd: 'KLM' }, { pat: '180', wrd: 'QRS' },
+        { pat: '360', wrd: 'UVW' }, { pat: '270', wrd: 'XYZ' }, { pat: '450', wrd: 'DEF' }, { pat: '199', wrd: 'GHI' },
+        { pat: '117', wrd: 'JKL' }, { pat: '469', wrd: 'MNO' }, { pat: '126', wrd: 'PQR' }, { pat: '667', wrd: 'STU' },
+        { pat: '478', wrd: 'VWX' }, { pat: '135', wrd: 'ZAB' }, { pat: '225', wrd: 'AXZ' }, { pat: '144', wrd: 'BKP' },
+        { pat: '379', wrd: 'LMO' }, { pat: '559', wrd: 'RST' }, { pat: '289', wrd: 'TUV' }, { pat: '388', wrd: 'WXY' },
+        { pat: '577', wrd: 'NOP' }, { pat: '568', wrd: 'ABC' }
+    ],
+    '0': [
+        { pat: '000', wrd: 'HIJ' }, { pat: '127', wrd: 'KLM' }, { pat: '190', wrd: 'QRS' }, { pat: '280', wrd: 'UVW' },
+        { pat: '370', wrd: 'XYZ' }, { pat: '460', wrd: 'DEF' }, { pat: '550', wrd: 'GHI' }, { pat: '235', wrd: 'JKL' },
+        { pat: '118', wrd: 'MNO' }, { pat: '578', wrd: 'PQR' }, { pat: '145', wrd: 'STU' }, { pat: '479', wrd: 'VWX' },
+        { pat: '668', wrd: 'ZAB' }, { pat: '299', wrd: 'AXZ' }, { pat: '334', wrd: 'BKP' }, { pat: '488', wrd: 'LMO' },
+        { pat: '389', wrd: 'RST' }, { pat: '226', wrd: 'TUV' }, { pat: '569', wrd: 'WXY' }, { pat: '677', wrd: 'NOP' },
+        { pat: '136', wrd: 'ABC' }, { pat: '244', wrd: 'EFG' }
+    ]
+};
+    ]
+};
+
+// গেম ইঞ্জিন লুপ আপডেট (বোর্ড রেন্ডারিং)
+function loadGameBoard() {
+    BOARD_ROWS.forEach(row => {
+        let pattiList = PATTI_DATA[row.label]; 
+        let wordList = WORD_MAPPING[row.label]; 
         
-        /* SINGLE Section Styles */
-        .single-section { background: white; padding: 15px; border: 2px solid #000; margin-bottom: 20px; }
-        .tabs { margin-top: 10px; display: flex; gap: 10px; }
-        .tab-btn { padding: 8px 15px; cursor: pointer; border: 1px solid #000; }
-        
-        /* Grid Structure */
-        .grid-container { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 15px; }
-        .column { border: 1px solid #999; padding: 5px; text-align: center; }
-        .header-val { font-weight: bold; padding-bottom: 5px; border-bottom: 1px solid #000; }
-        .party-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; margin-top: 5px; }
-        .party-btn { font-size: 10px; padding: 2px; cursor: pointer; }
-    </style>
-</head>
-<body>
+        // এইচটিএমএল লুপ
+        for(let i = 0; i < 22; i++) {
+            let patti = pattiList[i];
+            let word = wordList[i];
+            // এখন প্রতিটি বক্সে সঠিক পাতি আর তার বিপরীতে সঠিক ওয়ার্ড বসবে
+        }
+    });
+}
 
-    <!-- বাম পাশের Menu -->
-    <div class="sidebar">Menu</div>
 
-    <!-- মাঝের মূল সেকশন -->
-    <div class="main-content">
-        
-        <!-- SINGLE সেকশন -->
-        <div class="single-section">
-            <h3>SINGLE</h3>
-            <div class="tabs">
-                <button class="tab-btn">BOTH</button>
-                <button class="tab-btn">DIGIT</button>
-                <button class="tab-btn">WORD</button>
-            </div>
+function loadGameBoard() {
+    document.getElementById('dashboard-area').style.display = 'none';
+    const container = document.getElementById('game-board-container');
+    container.style.display = 'block';
 
-            <!-- ২২টি পার্টিসহ কলাম -->
-            <div class="grid-container" id="grid">
-                <!-- ১২০টি ব্লকের বদলে এখন ১০টি কলাম, প্রতিটিতে ২২টি পার্টি -->
-                <script>
-                    const headers = ["1/A", "2/B", "3/C", "4/D", "5/E", "6/F", "7/G", "8/H", "9/I", "0/J"];
-                    for (let i = 0; i < 10; i++) {
-                        document.write(`<div class="column">
-                            <div class="header-val">${headers[i]}</div>
-                            <div class="party-list">`);
-                        for (let j = 1; j <= 22; j++) {
-                            document.write(`<button class="party-btn">${j}</button>`);
-                        }
-                        document.write(`</div></div>`);
-                    }
-                </script>
-            </div>
-        </div>
-    </div>
+    let html = `<table class="patti-table">`;
+    BOARD_ROWS.forEach(row => {
+        html += `<tr><td class="row-header">${row.label} (${row.cat})</td>`;
+        for(let i=1; i<=22; i++) {
+            // এখানে ডায়মন্ড ফাটাফাট চার্টের ডেটা অনুযায়ী লুপ হবে
+            html += `
+            <td class="patti-box" onclick="placeBet('${row.label}', '${i}')">
+                <div class="box-content">
+                    <small>Pat: 100</small><br>
+                    <strong>Wrd: AXZ</strong>
+                </div>
+            </td>`;
+        }
+        html += `</tr>`;
+    });
+    html += `</table>`;
+    container.innerHTML = html;
+}
 
-    <!-- ডান পাশের Bet Panel -->
-    <div class="bet-panel">Bet Panel</div>
-
-</body>
-</html>
+function placeBet(row, col) {
+    alert("আপনার বাজিটি এই লাইনের জন্য কনফার্ম করুন।");
+}
