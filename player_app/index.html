@@ -4,207 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A2Z Game Dashboard</title>
-    <!-- CSS File Link -->
     <link rel="stylesheet" href="style.css">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-
-    <div class="app-container">
-     <!-- Top Profile & Points Bar (Fixes 'sonu', 'Balance', & '৳' symbol) -->
-<header class="top-header">
-    <div class="user-info">
-        <span>Player: <strong id="profileName">Admin User</strong></span>
-        <span id="currentDateTime"></span>
-    </div>
-    <div class="points-bar">
-        <span>Play Points: <strong id="playPoints">5,000 Pts</strong></span>
-        <span>Winning Points: <strong id="winningPoints">1,200 Pts</strong></span>
-        <span>Reward Points: <strong id="rewardPoints">50 Pts</strong></span>
-    </div>
-</header>
-
-<!-- Section 1 & Section 2 Headers (Fixes Title Name) -->
-<div class="board-section">
-    <!-- SECTION 1 (UNTOUCHED) -->
-    <h2 class="section-title">SECTION 1: SINGLE MODE</h2>
-    <div id="singleGrid" class="single-grid"></div>
-
-    <!-- SECTION 2 (UPDATED TITLE) -->
-    <h2 id="tripleBoardHeader" class="section-title">SECTION 2: TRIPLE MAIN BOARD (220 BLOCKS)</h2>
-    
-    <div id="pattiVerticalContainer" class="patti-container"></div>
-</div>
-
-            <button class="logout-btn"><i class="fa-solid fa-power-off"></i> Logout</button>
+    <div class="dashboard-container">
+        
+        <!-- Header Controls -->
+        <header class="top-header">
+            <div class="user-info">
+                <span>Player: <strong id="profileName">Admin User</strong></span>
+                <span id="currentDateTime"></span>
+            </div>
+            <div class="points-bar">
+                <span>Play Points: <strong id="playPoints">5,000 Pts</strong></span>
+                <span>Winning Points: <strong id="winningPoints">1,200 Pts</strong></span>
+            </div>
         </header>
 
-        <!-- MAIN WRAPPER -->
-        <div class="main-wrapper">
+        <!-- Board Sections Container -->
+        <div class="board-section">
             
-            <!-- LEFT SIDEBAR MENU -->
-            <aside class="left-sidebar">
-                <ul class="nav-menu">
-                    <li class="nav-item active"><i class="fa-solid fa-border-all"></i> Play Board</li>
-                    <li class="nav-item"><i class="fa-solid fa-hand-holding-dollar"></i> Withdraw Funds</li>
-                    <li class="nav-item"><i class="fa-solid fa-file-invoice-dollar"></i> Transaction Report</li>
-                    <li class="nav-item"><i class="fa-solid fa-scale-balanced"></i> Account Balance</li>
-                    <li class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> Play History</li>
-                    <li class="nav-item"><i class="fa-solid fa-square-poll-vertical"></i> Results</li>
-                    <li class="nav-item"><i class="fa-solid fa-gear"></i> Settings</li>
-                    <li class="nav-item"><i class="fa-solid fa-circle-question"></i> Help & Support</li>
-                </ul>
+            <!-- SECTION 1 -->
+            <h2 class="section-title">SECTION 1: SINGLE MODE</h2>
+            <div id="singleGrid" class="single-grid"></div>
 
-                <div class="live-draw-card">
-                    <div class="card-header">
-                        <span>Live Draw Status</span>
-                        <span class="live-badge">🔴 LIVE</span>
-                    </div>
-                    <div class="card-body">
-                        <p>Draw Time: <span>01:25:30 PM</span></p>
-                        <p>Draw ID: <span>245678</span></p>
-                        <p>Next Draw: <span>02:00 PM</span></p>
-                        <button class="view-history-btn"><i class="fa-solid fa-eye"></i> View Draw History</button>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- MIDDLE BOARD AREA -->
-            <main class="middle-board-area">
-                
-                <!-- BOARD TOP CONTROLS -->
-                <div class="board-top-controls">
-                    <div class="action-buttons">
-                        <button class="print-btn"><i class="fa-solid fa-print"></i> Print</button>
-                        <span class="live-tag">🔴 LIVE</span>
-                    </div>
-
-                    <!-- VIEW BY TABS -->
-                    <div class="view-by-selector">
-                        <span class="label">View By</span>
-                        <div class="tab-group" id="viewByTabs">
-                            <button class="tab-btn active" data-view="both">Both</button>
-                            <button class="tab-btn" data-view="word">Word</button>
-                            <button class="tab-btn" data-view="digit">Digit</button>
-                        </div>
-                    </div>
-
-                    <!-- BET TYPE TABS -->
-                    <div class="bet-type-selector">
-                        <span class="label">Bet Type</span>
-                        <div class="tab-group" id="betTypeTabs">
-                            <button class="tab-btn" data-type="single">Single</button>
-                            <button class="tab-btn" data-type="jora">Jora</button>
-                            <button class="tab-btn active" data-type="triple">Triple</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECTION 1: SINGLE MODE -->
-                <div class="board-section">
-                    <h3 class="section-title">SECTION 1: SINGLE MODE</h3>
-                    <div class="single-grid" id="singleGrid">
-                        <!-- JS generated 10 blocks will load here -->
-                    </div>
-                </div>
-
-                <!-- SECTION 2: PATTI / MAIN BOARD (220 BLOCKS) -->
-                <div class="board-section">
-                    <h3 class="section-title">SECTION 2: PATTI / MAIN BOARD (220 BLOCKS)</h3>
-                    <div class="patti-vertical-list" id="pattiVerticalList">
-                        <!-- JS generated 220 blocks (22 columns x 10 rows) will load here -->
-                    </div>
-                </div>
-
-                <div class="board-bottom-notice">
-                    <i class="fa-solid fa-bullhorn"></i> Note: Please place your bet before the draw time.
-                </div>
-
-            </main>
-
-            <!-- RIGHT BET PANEL -->
-            <aside class="right-bet-panel">
-                
-                <!-- NUMBER RANGE FILTER -->
-                <div class="panel-box">
-                    <div class="panel-title">NUMBER RANGE</div>
-                    <div class="range-buttons-grid">
-                        <button class="range-btn" data-range="A">
-                            <strong>A</strong>
-                            <small>1-55</small>
-                        </button>
-                        <button class="range-btn" data-range="B">
-                            <strong>B</strong>
-                            <small>56-110</small>
-                        </button>
-                        <button class="range-btn" data-range="C">
-                            <strong>C</strong>
-                            <small>111-165</small>
-                        </button>
-                        <button class="range-btn" data-range="D">
-                            <strong>D</strong>
-                            <small>166-220</small>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- BET ON -->
-                <div class="panel-box">
-                    <div class="panel-title">BET ON</div>
-                    <div class="panel-tab-group">
-                        <button class="side-tab-btn active">Both</button>
-                        <button class="side-tab-btn">Word</button>
-                        <button class="side-tab-btn">Digit</button>
-                    </div>
-                </div>
-
-                <!-- BET TYPE -->
-                <div class="panel-box">
-                    <div class="panel-title">BET TYPE</div>
-                    <div class="panel-tab-group">
-                        <button class="side-tab-btn active">Single</button>
-                        <button class="side-tab-btn">Jora</button>
-                        <button class="side-tab-btn">Triple</button>
-                    </div>
-                </div>
-
-                <!-- BET AMOUNT -->
-                <div class="panel-box">
-                    <div class="panel-title">BET AMOUNT</div>
-                    <div class="chips-grid">
-                        <button class="chip-btn active" data-amount="10">৳10</button>
-                        <button class="chip-btn" data-amount="20">৳20</button>
-                        <button class="chip-btn" data-amount="50">৳50</button>
-                        <button class="chip-btn" data-amount="100">৳100</button>
-                        <button class="chip-btn" data-amount="500">৳500</button>
-                    </div>
-                    <input type="number" class="custom-amount-input" placeholder="Enter custom amount">
-                </div>
-
-                <!-- SELECTED ITEMS CART -->
-                <div class="panel-box selected-cart-box">
-                    <div class="cart-header">
-                        <span>SELECTED ITEMS (<span id="selectedCount">0</span>)</span>
-                        <button class="clear-cart-btn" id="clearCartBtn">Clear All</button>
-                    </div>
-                    <div class="cart-items-list" id="cartItemsList">
-                        <div class="empty-cart-msg">Your selections will appear here</div>
-                    </div>
-                </div>
-
-                <!-- ACTION BUTTONS -->
-                <div class="panel-actions">
-                    <button class="action-btn reset-btn" id="resetBetsBtn">Reset</button>
-                    <button class="action-btn submit-btn" id="submitBetsBtn">Submit Bet</button>
-                </div>
-
-            </aside>
-
+            <!-- SECTION 2 -->
+            <h2 id="tripleBoardHeader" class="section-title">SECTION 2: TRIPLE MAIN BOARD (220 BLOCKS)</h2>
+            
+            <!-- 10-Column Container -->
+            <div id="pattiVerticalContainer" class="patti-container"></div>
         </div>
-    </div>
 
-    <!-- JS File Link -->
+    </div>
     <script src="app.js"></script>
 </body>
 </html>
