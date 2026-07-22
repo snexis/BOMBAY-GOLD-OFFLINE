@@ -1,1 +1,312 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2Z Game Player Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome Icons for UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
 
+    <!-- 1. LOGIN OVERLAY (TESTING AUTH SYSTEM) -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <div class="login-header">
+                <h2><i class="fa-solid fa-gamepad"></i> A2Z GAME PLAYER</h2>
+                <p>সিকিউর প্লেয়ার ড্যাশবোর্ডে প্রবেশ করুন</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label><i class="fa-solid fa-user"></i> প্লেয়ার আইডি / ইউজারনেম:</label>
+                    <input type="text" id="loginUsername" value="admin" required placeholder="ইউজারনেম লিখুন">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-lock"></i> পাসওয়ার্ড:</label>
+                    <input type="password" id="loginPassword" value="1234" required placeholder="পাসওয়ার্ড লিখুন">
+                </div>
+                <div id="loginError" class="login-error"></div>
+                <button type="submit" class="login-submit-btn"><i class="fa-solid fa-right-to-bracket"></i> লগইন করুন</button>
+            </form>
+            <div class="login-footer">
+                <small>ডেমো এক্সেস আইডি: <strong>admin</strong> | পাসওয়ার্ড: <strong>1234</strong></small>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN APP DASHBOARD WRAPPER -->
+    <div id="appContainer" class="dashboard-wrapper hidden-app">
+        
+        <!-- LEFT SIDEBAR MENU (FULL PLAYER NAVIGATION) -->
+        <aside class="sidebar-menu">
+            <div class="sidebar-logo">
+                <h2>A2Z GAME</h2>
+                <span class="user-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-item active" data-target="viewPlayBoard"><i class="fa-solid fa-border-all"></i> Play Board</a>
+                <a href="#" class="nav-item" data-target="viewWithdraw"><i class="fa-solid fa-hand-holding-dollar"></i> Withdraw Funds</a>
+                <a href="#" class="nav-item" data-target="viewTransactions"><i class="fa-solid fa-file-invoice-dollar"></i> Transaction Report</a>
+                <a href="#" class="nav-item" data-target="viewBalance"><i class="fa-solid fa-wallet"></i> Account Balance</a>
+                <a href="#" class="nav-item" data-target="viewHistory"><i class="fa-solid fa-clock-rotate-left"></i> Play History</a>
+                <a href="#" class="nav-item" data-target="viewResults"><i class="fa-solid fa-trophy"></i> Results</a>
+                <a href="#" class="nav-item" data-target="viewSettings"><i class="fa-solid fa-gear"></i> Settings</a>
+                <a href="#" class="nav-item" data-target="viewSupport"><i class="fa-solid fa-headset"></i> Help & Support</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="logout-btn"><i class="fa-solid fa-power-off"></i> Logout</button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT LAYOUT AREA -->
+        <div class="main-layout">
+            
+            <!-- TOP HEADER -->
+            <header class="top-header">
+                <div class="user-info">
+                    <span>Player: <strong id="profileName">Admin User</strong></span>
+                    <span id="currentDateTime" class="time-display"></span>
+                </div>
+                <div class="points-bar">
+                    <span>Play Points: <strong id="playPointsDisplay">5,000 Pts</strong></span>
+                    <span>Winning Points: <strong id="winningPointsDisplay">1,200 Pts</strong></span>
+                </div>
+            </header>
+
+            <!-- DYNAMIC VIEWS CONTAINER -->
+            <div class="view-content-wrapper">
+                
+                <!-- VIEW 1: MAIN PLAY BOARD (PRIMARY VIEW) -->
+                <div id="viewPlayBoard" class="app-view active-view">
+                    
+                    <!-- CONTROLS & FILTERS BAR -->
+                    <div class="controls-bar">
+                        <div class="action-btns">
+                            <button class="btn-print" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button>
+                            <span class="live-status"><i class="fa-solid fa-circle"></i> LIVE</span>
+                        </div>
+                        
+                        <div id="viewByTabs" class="tab-group">
+                            <span class="tab-label">View By:</span>
+                            <button class="tab-btn active" data-view="both">Both</button>
+                            <button class="tab-btn" data-view="word">Word</button>
+                            <button class="tab-btn" data-view="digit">Digit</button>
+                        </div>
+
+                        <div id="betTypeTabs" class="tab-group">
+                            <span class="tab-label">Bet Type:</span>
+                            <button class="tab-btn" data-type="single">Single</button>
+                            <button class="tab-btn" data-type="jora">Jora</button>
+                            <button class="tab-btn active" data-type="triple">Triple</button>
+                        </div>
+                    </div>
+
+                    <!-- BOARD AND CART FLEX LAYOUT -->
+                    <div class="content-body">
+                        
+                        <!-- LEFT/CENTER: BOARDS CONTAINER -->
+                        <main class="board-section">
+                            
+                            <!-- SECTION 1 (ANIMATED GLOW HEADER) -->
+                            <h2 class="section-title section-1-glow">SECTION 1: SINGLE MODE</h2>
+                            <div id="singleGrid" class="single-grid"></div>
+
+                            <!-- SECTION 2 HEADER & RANGE FILTERS -->
+                            <div class="section-2-header-wrapper">
+                                <h2 id="tripleBoardHeader" class="section-title">SECTION 2: TRIPLE MAIN BOARD (220 BLOCKS)</h2>
+                                
+                                <div class="range-filters-bar">
+                                    <span class="range-label">Range Select:</span>
+                                    <button class="range-btn active" data-range="ALL">All</button>
+                                    <button class="range-btn" data-range="A">Range A (1-55)</button>
+                                    <button class="range-btn" data-range="B">Range B (56-110)</button>
+                                    <button class="range-btn" data-range="C">Range C (111-165)</button>
+                                    <button class="range-btn" data-range="D">Range D (166-220)</button>
+                                </div>
+                            </div>
+
+                            <!-- 10-COLUMN VERTICAL PATTI CONTAINER -->
+                            <div id="pattiVerticalContainer" class="patti-container"></div>
+                        </main>
+
+                        <!-- RIGHT SIDE CART & BETTING PANEL -->
+                        <aside class="cart-panel">
+                            <h3>SELECTED ITEMS (<span id="selectedCount">0</span>)</h3>
+                            <div id="cartItemsList" class="cart-list"></div>
+
+                            <!-- MOBILE / TOUCH FRIENDLY MODE TOGGLE -->
+                            <div class="mode-toggle-box">
+                                <label>Touch Action Mode:</label>
+                                <div class="toggle-btns">
+                                    <button id="modeAddBtn" class="mode-btn active"><i class="fa-solid fa-plus"></i> Add (+)</button>
+                                    <button id="modeSubBtn" class="mode-btn"><i class="fa-solid fa-minus"></i> Subtract (-)</button>
+                                </div>
+                            </div>
+
+                            <div class="chip-selection">
+                                <label>Select Points Chip:</label>
+                                <div class="chips-grid">
+                                    <button class="chip-btn active" data-amount="10">10 Pts</button>
+                                    <button class="chip-btn" data-amount="20">20 Pts</button>
+                                    <button class="chip-btn" data-amount="50">50 Pts</button>
+                                    <button class="chip-btn" data-amount="100">100 Pts</button>
+                                </div>
+                                <input type="number" id="customAmount" placeholder="Custom Pts..." class="custom-input">
+                            </div>
+
+                            <div class="cart-action-btns">
+                                <button id="clearCartBtn" class="btn-secondary">Clear</button>
+                                <button id="resetBetsBtn" class="btn-secondary">Reset</button>
+                                <button id="submitBetsBtn" class="btn-primary"><i class="fa-solid fa-check"></i> Submit Points</button>
+                            </div>
+                        </aside>
+
+                    </div>
+                </div>
+
+                <!-- VIEW 2: WITHDRAW FUNDS -->
+                <div id="viewWithdraw" class="app-view">
+                    <div class="panel-card">
+                        <h2><i class="fa-solid fa-hand-holding-dollar"></i> Withdraw Funds Request</h2>
+                        <form id="withdrawForm" class="std-form">
+                            <div class="form-group">
+                                <label>Available Winning Points:</label>
+                                <input type="text" id="availWinPts" value="1,200 Pts" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Enter Withdrawal Amount (Pts):</label>
+                                <input type="number" id="withdrawPts" min="100" required placeholder="Example: 500">
+                            </div>
+                            <div class="form-group">
+                                <label>Payment Method / Account Details:</label>
+                                <textarea id="withdrawAcc" rows="3" required placeholder="Enter Bank / UPI details..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Submit Withdrawal Request</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: TRANSACTION REPORT -->
+                <div id="viewTransactions" class="app-view">
+                    <div class="panel-card">
+                        <h2><i class="fa-solid fa-file-invoice-dollar"></i> Transaction Report</h2>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Type</th>
+                                    <th>Points</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transTableBody">
+                                <tr>
+                                    <td>Jul 23, 2026, 01:15 AM</td>
+                                    <td>Points Debited (Bet)</td>
+                                    <td>-150 Pts</td>
+                                    <td><span class="badge success">Completed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW 4: ACCOUNT BALANCE -->
+                <div id="viewBalance" class="app-view">
+                    <div class="panel-card">
+                        <h2><i class="fa-solid fa-wallet"></i> Account Balance Summary</h2>
+                        <div class="balance-cards-grid">
+                            <div class="bal-card">
+                                <h3>PLAY POINTS</h3>
+                                <p id="summaryPlayPts">5,000 Pts</p>
+                            </div>
+                            <div class="bal-card highlight">
+                                <h3>WINNING POINTS</h3>
+                                <p id="summaryWinPts">1,200 Pts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 5: PLAY HISTORY -->
+                <div id="viewHistory" class="app-view">
+                    <div class="panel-card">
+                        <h2><i class="fa-solid fa-clock-rotate-left"></i> Recent Play History</h2>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>Time</th>
+                                    <th>Total Items</th>
+                                    <th>Points Placed</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                <!-- Dynamically populated via app.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW 6: RESULTS -->
+                <div id="viewResults" class="app-view">
+                    <div class="panel-card">
+                        <h2><i class="fa-solid fa-trophy"></i> Game Results Board</h2>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Draw Time</th>
+                                    <th>Single Result</th>
+                                    <th>Patti Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>23-07-2026</td><td>01:00 PM</td><td>5</td><td>140</td></tr>
+                                <tr><td>22-07-2026</td><td>04:00 PM</td><td>8</td><td>380</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW 7: SETTINGS -->
+                <div id="viewSettings" class="app-view">
+                    <div class="panel-card">
+                        <h2><i class="fa-solid fa-gear"></i> Account Settings</h2>
+                        <form id="pwdForm" class="std-form">
+                            <div class="form-group">
+                                <label>Current Password:</label>
+                                <input type="password" required>
+                            </div>
+                            <div class="form-group">
+                                <label>New Password:</label>
+                                <input type="password" required>
+                            </div>
+                            <button type="submit" class="btn-primary">Update Password</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- VIEW 8: HELP & SUPPORT -->
+                <div id="viewSupport" class="app-view">
+                    <div class="panel-card">
+                        <h2><i class="fa-solid fa-headset"></i> Help & Support Center</h2>
+                        <p>আপনার অ্যাকাউন্ট সম্পর্কিত কোনো তথ্যের জন্য কাস্টমার সাপোর্ট ডেস্কে যোগাযোগ করুন।</p>
+                        <div class="support-box">
+                            <p><i class="fa-solid fa-envelope"></i> Support Email: support@a2zgame.com</p>
+                            <p><i class="fa-solid fa-phone"></i> Helpline: +91 98000 00000</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JS ENGINE -->
+    <script src="app.js"></script>
+</body>
+</html>
