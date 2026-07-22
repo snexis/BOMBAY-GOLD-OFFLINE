@@ -12,47 +12,30 @@
 <body>
 
     <div class="app-container">
-        
-        <!-- TOP HEADER -->
-        <header class="top-header">
-            <div class="user-profile">
-                <i class="fa-solid fa-circle-user profile-icon"></i>
-                <div class="user-info">
-                    <span class="user-name">Profile: Raj</span>
-                    <span class="current-date-time" id="currentDateTime">--/--/---- --:--:--</span>
-                </div>
-            </div>
+     <!-- Top Profile & Points Bar (Fixes 'sonu', 'Balance', & '৳' symbol) -->
+<header class="top-header">
+    <div class="user-info">
+        <span>Player: <strong id="profileName">Admin User</strong></span>
+        <span id="currentDateTime"></span>
+    </div>
+    <div class="points-bar">
+        <span>Play Points: <strong id="playPoints">5,000 Pts</strong></span>
+        <span>Winning Points: <strong id="winningPoints">1,200 Pts</strong></span>
+        <span>Reward Points: <strong id="rewardPoints">50 Pts</strong></span>
+    </div>
+</header>
 
-            <div class="header-stats">
-                <div class="stat-box">
-                    <i class="fa-solid fa-wallet"></i>
-                    <div>
-                        <small>Play Balance</small>
-                        <strong>৳5,000</strong>
-                    </div>
-                </div>
-                <div class="stat-box">
-                    <i class="fa-solid fa-trophy"></i>
-                    <div>
-                        <small>Winning Balance</small>
-                        <strong>৳1,200</strong>
-                    </div>
-                </div>
-                <div class="stat-box result-display-box">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <div>
-                        <small>Last Result</small>
-                        <strong>100 - AXZ</strong>
-                    </div>
-                </div>
-                <div class="stat-box">
-                    <i class="fa-solid fa-star"></i>
-                    <div>
-                        <small>Reward Points</small>
-                        <strong>50</strong>
-                    </div>
-                </div>
-            </div>
+<!-- Section 1 & Section 2 Headers (Fixes Title Name) -->
+<div class="board-section">
+    <!-- SECTION 1 (UNTOUCHED) -->
+    <h2 class="section-title">SECTION 1: SINGLE MODE</h2>
+    <div id="singleGrid" class="single-grid"></div>
+
+    <!-- SECTION 2 (UPDATED TITLE) -->
+    <h2 id="tripleBoardHeader" class="section-title">SECTION 2: TRIPLE MAIN BOARD (220 BLOCKS)</h2>
+    
+    <div id="pattiVerticalContainer" class="patti-container"></div>
+</div>
 
             <button class="logout-btn"><i class="fa-solid fa-power-off"></i> Logout</button>
         </header>
