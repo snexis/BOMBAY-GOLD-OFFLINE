@@ -353,5 +353,137 @@ body {
 }
 
 /* MODULE 3 END */
+/* ========================================== */
+/* MODULE 4 START: BETTING & SLIP SUMMARY */
+/* ========================================== */
 
+.bottom-bet-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+    background: #0f172a;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #1e293b;
+}
+
+.bet-chip-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-chip {
+    background: #1e293b;
+    color: #38bdf8;
+    border: 1px solid #0284c7;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-chip:hover, .btn-chip.active {
+    background: #0284c7;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(2, 132, 199, 0.5);
+}
+
+#custom-bet-input {
+    width: 90px;
+    padding: 8px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #fff;
+    border-radius: 6px;
+    text-align: center;
+}
+
+/* Selected Cart */
+.selected-summary-box {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: bold;
+    color: #cbd5e0;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+}
+
+.total-pts strong {
+    color: #10b981;
+    font-size: 14px;
+}
+
+.selected-items-list {
+    min-height: 40px;
+    max-height: 80px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.empty-msg {
+    font-size: 11px;
+    color: #64748b;
+    font-style: italic;
+}
+
+.chip-item-badge {
+    background: #065f46;
+    color: #34d399;
+    border: 1px solid #059669;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.action-btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-reset {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-submit-bet {
+    flex: 1;
+    background: #10b981;
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-submit-bet:hover {
+    background: #34d399;
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+}
+
+/* MODULE 4 END */
 
