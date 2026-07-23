@@ -58,11 +58,31 @@
         </header>
 
         <!-- Main Body Placeholder -->
+       <!-- Main Body Content -->
         <main class="main-content">
-            <div class="system-status">
-                <h3>মডিউল ১ সফলভাবে লোড হয়েছে (X9 Architecture Active)</h3>
-                <p>সিস্টেম মোড: <strong id="active-mode-label">DEMO MODE</strong></p>
+
+            <!-- MODULE 2 START: MODE CONTROLLER & SINGLE PANEL -->
+            
+            <!-- View Mode Controllers Bar -->
+            <div class="control-panel">
+                <div class="mode-selector">
+                    <span class="label-text">View By:</span>
+                    <button class="btn-mode active" id="btn-mode-both" onclick="switchViewMode('BOTH')">Both</button>
+                    <button class="btn-mode" id="btn-mode-word" onclick="switchViewMode('WORD')">Word</button>
+                    <button class="btn-mode" id="btn-mode-digit" onclick="switchViewMode('DIGIT')">Digit</button>
+                </div>
             </div>
+
+            <!-- SECTION 1: SINGLE MODE BOARD -->
+            <div class="board-section">
+                <div class="section-header">SECTION 1: SINGLE MODE</div>
+                <div class="single-grid" id="single-board-grid">
+                    <!-- JavaScript dynamically builds 1-0 Single Cells here -->
+                </div>
+            </div>
+
+            <!-- MODULE 2 END -->
+
         </main>
     </div>
 
