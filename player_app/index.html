@@ -82,7 +82,47 @@
             </div>
 
             <!-- MODULE 2 END -->
+<!-- MODULE 3 START: TRIPLE MAIN BOARD & RANGE SELECTOR -->
+            
+            <div class="board-section triple-board-container">
+                
+                <!-- Board Top Bar: Header & Range Filters -->
+                <div class="triple-board-bar">
+                    <div class="section-header">SECTION 2: TRIPLE MAIN BOARD (220 BLOCKS)</div>
+                    
+                    <!-- 4-Range Selectors (55 Blocks Each) -->
+                    <div class="range-selector">
+                        <span class="label-text">NUMBER RANGE:</span>
+                        <button class="btn-range active" id="btn-range-all" onclick="filterRange('ALL')">ALL (220)</button>
+                        <button class="btn-range" id="btn-range-a" onclick="filterRange('A')">A (1-55)</button>
+                        <button class="btn-range" id="btn-range-b" onclick="filterRange('B')">B (56-110)</button>
+                        <button class="btn-range" id="btn-range-c" onclick="filterRange('C')">C (111-165)</button>
+                        <button class="btn-range" id="btn-range-d" onclick="filterRange('D')">D (166-220)</button>
+                    </div>
+                </div>
 
+                <!-- 10 Columns Top Headers (1 to 0) -->
+                <div class="triple-grid-header">
+                    <div class="col-head">1</div>
+                    <div class="col-head">2</div>
+                    <div class="col-head">3</div>
+                    <div class="col-head">4</div>
+                    <div class="col-head">5</div>
+                    <div class="col-head">6</div>
+                    <div class="col-head">7</div>
+                    <div class="col-head">8</div>
+                    <div class="col-head">9</div>
+                    <div class="col-head">0</div>
+                </div>
+
+                <!-- 220 Blocks Main Matrix Grid -->
+                <div class="triple-grid" id="triple-board-grid">
+                    <!-- JavaScript dynamically builds 220 Patti Cells here -->
+                </div>
+
+            </div>
+
+            <!-- MODULE 3 END -->
         </main>
     </div>
 
