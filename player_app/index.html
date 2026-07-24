@@ -1,252 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A2Z BOMBAY - Gaming Portal</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-    <!-- Network Offline Overlay -->
-    <div id="network-offline-overlay" class="offline-screen hidden">
-        <div class="offline-card">
-            <div class="offline-icon">⚠️</div>
-            <h2>NET NOT CONNECTED</h2>
-            <p>Please check your internet connection to continue.</p>
-        </div>
-    </div>
-
-    <!-- Clean & Professional Login Modal -->
-    <div id="login-modal" class="modal-overlay">
-        <div class="login-card">
-            <div class="login-header">
-                <h2>A2Z BOMBAY</h2>
-                <p>Enter your credentials to access portal</p>
-            </div>
-
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="username">User ID</label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        placeholder="Enter User ID (e.g. DEMO_PLAYER_01)" 
-                        value="DEMO_PLAYER_01" 
-                        required 
-                    />
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        placeholder="Enter Password" 
-                        value="123456" 
-                        required 
-                    />
-                </div>
-
-                <button type="submit" class="btn-submit">LOGIN</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Main Dashboard Container -->
-    <div id="app-container" class="hidden">
-        
-        <!-- Top Header Panel -->
-        <header class="top-header">
-            <div class="brand-title">
-                <span class="glow-text">A2Z BOMBAY</span>
-            </div>
-            
-            <!-- Live Result Widget -->
-            <div class="live-result-box">
-                <div class="result-title">LIVE RESULT (<span id="current-date-display">---</span>)</div>
-                <div class="result-value" id="top-result-display">100 AXZ</div>
-            </div>
-
-            <!-- User Info Bar -->
-            <div class="user-info">
-                <span class="user-badge" id="display-user">
-                    <span class="user-icon">👤</span> 
-                    <span id="user-id-text">DEMO</span>
-                </span>
-                <span class="points-badge">Play Points: <strong id="play-points">5,000</strong></span>
-                <span class="points-badge win">Win Points: <strong id="win-points">1,200</strong></span>
-                <button id="logout-btn" class="btn-logout">Logout</button>
-            </div>
-        </header>
-
-        <!-- Main Body Wrapper with Sidebar -->
-        <div class="app-body-wrapper">
-            
-            <!-- Left Sidebar Navigation -->
-            <aside class="sidebar-panel">
-                <nav class="sidebar-menu">
-                    <button class="nav-btn active" onclick="switchTab('play-board')">🎮 Play Board</button>
-                    <button class="nav-btn" onclick="switchTab('withdraw')">💰 Withdraw Funds</button>
-                    <button class="nav-btn" onclick="switchTab('transactions')">📊 Transaction Report</button>
-                    <button class="nav-btn" onclick="switchTab('balance')">🏦 Account Balance</button>
-                    <button class="nav-btn" onclick="switchTab('history')">📜 Play History</button>
-                    <button class="nav-btn" onclick="switchTab('results')">🏆 Results</button>
-                    <button class="nav-btn" onclick="switchTab('settings')">⚙️ Settings</button>
-                    <button class="nav-btn" onclick="switchTab('help')">❓ Help & Support</button>
-                </nav>
-
-                <!-- Live Draw Status Widget -->
-                <div class="sidebar-widget live-draw-status">
-                    <div class="widget-header">
-                        <span class="status-dot live"></span> Live Draw Status
-                    </div>
-                    <div class="widget-body">
-                        <div>Draw Time: <strong id="draw-time-val">--:--:--</strong></div>
-                        <div>Draw ID: <strong id="draw-id-val">245678</strong></div>
-                        <div>Next Draw: <strong id="next-draw-val">--:--:--</strong></div>
-                        <div class="advance-draw-box">
-                            <label>Advance Draw:</label>
-                            <select id="advance-draw-select">
-                                <option value="current">Current Draw</option>
-                                <option value="draw2">Draw #2</option>
-                                <option value="draw3">Draw #3</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Main Workspace Content -->
-            <main class="main-content">
-
-                <!-- Mode Selector Bar -->
-                <div class="control-panel">
-                    <div class="mode-selector">
-                        <span class="label-text">View By:</span>
-                        <button class="btn-mode active" id="btn-mode-both" onclick="switchViewMode('BOTH')">Both</button>
-                        <button class="btn-mode" id="btn-mode-word" onclick="switchViewMode('WORD')">Word</button>
-                        <button class="btn-mode" id="btn-mode-digit" onclick="switchViewMode('DIGIT')">Digit</button>
-                    </div>
-                </div>
-
-                <!-- Section 1: Single Mode Board -->
-                <div class="board-section">
-                    <div class="section-header">SECTION 1: SINGLE MODE</div>
-                    <div class="single-grid" id="single-board-grid">
-                        <!-- Dynamic Grid Cells -->
-                    </div>
-                </div>
-
-                <!-- Section 2: Triple Main Board -->
-                <div class="board-section triple-board-container">
-                    <div class="triple-board-bar">
-                        <div class="section-header">SECTION 2: TRIPLE MAIN BOARD (220 BLOCKS)</div>
-                        
-                        <div class="range-selector">
-                            <span class="label-text">NUMBER RANGE:</span>
-                            <button class="btn-range active" id="btn-range-all" onclick="filterRange('ALL')">ALL (220)</button>
-                            <button class="btn-range" id="btn-range-a" onclick="filterRange('A')">A (1-55)</button>
-                            <button class="btn-range" id="btn-range-b" onclick="filterRange('B')">B (56-110)</button>
-                            <button class="btn-range" id="btn-range-c" onclick="filterRange('C')">C (111-165)</button>
-                            <button class="btn-range" id="btn-range-d" onclick="filterRange('D')">D (166-220)</button>
-                            <button class="btn-range jora-btn" id="btn-range-jora" onclick="filterRange('JORA')">Jora (1-100)</button>
-                        </div>
-                    </div>
-
-                    <!-- Matrix Column Headers -->
-                    <div class="triple-grid-header">
-                        <div class="col-head">1</div>
-                        <div class="col-head">2</div>
-                        <div class="col-head">3</div>
-                        <div class="col-head">4</div>
-                        <div class="col-head">5</div>
-                        <div class="col-head">6</div>
-                        <div class="col-head">7</div>
-                        <div class="col-head">8</div>
-                        <div class="col-head">9</div>
-                        <div class="col-head">0</div>
-                    </div>
-
-                    <!-- 220 Blocks Grid -->
-                    <div class="triple-grid" id="triple-board-grid">
-                        <!-- Dynamic Patti Cells -->
-                    </div>
-                </div>
-
-                <!-- Betting Summary Footer -->
-                <div class="bottom-bet-container">
-                    <div class="bet-chip-section">
-                        <span class="label-text">BET AMOUNT:</span>
-                        <button class="btn-chip active" onclick="setBetAmount(10)">৳10</button>
-                        <button class="btn-chip" onclick="setBetAmount(20)">৳20</button>
-                        <button class="btn-chip" onclick="setBetAmount(50)">৳50</button>
-                        <button class="btn-chip" onclick="setBetAmount(100)">৳100</button>
-                        <button class="btn-chip" onclick="setBetAmount(500)">৳500</button>
-                        <input type="number" id="custom-bet-input" placeholder="Custom" min="1" onchange="setCustomAmount(this.value)">
-                    </div>
-
-                    <div class="selected-summary-box">
-                        <div class="summary-header">
-                            <span>SELECTED ITEMS (<span id="selected-count">0</span>)</span>
-                            <span class="total-pts">TOTAL: <strong id="total-bet-points">0</strong> Pts</span>
-                        </div>
-                        <div class="selected-items-list" id="selected-items-display">
-                            <span class="empty-msg">No items selected</span>
-                        </div>
-                        
-                        <div class="action-btn-group">
-                            <button class="btn-reset" onclick="clearAllSelections()">Reset</button>
-                            <button class="btn-submit-bet" onclick="submitBetAndPrint()">Submit Bet / Print</button>
-                        </div>
-                    </div>
-                </div>
-
-            </main>
-        </div>
-    </div>
-
-    <!-- Main Script Engine -->
-    <script src="app.js" defer></script>
-</body>
-</html><!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A2Z BOMBAY - Offline Gaming System</title>
+    <title>A2Z BOMBAY</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Network Offline Overlay (Fake Online / Internet Guard) -->
-    <div id="network-offline-overlay" class="offline-screen hidden">
-        <div class="offline-card">
-            <div class="offline-icon">⚠️</div>
-            <h2>NET NOT CONNECTED</h2>
-            <p>Please check your internet connection to continue.</p>
+    <!-- Network Offline Guard Overlay -->
+    <div id="network-offline-overlay" class="network-overlay hidden">
+        <div class="network-card">
+            <h3>ইন্টারনেট সংযোগ বিচ্ছিন্ন!</h3>
+            <p>অনুগ্রহ করে আপনার নেটওয়ার্ক কানেকশন চেক করুন।</p>
         </div>
     </div>
 
-    <!-- Auth Modal / Admin Login -->
+    <!-- Login Modal -->
     <div id="login-modal" class="modal-overlay">
         <div class="login-card">
             <h2>A2Z BOMBAY LOGIN</h2>
             <p>অ্যাডমিন বা প্লেয়ার আইডি নির্বাচন করুন</p>
             <form id="login-form">
                 <div class="form-group">
-                    <label>ইউজার টাইপ:</label>
+                    <label for="user-type">ইউজার টাইপ:</label>
                     <select id="user-type">
                         <option value="demo">Demo Player (টেস্টিং মোড)</option>
-                        <option value="admin">System Admin (অ্যাডমিন প্যানেল)</option>
+                        <option value="real">Real Player</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>ইউজার আইডি:</label>
+                    <label for="username">ইউজার আইডি:</label>
                     <input type="text" id="username" value="DEMO_PLAYER_01" required>
                 </div>
                 <div class="form-group">
-                    <label>পাসওয়ার্ড:</label>
+                    <label for="password">পাসওয়ার্ড:</label>
                     <input type="password" id="password" value="123456" required>
                 </div>
                 <button type="submit" class="btn-submit">লগইন করুন</button>
@@ -254,161 +42,103 @@
         </div>
     </div>
 
-    <!-- Main Dashboard Container -->
+    <!-- Main App Container -->
     <div id="app-container" class="hidden">
-        <!-- Top Animated Header -->
+        <!-- Top Header Bar -->
         <header class="top-header">
-            <div class="brand-title">
-                <span class="glow-text">A2Z BOMBAY</span>
-            </div>
+            <div class="glow-text">A2Z BOMBAY</div>
             
-            <!-- Live Result Widget -->
-            <div class="live-result-box">
-                <div class="result-title">LIVE RESULT (<span id="current-date-display">---</span>)</div>
-                <div class="result-value" id="top-result-display">100 AXZ</div>
+            <div class="header-center-info">
+                <div class="live-result-box">
+                    <div class="result-title">LIVE RESULT</div>
+                    <div id="top-result-display" class="result-value">100 AXZ</div>
+                </div>
+                <div class="live-result-box">
+                    <div class="result-title">DRAW TIMER</div>
+                    <div id="draw-time-val" class="result-value" style="color: #00f0ff;">02:00</div>
+                </div>
             </div>
 
-            <!-- User Info Bar -->
             <div class="user-info">
-                <span class="user-badge" id="display-user"><span class="user-icon">👤</span> <span id="user-id-text">DEMO</span></span>
-                <span class="points-badge">Play Points: <strong id="play-points">5,000</strong></span>
-                <span class="points-badge win">Win Points: <strong id="win-points">1,200</strong></span>
+                <div class="user-badge">ID: <strong id="user-id-text">DEMO_PLAYER_01</strong></div>
+                <div class="points-badge">PTS: <strong id="play-points">5,000</strong></div>
                 <button id="logout-btn" class="btn-logout">Logout</button>
             </div>
         </header>
 
-        <!-- Main Body Content with Sidebar Layout -->
-        <div class="app-body-wrapper">
-            
-            <!-- Left Sidebar Navigation Panel -->
-            <aside class="sidebar-panel">
-                <nav class="sidebar-menu">
-                    <button class="nav-btn active" onclick="switchTab('play-board')">🎮 Play Board</button>
-                    <button class="nav-btn" onclick="switchTab('withdraw')">💰 Withdraw Funds</button>
-                    <button class="nav-btn" onclick="switchTab('transactions')">📊 Transaction Report</button>
-                    <button class="nav-btn" onclick="switchTab('balance')">🏦 Account Balance</button>
-                    <button class="nav-btn" onclick="switchTab('history')">📜 Play History</button>
-                    <button class="nav-btn" onclick="switchTab('results')">🏆 Results</button>
-                    <button class="nav-btn" onclick="switchTab('settings')">⚙️ Settings</button>
-                    <button class="nav-btn" onclick="switchTab('help')">❓ Help & Support</button>
-                </nav>
-
-                <!-- Live Draw Status Card -->
-                <div class="sidebar-widget live-draw-status">
-                    <div class="widget-header">
-                        <span class="status-dot live"></span> Live Draw Status
-                    </div>
-                    <div class="widget-body">
-                        <div>Draw Time: <strong id="draw-time-val">--:--:--</strong></div>
-                        <div>Draw ID: <strong id="draw-id-val">245678</strong></div>
-                        <div>Next Draw: <strong id="next-draw-val">--:--:--</strong></div>
-                        <div class="advance-draw-box">
-                            <label>Advance Draw:</label>
-                            <select id="advance-draw-select">
-                                <option value="current">Current Draw</option>
-                                <option value="draw2">Draw #2</option>
-                                <option value="draw3">Draw #3</option>
-                            </select>
-                        </div>
-                    </div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Controllers Panel -->
+            <div class="control-panel">
+                <div class="mode-selector">
+                    <span class="label-text">MODE:</span>
+                    <button id="btn-mode-both" class="btn-mode active" onclick="switchViewMode('BOTH')">BOTH</button>
+                    <button id="btn-mode-word" class="btn-mode" onclick="switchViewMode('WORD')">WORD</button>
+                    <button id="btn-mode-digit" class="btn-mode" onclick="switchViewMode('DIGIT')">DIGIT</button>
                 </div>
-            </aside>
+                <div class="label-text">DATE: <span id="current-date-display" style="color: #fff;"></span></div>
+            </div>
 
-            <!-- Main Content Area -->
-            <main class="main-content">
+            <!-- Single Board -->
+            <div class="board-section">
+                <div class="section-header">SINGLE BOARD (0-9)</div>
+                <div id="single-board-grid" class="single-grid"></div>
+            </div>
 
-                <!-- MODULE 2: MODE CONTROLLER -->
-                <div class="control-panel">
-                    <div class="mode-selector">
-                        <span class="label-text">View By:</span>
-                        <button class="btn-mode active" id="btn-mode-both" onclick="switchViewMode('BOTH')">Both</button>
-                        <button class="btn-mode" id="btn-mode-word" onclick="switchViewMode('WORD')">Word</button>
-                        <button class="btn-mode" id="btn-mode-digit" onclick="switchViewMode('DIGIT')">Digit</button>
+            <!-- Triple Board -->
+            <div class="board-section">
+                <div class="triple-board-bar">
+                    <div class="section-header" style="margin-bottom:0;">TRIPLE 220 MATRIX</div>
+                    <div class="range-selector">
+                        <span class="label-text">RANGE:</span>
+                        <button id="btn-range-all" class="btn-range active" onclick="filterRange('ALL')">ALL</button>
+                        <button id="btn-range-a" class="btn-range" onclick="filterRange('A')">A (1-55)</button>
+                        <button id="btn-range-b" class="btn-range" onclick="filterRange('B')">B (56-110)</button>
+                        <button id="btn-range-c" class="btn-range" onclick="filterRange('C')">C (111-165)</button>
+                        <button id="btn-range-d" class="btn-range" onclick="filterRange('D')">D (166-220)</button>
+                        <button id="btn-range-jora" class="btn-range" onclick="filterRange('JORA')">JORA</button>
                     </div>
                 </div>
 
-                <!-- SECTION 1: SINGLE MODE BOARD -->
-                <div class="board-section">
-                    <div class="section-header">SECTION 1: SINGLE MODE</div>
-                    <div class="single-grid" id="single-board-grid">
-                        <!-- JavaScript dynamically builds Single Cells -->
-                    </div>
+                <div class="triple-grid-header">
+                    <div class="col-head">1</div><div class="col-head">2</div><div class="col-head">3</div>
+                    <div class="col-head">4</div><div class="col-head">5</div><div class="col-head">6</div>
+                    <div class="col-head">7</div><div class="col-head">8</div><div class="col-head">9</div>
+                    <div class="col-head">0</div>
                 </div>
 
-                <!-- MODULE 3: TRIPLE MAIN BOARD (220 BLOCKS) -->
-                <div class="board-section triple-board-container">
-                    
-                    <div class="triple-board-bar">
-                        <div class="section-header">SECTION 2: TRIPLE MAIN BOARD (220 BLOCKS)</div>
-                        
-                        <!-- Range & Jora Selectors -->
-                        <div class="range-selector">
-                            <span class="label-text">NUMBER RANGE:</span>
-                            <button class="btn-range active" id="btn-range-all" onclick="filterRange('ALL')">ALL (220)</button>
-                            <button class="btn-range" id="btn-range-a" onclick="filterRange('A')">A (1-55)</button>
-                            <button class="btn-range" id="btn-range-b" onclick="filterRange('B')">B (56-110)</button>
-                            <button class="btn-range" id="btn-range-c" onclick="filterRange('C')">C (111-165)</button>
-                            <button class="btn-range" id="btn-range-d" onclick="filterRange('D')">D (166-220)</button>
-                            <button class="btn-range jora-btn" id="btn-range-jora" onclick="filterRange('JORA')">Jora (1-100)</button>
-                        </div>
-                    </div>
+                <div id="triple-board-grid" class="triple-grid"></div>
+            </div>
 
-                    <!-- 10 Columns Headers (1 to 0) -->
-                    <div class="triple-grid-header">
-                        <div class="col-head">1</div>
-                        <div class="col-head">2</div>
-                        <div class="col-head">3</div>
-                        <div class="col-head">4</div>
-                        <div class="col-head">5</div>
-                        <div class="col-head">6</div>
-                        <div class="col-head">7</div>
-                        <div class="col-head">8</div>
-                        <div class="col-head">9</div>
-                        <div class="col-head">0</div>
-                    </div>
-
-                    <!-- 220 Blocks Main Matrix Grid -->
-                    <div class="triple-grid" id="triple-board-grid">
-                        <!-- JavaScript dynamically builds Patti Cells -->
-                    </div>
-
+            <!-- Betting & Summary Panel -->
+            <div class="bottom-bet-container">
+                <div class="bet-chip-section">
+                    <span class="label-text">CHIP:</span>
+                    <button class="btn-chip active" onclick="setBetAmount(10)">10</button>
+                    <button class="btn-chip" onclick="setBetAmount(50)">50</button>
+                    <button class="btn-chip" onclick="setBetAmount(100)">100</button>
+                    <button class="btn-chip" onclick="setBetAmount(500)">500</button>
+                    <input type="number" id="custom-bet-input" placeholder="Custom" oninput="setCustomAmount(this.value)">
                 </div>
 
-                <!-- MODULE 4: BETTING PANEL & SUMMARY -->
-                <div class="bottom-bet-container">
-                    
-                    <div class="bet-chip-section">
-                        <span class="label-text">BET AMOUNT:</span>
-                        <button class="btn-chip active" onclick="setBetAmount(10)">৳10</button>
-                        <button class="btn-chip" onclick="setBetAmount(20)">৳20</button>
-                        <button class="btn-chip" onclick="setBetAmount(50)">৳50</button>
-                        <button class="btn-chip" onclick="setBetAmount(100)">৳100</button>
-                        <button class="btn-chip" onclick="setBetAmount(500)">৳500</button>
-                        <input type="number" id="custom-bet-input" placeholder="Custom" min="1" onchange="setCustomAmount(this.value)">
+                <div class="selected-summary-box">
+                    <div class="summary-header">
+                        <span>SELECTED: <strong id="selected-count" style="color: #00f0ff;">0</strong></span>
+                        <span class="total-pts">TOTAL PTS: <strong id="total-bet-points">0</strong></span>
                     </div>
-
-                    <div class="selected-summary-box">
-                        <div class="summary-header">
-                            <span>SELECTED ITEMS (<span id="selected-count">0</span>)</span>
-                            <span class="total-pts">TOTAL: <strong id="total-bet-points">0</strong> Pts</span>
-                        </div>
-                        <div class="selected-items-list" id="selected-items-display">
-                            <span class="empty-msg">কোনো আইটেম সিলেক্ট করা হয়নি</span>
-                        </div>
-                        
-                        <div class="action-btn-group">
-                            <button class="btn-reset" onclick="clearAllSelections()">Reset</button>
-                            <button class="btn-submit-bet" onclick="submitBetAndPrint()">Submit Bet / Print</button>
-                        </div>
+                    <div id="selected-items-display" class="selected-items-list">
+                        <span class="empty-msg">No items selected</span>
                     </div>
-
+                    <div class="action-btn-group">
+                        <button class="btn-reset" onclick="clearAllSelections()">RESET</button>
+                        <button class="btn-submit-bet" onclick="submitBetAndPrint()">SUBMIT & PRINT</button>
+                    </div>
                 </div>
-
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Application Script Engine -->
-    <script src="app.js" defer></script>
+    <!-- Script Import (Only Once At Bottom) -->
+    <script src="app.js"></script>
 </body>
 </html>
