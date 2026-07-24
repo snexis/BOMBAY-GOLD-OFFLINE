@@ -36,8 +36,7 @@ window.AppState = window.AppState || {
     }
 };
 
-const AppState = window.AppState;
-
+let AppState = window.AppState || {};
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
     setupNetworkGuard();
@@ -587,17 +586,27 @@ function updateTimerUI(nowDate, msRemaining, totalSecs) {
 // MODULE 1: GLOBAL STATE, IP & NETWORK GUARD
 // ==========================================
 
-AppState = {
-    currentUser: null,
-    userType: 'demo',
-    deviceIP: '127.0.0.1',
-    playPoints: 5000,
-    winPoints: 1200,
-    currentMode: 'BOTH', // BOTH, WORD, DIGIT
-    currentResult: {
-        digit: '100',
-        word: 'AXZ'
-    },
+const isDemoMode = (AppState.userType === 'demo' || AppState.currentUser === 'DEMO_PLAYER_01');
+
+Object.assign(AppState, {
+    currentUser: AppState.currentUser || 'DEMO_PLAYER_01',
+    userType: AppState.userType || 'demo',
+    deviceIP: AppState.deviceIP || '127.0.0.1',
+    playPoints: isDemoMode ? (AppState.playPoints > 0 ? AppState.playPoints : 5000) : 0,
+    winPoints: isDemoMode ? (AppState.winPoints || 1200) : 0,
+    currentMode: isDemoMode ? 'BOTH' : null,
+    allowedFeatures: isDemoMode ? ['BOTH', 'WORD', 'DIGIT'] : [],
+    currentResult: null
+});
+
+// অটো ব্যালেন্স চেকার (ব্যালেন্স ০ হলে অটোমেটিক ৫০০০ পয়েন্ট যোগ হবে)
+function checkAndAutoRefillBalance() {
+    if ((AppState.userType === 'demo' || AppState.currentUser === 'DEMO_PLAYER_01') && AppState.playPoints <= 0) {
+        AppState.playPoints = 5000;
+        if (typeof updateUI === 'function') updateUI();
+        console.log("Demo balance auto-refilled to 5000");
+    }
+}
     activeRange: 'ALL', // ALL, A, B, C, D, JORA
     selectedBetAmount: 10,
     selectedCart: [],
