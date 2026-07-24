@@ -57,7 +57,7 @@
                 <div class="result-value" id="top-result-display">100 AXZ</div>
             </div>
 
-            <!-- User Info Bar (Profile Icon without name) -->
+            <!-- User Info Bar -->
             <div class="user-info">
                 <span class="user-badge" id="display-user"><span class="user-icon">👤</span> <span id="user-id-text">DEMO</span></span>
                 <span class="points-badge">Play Points: <strong id="play-points">5,000</strong></span>
@@ -88,15 +88,15 @@
                         <span class="status-dot live"></span> Live Draw Status
                     </div>
                     <div class="widget-body">
-                        <div>Draw Time: <strong id="draw-time-val">01:25:30 PM</strong></div>
+                        <div>Draw Time: <strong id="draw-time-val">--:--:--</strong></div>
                         <div>Draw ID: <strong id="draw-id-val">245678</strong></div>
-                        <div>Next Draw: <strong id="next-draw-val">02:00:00 PM</strong></div>
+                        <div>Next Draw: <strong id="next-draw-val">--:--:--</strong></div>
                         <div class="advance-draw-box">
                             <label>Advance Draw:</label>
                             <select id="advance-draw-select">
                                 <option value="current">Current Draw</option>
-                                <option value="draw2">Draw #2 (02:30 PM)</option>
-                                <option value="draw3">Draw #3 (03:00 PM)</option>
+                                <option value="draw2">Draw #2</option>
+                                <option value="draw3">Draw #3</option>
                             </select>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
             <!-- Main Content Area -->
             <main class="main-content">
 
-                <!-- MODULE 2 START: MODE CONTROLLER & SINGLE PANEL -->
+                <!-- MODULE 2: MODE CONTROLLER -->
                 <div class="control-panel">
                     <div class="mode-selector">
                         <span class="label-text">View By:</span>
@@ -120,15 +120,13 @@
                 <div class="board-section">
                     <div class="section-header">SECTION 1: SINGLE MODE</div>
                     <div class="single-grid" id="single-board-grid">
-                        <!-- JavaScript dynamically builds 1-0 Single Cells here -->
+                        <!-- JavaScript dynamically builds Single Cells -->
                     </div>
                 </div>
-                <!-- MODULE 2 END -->
 
-                <!-- MODULE 3 START: TRIPLE MAIN BOARD & RANGE SELECTOR -->
+                <!-- MODULE 3: TRIPLE MAIN BOARD (220 BLOCKS) -->
                 <div class="board-section triple-board-container">
                     
-                    <!-- Board Top Bar: Header, Range & Jora Selectors -->
                     <div class="triple-board-bar">
                         <div class="section-header">SECTION 2: TRIPLE MAIN BOARD (220 BLOCKS)</div>
                         
@@ -144,7 +142,7 @@
                         </div>
                     </div>
 
-                    <!-- 10 Columns Top Headers (1 to 0) -->
+                    <!-- 10 Columns Headers (1 to 0) -->
                     <div class="triple-grid-header">
                         <div class="col-head">1</div>
                         <div class="col-head">2</div>
@@ -160,16 +158,14 @@
 
                     <!-- 220 Blocks Main Matrix Grid -->
                     <div class="triple-grid" id="triple-board-grid">
-                        <!-- JavaScript dynamically builds 220 Patti Cells here -->
+                        <!-- JavaScript dynamically builds Patti Cells -->
                     </div>
 
                 </div>
-                <!-- MODULE 3 END -->
 
-                <!-- MODULE 4 START: BETTING PANEL & SELECTED SUMMARY -->
+                <!-- MODULE 4: BETTING PANEL & SUMMARY -->
                 <div class="bottom-bet-container">
                     
-                    <!-- Quick Bet Amount Selector with Right-Click Support Info -->
                     <div class="bet-chip-section">
                         <span class="label-text">BET AMOUNT:</span>
                         <button class="btn-chip active" onclick="setBetAmount(10)">৳10</button>
@@ -178,10 +174,8 @@
                         <button class="btn-chip" onclick="setBetAmount(100)">৳100</button>
                         <button class="btn-chip" onclick="setBetAmount(500)">৳500</button>
                         <input type="number" id="custom-bet-input" placeholder="Custom" min="1" onchange="setCustomAmount(this.value)">
-                        <span class="click-hint">(Left-click: +Bet | Right-click: -Bet)</span>
                     </div>
 
-                    <!-- Selected Items List & Cart -->
                     <div class="selected-summary-box">
                         <div class="summary-header">
                             <span>SELECTED ITEMS (<span id="selected-count">0</span>)</span>
@@ -191,7 +185,6 @@
                             <span class="empty-msg">কোনো আইটেম সিলেক্ট করা হয়নি</span>
                         </div>
                         
-                        <!-- Action Buttons -->
                         <div class="action-btn-group">
                             <button class="btn-reset" onclick="clearAllSelections()">Reset</button>
                             <button class="btn-submit-bet" onclick="submitBetAndPrint()">Submit Bet / Print</button>
@@ -199,12 +192,12 @@
                     </div>
 
                 </div>
-                <!-- MODULE 4 END -->
 
             </main>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Application Script Engine -->
+    <script src="app.js" defer></script>
 </body>
 </html>
