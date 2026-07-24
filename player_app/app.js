@@ -587,7 +587,7 @@ function updateTimerUI(nowDate, msRemaining, totalSecs) {
 // MODULE 1: GLOBAL STATE, IP & NETWORK GUARD
 // ==========================================
 
-const AppState = {
+AppState = {
     currentUser: null,
     userType: 'demo',
     deviceIP: '127.0.0.1',
