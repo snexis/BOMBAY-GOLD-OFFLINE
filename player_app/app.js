@@ -2,20 +2,16 @@
 // MODULE 1: GLOBAL DYNAMIC STATE & CONFIG
 // ==========================================
 
-// Global State Structure (Supports future Admin API Overrides)
 window.AppState = window.AppState || {
-    // Authentication & User Details
     currentUser: null,
-    userType: 'demo', // 'demo', 'real', or 'admin'
+    userType: 'demo',
     deviceIP: '0.0.0.0',
     
-    // Balance & Limits
     playPoints: 5000,
     winPoints: 0,
     
-    // View & Dynamic Permissions
-    currentMode: 'BOTH', // Default UI Mode: 'BOTH', 'WORD', or 'DIGIT'
-    allowedModes: ['BOTH', 'WORD', 'DIGIT'], // Can be restricted by Admin later
+    currentMode: 'BOTH', // 'BOTH', 'WORD', or 'DIGIT'
+    allowedModes: ['BOTH', 'WORD', 'DIGIT'],
     
     // Live Result State
     currentResult: {
@@ -23,35 +19,37 @@ window.AppState = window.AppState || {
         word: 'AXZ'
     },
     
-    // Game Controls & Cart
+    recentResults: [], // Holds last 10 draws
+    ticketHistory: [], // Holds all bet tickets
+    
+    // Hardware & Audio Toggles
+    soundEnabled: true,
+    printEnabled: true,
+    
     activeRange: 'ALL',
     selectedBetAmount: 10,
     selectedCart: [],
     
-    // Dynamic Ratios (Configurable by Admin)
     winningRatios: {
         SINGLE: 9.00,
         TRIPLE: 11.50
     },
     
-    // Draw Timer Engine Config
     drawSettings: {
         intervalMinutes: 2,
         lockSecondsBefore: 1
     },
     
-    // Lock State
     timerState: {
         isLocked: false,
         secondsRemaining: 120,
-        timerId: null
+        timerId: null,
+        warnedLastChance: false
     }
 };
 
-// Global Reference Variable
 var AppState = window.AppState;
 
-// Initialize Application Engine
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
     setupNetworkGuard();
@@ -65,6 +63,7 @@ function initApp() {
     renderSingleBoard();
     renderTripleBoard();
     checkAndAutoRefillBalance();
+    renderRecentResults();
 }
 
 function updateDateDisplay() {
@@ -79,7 +78,6 @@ function fetchDeviceIP() {
 }
 
 function checkAndAutoRefillBalance() {
-    // Testing Refill Guard for Demo Players
     if ((AppState.userType === 'demo' || AppState.currentUser === 'DEMO_PLAYER_01') && AppState.playPoints <= 0) {
         AppState.playPoints = 5000;
         const playPtsEl = document.getElementById('play-points');
@@ -97,10 +95,55 @@ function setupNetworkGuard() {
             overlay.classList.remove('hidden');
         }
     }
-
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
     updateOnlineStatus();
+}
+
+// Sound & Print Controls
+function toggleSound() {
+    AppState.soundEnabled = !AppState.soundEnabled;
+    const btn = document.getElementById('btn-toggle-sound');
+    if (btn) btn.classList.toggle('active', AppState.soundEnabled);
+}
+
+function togglePrint() {
+    AppState.printEnabled = !AppState.printEnabled;
+    const btn = document.getElementById('btn-toggle-print');
+    if (btn) btn.classList.toggle('active', AppState.printEnabled);
+}
+
+function playVoiceAlert(type) {
+    if (!AppState.soundEnabled) return;
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+
+    let text = "";
+    if (type === 'LAST_CHANCE') text = "Last Chance!";
+    if (type === 'GAME_LOCKED') text = "Game is Locked! Time Over.";
+    if (type === 'LOGGED_IN') text = "Logged in successfully.";
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.0;
+    synth.speak(utterance);
+}
+
+// Side Drawer Navigation & History Modal
+function toggleDrawer() {
+    const drawer = document.getElementById('side-drawer');
+    if (drawer) drawer.classList.toggle('closed');
+}
+
+function openTicketHistory() {
+    toggleDrawer();
+    renderTicketHistoryTable();
+    const modal = document.getElementById('history-modal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeTicketHistory() {
+    const modal = document.getElementById('history-modal');
+    if (modal) modal.classList.add('hidden');
 }
 
 // ==========================================
@@ -112,28 +155,27 @@ function setupEventListeners() {
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            
             const usernameInput = document.getElementById('username');
             const userTypeInput = document.getElementById('user-type');
 
             const username = usernameInput ? usernameInput.value.trim() : 'DEMO_PLAYER_01';
             const userType = userTypeInput ? userTypeInput.value : 'demo';
 
-            // Dynamic State Mutation
             AppState.currentUser = username || 'DEMO_PLAYER_01';
             AppState.userType = userType;
 
             const userIdTextEl = document.getElementById('user-id-text');
+            const drawerUserIdEl = document.getElementById('drawer-user-id');
             if (userIdTextEl) userIdTextEl.innerText = AppState.currentUser;
+            if (drawerUserIdEl) drawerUserIdEl.innerText = AppState.currentUser;
 
-            // UI View Transition
             const loginModal = document.getElementById('login-modal');
             const appContainer = document.getElementById('app-container');
 
             if (loginModal) loginModal.classList.add('hidden');
             if (appContainer) appContainer.classList.remove('hidden');
             
-            // Re-render Game View with Updated Config
+            playVoiceAlert('LOGGED_IN');
             renderSingleBoard();
             renderTripleBoard();
             updateLiveResultDisplay();
@@ -234,20 +276,30 @@ function updateLiveResultDisplay() {
 }
 
 // ==========================================
-// MODULE 4: TRIPLE 220 MATRIX BOARD
+// MODULE 4: TRIPLE 220 MATRIX BOARD (MASTER CHART)
 // ==========================================
 
 const RawTripleDigits = [
+    // Column 1
     "100", "678", "777", "560", "470", "380", "290", "119", "137", "236", "146", "669", "579", "399", "588", "489", "245", "155", "227", "344", "335", "128",
+    // Column 2
     "200", "345", "444", "570", "480", "390", "660", "129", "237", "336", "246", "679", "255", "147", "228", "499", "688", "778", "138", "156", "110", "589",
+    // Column 3
     "300", "120", "114", "580", "490", "670", "238", "139", "337", "157", "346", "689", "355", "247", "256", "166", "599", "148", "788", "445", "229", "779",
+    // Column 4
     "400", "789", "888", "590", "130", "680", "248", "149", "347", "158", "446", "699", "455", "266", "112", "356", "239", "338", "257", "220", "770", "167",
+    // Column 5
     "500", "456", "555", "140", "230", "690", "258", "159", "357", "799", "267", "780", "447", "366", "113", "122", "177", "249", "339", "889", "348", "168",
+    // Column 6
     "600", "123", "222", "150", "330", "240", "268", "169", "367", "448", "899", "178", "790", "466", "358", "880", "114", "556", "259", "349", "457", "277",
+    // Column 7
     "700", "890", "999", "160", "340", "250", "278", "179", "377", "467", "115", "124", "223", "566", "557", "368", "359", "449", "269", "133", "188", "458",
+    // Column 8
     "800", "567", "666", "170", "350", "260", "288", "189", "116", "233", "459", "125", "224", "477", "990", "134", "558", "369", "378", "440", "279", "468",
+    // Column 9
     "900", "234", "333", "180", "360", "270", "450", "199", "117", "469", "126", "667", "478", "135", "225", "144", "379", "559", "289", "388", "577", "568",
-    "000", "127", "190", "280", "370", "460", "550", "235", "118", "578", "145", "668", "668", "299", "334", "488", "389", "226", "569", "677", "136", "244"
+    // Column 0
+    "000", "127", "190", "280", "370", "460", "550", "235", "118", "578", "145", "479", "668", "299", "334", "488", "389", "226", "569", "677", "136", "244"
 ];
 
 const TripleData = [];
@@ -312,7 +364,12 @@ function getFilteredTripleData() {
     if (AppState.activeRange === 'B') return TripleData.slice(55, 110);
     if (AppState.activeRange === 'C') return TripleData.slice(110, 165);
     if (AppState.activeRange === 'D') return TripleData.slice(165, 220);
-    if (AppState.activeRange === 'JORA') return TripleData.slice(0, 100);
+    if (AppState.activeRange === 'JORA') {
+        return TripleData.filter(item => {
+            const d = item.digit;
+            return d[0] === d[1] || d[1] === d[2] || d[0] === d[2];
+        });
+    }
     return TripleData;
 }
 
@@ -418,7 +475,8 @@ function updateCartDisplay() {
 
         const potentialWin = item.amount * item.winningRatio;
 
-        badge.innerText = `${label} : ৳${item.amount} [Est: ৳${potentialWin.toFixed(1)}]`;
+        // Strict Points Labeling (No Currency Symbol)
+        badge.innerText = `${label} : ${item.amount} PTS [Est Win: ${potentialWin.toFixed(0)} PTS]`;
         listContainer.appendChild(badge);
     });
 
@@ -431,37 +489,89 @@ function clearAllSelections() {
     updateCartDisplay();
 }
 
+// Silent Thermal & Bluetooth Printing Handler
 function submitBetAndPrint() {
-    if (AppState.timerState.isLocked) {
-        alert("Betting is currently LOCKED for this draw!");
-        return;
-    }
+    if (AppState.timerState.isLocked) return;
 
-    if (AppState.selectedCart.length === 0) {
-        alert("Please select a bet before submitting!");
-        return;
-    }
+    if (AppState.selectedCart.length === 0) return;
 
     let totalCost = AppState.selectedCart.reduce((sum, item) => sum + item.amount, 0);
 
-    if (AppState.playPoints < totalCost) {
-        alert("Insufficient play points!");
-        return;
-    }
+    if (AppState.playPoints < totalCost) return;
 
-    // Deduct Balance dynamically
+    // Deduct Balance
     AppState.playPoints -= totalCost;
     const playPtsEl = document.getElementById('play-points');
     if (playPtsEl) playPtsEl.innerText = AppState.playPoints.toLocaleString();
 
-    alert(`Bet Submitted Successfully!\nTotal Points Used: ${totalCost}\nPrinting Slip...`);
-    
-    window.print();
+    // Generate Unique Ticket Barcode
+    const ticketId = "TKT" + Date.now().toString().slice(-8) + Math.floor(Math.random() * 89 + 10);
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // Store Ticket Entry
+    const ticketRecord = {
+        id: ticketId,
+        points: totalCost,
+        time: timeStr,
+        items: [...AppState.selectedCart],
+        status: 'P', // P = Pending, Y = Won, N = Lost
+        winningPts: 0
+    };
+    AppState.ticketHistory.unshift(ticketRecord);
+
+    // Silent Thermal Print (ESC/POS Plain Template)
+    if (AppState.printEnabled) {
+        executeSilentThermalPrint(ticketRecord);
+    }
+
     clearAllSelections();
 }
 
+function executeSilentThermalPrint(ticket) {
+    const iframe = document.getElementById('silent-print-frame');
+    if (!iframe) return;
+
+    let itemsHtml = ticket.items.map(i => `<div>${i.digit} (${i.word}) x ${i.amount} PTS</div>`).join('');
+
+    const slipHtml = `
+        <html>
+        <head>
+            <style>
+                body { font-family: monospace; width: 58mm; margin: 0; padding: 5px; font-size: 11px; }
+                .center { text-align: center; }
+                .line { border-bottom: 1px dashed #000; margin: 5px 0; }
+            </style>
+        </head>
+
+        <body>
+            <div class="center"><b>A2Z BOMBAY</b></div>
+            <div class="center">ID: ${ticket.id}</div>
+            <div class="line"></div>
+            <div>Time: ${ticket.time}</div>
+            <div>User: ${AppState.currentUser}</div>
+            <div class="line"></div>
+            ${itemsHtml}
+            <div class="line"></div>
+            <div><b>TOTAL PTS: ${ticket.points}</b></div>
+            <div class="center">*** GOOD LUCK ***</div>
+        </body>
+        </html>
+    `;
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(slipHtml);
+    doc.close();
+
+    setTimeout(() => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }, 200);
+}
+
 // ==========================================
-// MODULE 6: REAL-TIME DRAW TIMER ENGINE
+// MODULE 6: DRAW TIMER & RECENT RESULTS BOARD
 // ==========================================
 
 function initDrawTimerEngine() {
@@ -483,12 +593,20 @@ function runClockCycle() {
     const totalSecondsRemaining = Math.floor(msRemaining / 1000);
     AppState.timerState.secondsRemaining = totalSecondsRemaining;
 
+    // Dynamic Voice Alerts
+    if (totalSecondsRemaining === 15 && !AppState.timerState.warnedLastChance) {
+        AppState.timerState.warnedLastChance = true;
+        playVoiceAlert('LAST_CHANCE');
+    }
+
     const isLockPeriod = totalSecondsRemaining <= AppState.drawSettings.lockSecondsBefore;
 
     if (isLockPeriod && !AppState.timerState.isLocked) {
         setLockState(true);
+        playVoiceAlert('GAME_LOCKED');
     } else if (!isLockPeriod && AppState.timerState.isLocked) {
         setLockState(false);
+        AppState.timerState.warnedLastChance = false;
         onNewDrawStart();
     }
 
@@ -497,19 +615,110 @@ function runClockCycle() {
 
 function setLockState(locked) {
     AppState.timerState.isLocked = locked;
+    const lockBanner = document.getElementById('game-lock-banner');
+    if (lockBanner) lockBanner.classList.toggle('hidden', !locked);
+
     renderSingleBoard();
     renderTripleBoard();
 }
 
 function onNewDrawStart() {
     const randomTriple = TripleData[Math.floor(Math.random() * TripleData.length)];
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     AppState.currentResult = {
         digit: randomTriple.digit,
-        word: randomTriple.word
+        word: randomTriple.word,
+        time: timeStr
     };
 
+    // Store in Recent Results (Max 10)
+    AppState.recentResults.unshift({ ...AppState.currentResult });
+    if (AppState.recentResults.length > 10) AppState.recentResults.pop();
+
+    // Evaluate Winning Tickets
+    evaluateTicketWinners(AppState.currentResult);
+
     updateLiveResultDisplay();
+    renderRecentResults();
+}
+
+function renderRecentResults() {
+    const container = document.getElementById('recent-results-stripe');
+    if (!container) return;
+
+    container.innerHTML = '';
+    AppState.recentResults.forEach(res => {
+        const item = document.createElement('div');
+        item.className = 'recent-item';
+        item.innerText = `${res.time} | ${res.digit} ${res.word}`;
+        container.appendChild(item);
+    });
+}
+
+function evaluateTicketWinners(result) {
+    AppState.ticketHistory.forEach(ticket => {
+        if (ticket.status === 'P') {
+            let winTotal = 0;
+            ticket.items.forEach(item => {
+                if (item.digit === result.digit || item.word === result.word) {
+                    winTotal += item.amount * item.winningRatio;
+                }
+            });
+
+            if (winTotal > 0) {
+                ticket.status = 'Y';
+                ticket.winningPts = winTotal;
+            } else {
+                ticket.status = 'N';
+            }
+        }
+    });
+}
+
+// Ticket Barcode Checker
+function checkTicketBarcode() {
+    const input = document.getElementById('barcode-check-input');
+    if (!input || !input.value.trim()) return;
+
+    const barcode = input.value.trim();
+    const ticket = AppState.ticketHistory.find(t => t.id === barcode);
+
+    if (!ticket) {
+        alert("TICKET NOT FOUND!");
+        return;
+    }
+
+    if (ticket.status === 'Y') {
+        alert(`🟢 WINNING TICKET!\nWon: ${ticket.winningPts.toFixed(0)} PTS`);
+    } else if (ticket.status === 'N') {
+        alert(`🔴 NOT A WINNING TICKET`);
+    } else {
+        alert(`🟡 TICKET PENDING FOR DRAW`);
+    }
+}
+
+function renderTicketHistoryTable() {
+    const tbody = document.getElementById('history-table-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    AppState.ticketHistory.forEach(ticket => {
+        const tr = document.createElement('tr');
+        
+        let statusBadge = '<span class="status-pending">P (Pending)</span>';
+        if (ticket.status === 'Y') statusBadge = `<span class="status-won">Y (Won ${ticket.winningPts.toFixed(0)} PTS)</span>`;
+        if (ticket.status === 'N') statusBadge = '<span class="status-lost">N (Lost)</span>';
+
+        tr.innerHTML = `
+            <td>${ticket.id}</td>
+            <td>${ticket.points} PTS</td>
+            <td>${ticket.time}</td>
+            <td>${statusBadge}</td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
 function updateTimerUI(nowDate, msRemaining, totalSecs) {
