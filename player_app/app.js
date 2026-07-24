@@ -1,34 +1,46 @@
 // ==========================================
-// MODULE 1: GLOBAL STATE, IP & NETWORK GUARD
+// MODULE 1: GLOBAL DYNAMIC STATE & CONFIG
 // ==========================================
 
-// Window Level Safe State Initialization (Prevents Duplicate Declaration Error)
+// Global State Structure (Supports future Admin API Overrides)
 window.AppState = window.AppState || {
-    currentUser: 'DEMO_PLAYER_01',
-    userType: 'demo',
-    deviceIP: '127.0.0.1',
+    // Authentication & User Details
+    currentUser: null,
+    userType: 'demo', // 'demo', 'real', or 'admin'
+    deviceIP: '0.0.0.0',
+    
+    // Balance & Limits
     playPoints: 5000,
-    winPoints: 1200,
-    currentMode: 'BOTH', // BOTH, WORD, DIGIT
+    winPoints: 0,
+    
+    // View & Dynamic Permissions
+    currentMode: 'BOTH', // Default UI Mode: 'BOTH', 'WORD', or 'DIGIT'
+    allowedModes: ['BOTH', 'WORD', 'DIGIT'], // Can be restricted by Admin later
+    
+    // Live Result State
     currentResult: {
         digit: '100',
         word: 'AXZ'
     },
-    activeRange: 'ALL', // ALL, A, B, C, D, JORA
+    
+    // Game Controls & Cart
+    activeRange: 'ALL',
     selectedBetAmount: 10,
     selectedCart: [],
     
-    // Winning Ratio Multipliers
+    // Dynamic Ratios (Configurable by Admin)
     winningRatios: {
-        SINGLE: 9.00,    // 1 Point = 9 Points
-        TRIPLE: 11.50    // 1 Point = 11.50 Points
+        SINGLE: 9.00,
+        TRIPLE: 11.50
     },
-
-    // Dynamic Admin Timing & Engine Configurations
+    
+    // Draw Timer Engine Config
     drawSettings: {
-        intervalMinutes: 2,   // Default 2-minute interval
-        lockSecondsBefore: 1  // Locks 1 second before draw completion
+        intervalMinutes: 2,
+        lockSecondsBefore: 1
     },
+    
+    // Lock State
     timerState: {
         isLocked: false,
         secondsRemaining: 120,
@@ -36,8 +48,10 @@ window.AppState = window.AppState || {
     }
 };
 
-let AppState = window.AppState;
+// Global Reference Variable
+var AppState = window.AppState;
 
+// Initialize Application Engine
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
     setupNetworkGuard();
@@ -60,28 +74,23 @@ function updateDateDisplay() {
     if (dateEl) dateEl.innerText = dateStr;
 }
 
-// Device IP Extractor Hook for Live Admin Player Creation & Tracking
 function fetchDeviceIP() {
     AppState.deviceIP = "192.168.1." + Math.floor(Math.random() * 200 + 10);
-    console.log("Device Local IP Enrolled:", AppState.deviceIP);
 }
 
-// Auto Balance Refill for Demo Users
 function checkAndAutoRefillBalance() {
+    // Testing Refill Guard for Demo Players
     if ((AppState.userType === 'demo' || AppState.currentUser === 'DEMO_PLAYER_01') && AppState.playPoints <= 0) {
         AppState.playPoints = 5000;
         const playPtsEl = document.getElementById('play-points');
         if (playPtsEl) playPtsEl.innerText = AppState.playPoints.toLocaleString();
-        console.log("Demo balance auto-refilled to 5000");
     }
 }
 
-// Network Internet Guard
 function setupNetworkGuard() {
     function updateOnlineStatus() {
         const overlay = document.getElementById('network-offline-overlay');
         if (!overlay) return;
-        
         if (navigator.onLine) {
             overlay.classList.add('hidden');
         } else {
@@ -94,34 +103,42 @@ function setupNetworkGuard() {
     updateOnlineStatus();
 }
 
+// ==========================================
+// MODULE 2: AUTHENTICATION & UI SWITCHING
+// ==========================================
+
 function setupEventListeners() {
     const loginForm = document.getElementById('login-form');
-    if (!loginForm) return;
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const usernameInput = document.getElementById('username');
+            const userTypeInput = document.getElementById('user-type');
 
-    loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const usernameInput = document.getElementById('username');
-        const userTypeInput = document.getElementById('user-type');
+            const username = usernameInput ? usernameInput.value.trim() : 'DEMO_PLAYER_01';
+            const userType = userTypeInput ? userTypeInput.value : 'demo';
 
-        const username = usernameInput ? usernameInput.value : 'DEMO_PLAYER_01';
-        const userType = userTypeInput ? userTypeInput.value : 'demo';
+            // Dynamic State Mutation
+            AppState.currentUser = username || 'DEMO_PLAYER_01';
+            AppState.userType = userType;
 
-        AppState.currentUser = username;
-        AppState.userType = userType;
+            const userIdTextEl = document.getElementById('user-id-text');
+            if (userIdTextEl) userIdTextEl.innerText = AppState.currentUser;
 
-        const userIdTextEl = document.getElementById('user-id-text');
-        if (userIdTextEl) userIdTextEl.innerText = username;
+            // UI View Transition
+            const loginModal = document.getElementById('login-modal');
+            const appContainer = document.getElementById('app-container');
 
-        const loginModal = document.getElementById('login-modal');
-        const appContainer = document.getElementById('app-container');
-
-        if (loginModal) loginModal.classList.add('hidden');
-        if (appContainer) appContainer.classList.remove('hidden');
-        
-        renderSingleBoard();
-        renderTripleBoard();
-    });
+            if (loginModal) loginModal.classList.add('hidden');
+            if (appContainer) appContainer.classList.remove('hidden');
+            
+            // Re-render Game View with Updated Config
+            renderSingleBoard();
+            renderTripleBoard();
+            updateLiveResultDisplay();
+        });
+    }
 
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
@@ -135,16 +152,8 @@ function setupEventListeners() {
     }
 }
 
-function switchTab(tabName) {
-    document.querySelectorAll('.sidebar-menu .nav-btn').forEach(btn => btn.classList.remove('active'));
-    if (window.event && window.event.currentTarget) {
-        window.event.currentTarget.classList.add('active');
-    }
-    console.log("Switched to Tab:", tabName);
-}
-
 // ==========================================
-// MODULE 2: SINGLE BOARD ENGINE
+// MODULE 3: SINGLE BOARD ENGINE (0-9)
 // ==========================================
 
 const SingleData = [
@@ -166,14 +175,12 @@ function renderSingleBoard() {
         cell.className = 'single-cell';
         if (AppState.timerState.isLocked) cell.classList.add('disabled-cell');
         
-        // Left-click (Add Bet)
         cell.onclick = (e) => {
             e.preventDefault();
             if (AppState.timerState.isLocked) return;
             addBetToCart(`SINGLE-${item.digit}`, item.digit, item.word, 'SINGLE', AppState.selectedBetAmount);
         };
 
-        // Right-click (Reduce Bet)
         cell.oncontextmenu = (e) => {
             e.preventDefault();
             if (AppState.timerState.isLocked) return;
@@ -202,7 +209,7 @@ function renderSingleBoard() {
 function switchViewMode(mode) {
     AppState.currentMode = mode;
 
-    document.querySelectorAll('.btn-mode').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.mode-selector .btn-mode').forEach(btn => btn.classList.remove('active'));
     if (mode === 'BOTH') document.getElementById('btn-mode-both')?.classList.add('active');
     if (mode === 'WORD') document.getElementById('btn-mode-word')?.classList.add('active');
     if (mode === 'DIGIT') document.getElementById('btn-mode-digit')?.classList.add('active');
@@ -215,9 +222,7 @@ function switchViewMode(mode) {
 
 function updateLiveResultDisplay() {
     const resultBox = document.getElementById('top-result-display');
-    if (!resultBox) return;
-
-    if (!AppState.currentResult) return;
+    if (!resultBox || !AppState.currentResult) return;
 
     if (AppState.currentMode === 'BOTH') {
         resultBox.innerText = `${AppState.currentResult.digit} ${AppState.currentResult.word}`;
@@ -229,29 +234,19 @@ function updateLiveResultDisplay() {
 }
 
 // ==========================================
-// MODULE 3: TRIPLE 220 MATRIX (EXACT IMAGE DATA)
+// MODULE 4: TRIPLE 220 MATRIX BOARD
 // ==========================================
 
 const RawTripleDigits = [
-    // Col 1 (1)
     "100", "678", "777", "560", "470", "380", "290", "119", "137", "236", "146", "669", "579", "399", "588", "489", "245", "155", "227", "344", "335", "128",
-    // Col 2 (2)
     "200", "345", "444", "570", "480", "390", "660", "129", "237", "336", "246", "679", "255", "147", "228", "499", "688", "778", "138", "156", "110", "589",
-    // Col 3 (3)
     "300", "120", "114", "580", "490", "670", "238", "139", "337", "157", "346", "689", "355", "247", "256", "166", "599", "148", "788", "445", "229", "779",
-    // Col 4 (4)
     "400", "789", "888", "590", "130", "680", "248", "149", "347", "158", "446", "699", "455", "266", "112", "356", "239", "338", "257", "220", "770", "167",
-    // Col 5 (5)
     "500", "456", "555", "140", "230", "690", "258", "159", "357", "799", "267", "780", "447", "366", "113", "122", "177", "249", "339", "889", "348", "168",
-    // Col 6 (6)
     "600", "123", "222", "150", "330", "240", "268", "169", "367", "448", "899", "178", "790", "466", "358", "880", "114", "556", "259", "349", "457", "277",
-    // Col 7 (7)
     "700", "890", "999", "160", "340", "250", "278", "179", "377", "467", "115", "124", "223", "566", "557", "368", "359", "449", "269", "133", "188", "458",
-    // Col 8 (8)
     "800", "567", "666", "170", "350", "260", "288", "189", "116", "233", "459", "125", "224", "477", "990", "134", "558", "369", "378", "440", "279", "468",
-    // Col 9 (9)
     "900", "234", "333", "180", "360", "270", "450", "199", "117", "469", "126", "667", "478", "135", "225", "144", "379", "559", "289", "388", "577", "568",
-    // Col 10 (0)
     "000", "127", "190", "280", "370", "460", "550", "235", "118", "578", "145", "668", "668", "299", "334", "488", "389", "226", "569", "677", "136", "244"
 ];
 
@@ -281,14 +276,12 @@ function renderTripleBoard() {
         cell.id = `triple-cell-${item.id}`;
         if (AppState.timerState.isLocked) cell.classList.add('disabled-cell');
 
-        // Left-click (Add Bet)
         cell.onclick = (e) => {
             e.preventDefault();
             if (AppState.timerState.isLocked) return;
             addBetToCart(`TRIPLE-${item.id}`, item.digit, item.word, 'TRIPLE', AppState.selectedBetAmount);
         };
 
-        // Right-click (Reduce Bet)
         cell.oncontextmenu = (e) => {
             e.preventDefault();
             if (AppState.timerState.isLocked) return;
@@ -326,7 +319,7 @@ function getFilteredTripleData() {
 function filterRange(rangeKey) {
     AppState.activeRange = rangeKey;
 
-    document.querySelectorAll('.btn-range').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.range-selector .btn-range').forEach(btn => btn.classList.remove('active'));
     if (rangeKey === 'ALL') document.getElementById('btn-range-all')?.classList.add('active');
     if (rangeKey === 'A') document.getElementById('btn-range-a')?.classList.add('active');
     if (rangeKey === 'B') document.getElementById('btn-range-b')?.classList.add('active');
@@ -338,7 +331,7 @@ function filterRange(rangeKey) {
 }
 
 // ==========================================
-// MODULE 4: CART & WINNING CALCULATION ENGINE
+// MODULE 5: BETTING & SLIP SUMMARY ENGINE
 // ==========================================
 
 function setBetAmount(amount) {
@@ -346,7 +339,7 @@ function setBetAmount(amount) {
     
     document.querySelectorAll('.bet-chip-section .btn-chip').forEach(btn => {
         btn.classList.remove('active');
-        if (btn.innerText.includes(amount.toString())) btn.classList.add('active');
+        if (btn.innerText.trim() === amount.toString()) btn.classList.add('active');
     });
 
     const customInput = document.getElementById('custom-bet-input');
@@ -425,7 +418,7 @@ function updateCartDisplay() {
 
         const potentialWin = item.amount * item.winningRatio;
 
-        badge.innerText = `${label} : ৳${item.amount} [Est. Win: ৳${potentialWin.toFixed(1)}]`;
+        badge.innerText = `${label} : ৳${item.amount} [Est: ৳${potentialWin.toFixed(1)}]`;
         listContainer.appendChild(badge);
     });
 
@@ -456,78 +449,20 @@ function submitBetAndPrint() {
         return;
     }
 
+    // Deduct Balance dynamically
     AppState.playPoints -= totalCost;
     const playPtsEl = document.getElementById('play-points');
     if (playPtsEl) playPtsEl.innerText = AppState.playPoints.toLocaleString();
 
-    AudioSystem.playSuccess();
-
-    alert(`Bet Submitted Successfully!\nTotal Points Used: ${totalCost}\nDevice IP: ${AppState.deviceIP}\nPrinting Slip...`);
+    alert(`Bet Submitted Successfully!\nTotal Points Used: ${totalCost}\nPrinting Slip...`);
     
     window.print();
     clearAllSelections();
 }
 
 // ==========================================
-// MODULE 5: REAL-TIME CLOCK, AUDIO & LOCK ENGINE
+// MODULE 6: REAL-TIME DRAW TIMER ENGINE
 // ==========================================
-
-const AudioSystem = {
-    ctx: null,
-    
-    init() {
-        if (!this.ctx) {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (AudioCtx) this.ctx = new AudioCtx();
-        }
-    },
-
-    playSuccess() {
-        this.init();
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(659.25, this.ctx.currentTime + 0.15);
-        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.3);
-    },
-
-    playTick() {
-        this.init();
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.05);
-    },
-
-    playLockBeep() {
-        this.init();
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(300, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.4);
-    }
-};
 
 function initDrawTimerEngine() {
     if (AppState.timerState.timerId) clearInterval(AppState.timerState.timerId);
@@ -557,10 +492,6 @@ function runClockCycle() {
         onNewDrawStart();
     }
 
-    if (totalSecondsRemaining > 1 && totalSecondsRemaining <= 10) {
-        AudioSystem.playTick();
-    }
-
     updateTimerUI(now, msRemaining, totalSecondsRemaining);
 }
 
@@ -586,12 +517,7 @@ function updateTimerUI(nowDate, msRemaining, totalSecs) {
     const seconds = totalSecs % 60;
     
     const timeFormatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    const nextDrawTime = new Date(nowDate.getTime() + msRemaining);
-    const nextDrawFormatted = nextDrawTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
 
     const drawTimeEl = document.getElementById('draw-time-val');
-    const nextDrawEl = document.getElementById('next-draw-val');
-
     if (drawTimeEl) drawTimeEl.innerText = timeFormatted;
-    if (nextDrawEl) nextDrawEl.innerText = nextDrawFormatted;
 }
