@@ -1,43 +1,149 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A2Z BOMBAY</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* International Login Screen Custom Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(8, 12, 20, 0.92);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+        .login-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            padding: 35px 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.2), 0 15px 30px rgba(0, 0, 0, 0.8);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-card h2 {
+            color: #00f0ff;
+            margin-bottom: 8px;
+            font-size: 24px;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+        .login-card p {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+            position: relative;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 11px 14px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: #00f0ff;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+        }
+        .password-container {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .toggle-password:hover {
+            color: #00f0ff;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: #00f0ff;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+        .btn-submit:hover {
+            background: #38bdf8;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+        }
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
 
     <!-- Network Offline Guard Overlay -->
     <div id="network-offline-overlay" class="network-overlay hidden">
         <div class="network-card">
-            <h3>????????? ????? ?????????!</h3>
-            <p>??????? ??? ????? ?????????? ??????? ??? ?????</p>
+            <h3>Connection Warning!</h3>
+            <p>Please check your internet connection and try again.</p>
         </div>
     </div>
 
-    <!-- Login Modal -->
+    <!-- Login Modal (International Professional Look) -->
     <div id="login-modal" class="modal-overlay">
         <div class="login-card">
-            <h2>A2Z BOMBAY LOGIN</h2>
-            <p>????? ???? ? ?????????? ?????</p>
+            <h2>A2Z BOMBAY</h2>
+            <p>Secure Player Authentication Portal</p>
             <form id="login-form">
                 <div class="form-group">
-                    <label for="user-type">????? ????:</label>
+                    <label for="user-type">Player Type</label>
                     <select id="user-type">
-                        <option value="demo">Demo Player (??????? ???)</option>
+                        <option value="demo">Demo Player</option>
                         <option value="real">Real Player</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="username">????? ????:</label>
-                    <input type="text" id="username" value="DEMO_PLAYER_01" required>
+                    <label for="username">Player ID / Name</label>
+                    <input type="text" id="username" value="DEMO_PLAYER_01" required placeholder="Enter Player ID">
                 </div>
                 <div class="form-group">
-                    <label for="password">??????????:</label>
-                    <input type="password" id="password" value="123456" required>
+                    <label for="password">Password / PIN</label>
+                    <div class="password-container">
+                        <input type="password" id="password" value="123456" required placeholder="Enter Password">
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">👁</button>
+                    </div>
                 </div>
-                <button type="submit" class="btn-submit">???? ????</button>
+                <button type="submit" class="btn-submit">Sign In</button>
             </form>
         </div>
     </div>
@@ -52,10 +158,10 @@
                     <img id="user-avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f0ff'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Profile Logo">
                 </div>
                 <div class="drawer-user-id" id="drawer-user-id">DEMO_PLAYER_01</div>
-                <button class="btn-close-drawer" onclick="toggleDrawer()">?</button>
+                <button class="btn-close-drawer" onclick="toggleDrawer()">✕</button>
             </div>
             <div class="drawer-menu">
-                <button class="drawer-btn" onclick="openTicketHistory()">??? Ticket History</button>
+                <button class="drawer-btn" onclick="openTicketHistory()">📋 Ticket History</button>
             </div>
         </aside>
 
@@ -64,7 +170,7 @@
             <div class="history-card">
                 <div class="history-header">
                     <h3>Ticket Betting History</h3>
-                    <button class="btn-close-modal" onclick="closeTicketHistory()">?</button>
+                    <button class="btn-close-modal" onclick="closeTicketHistory()">✕</button>
                 </div>
                 <div class="history-body">
                     <table class="history-table">
@@ -87,7 +193,7 @@
         <!-- Top Header Bar -->
         <header class="top-header">
             <div class="header-left">
-                <button class="btn-menu-toggle" onclick="toggleDrawer()">?</button>
+                <button class="btn-menu-toggle" onclick="toggleDrawer()">☰</button>
                 <div class="glow-text">A2Z BOMBAY</div>
             </div>
             
@@ -118,8 +224,8 @@
 
             <div class="user-info">
                 <!-- Sound & Print Controls -->
-                <button id="btn-toggle-sound" class="btn-icon-control active" onclick="toggleSound()" title="Sound On/Off">??</button>
-                <button id="btn-toggle-print" class="btn-icon-control active" onclick="togglePrint()" title="Silent Printing On/Off">???</button>
+                <button id="btn-toggle-sound" class="btn-icon-control active" onclick="toggleSound()" title="Sound On/Off">🔊</button>
+                <button id="btn-toggle-print" class="btn-icon-control active" onclick="togglePrint()" title="Silent Printing On/Off">🖨️</button>
 
                 <div class="user-badge">ID: <strong id="user-id-text">DEMO_PLAYER_01</strong></div>
                 <div class="points-badge">PTS: <strong id="play-points">5,000</strong></div>
@@ -129,10 +235,10 @@
 
         <!-- Lock Overlay Notification -->
         <div id="game-lock-banner" class="lock-banner hidden">
-            <span>?? GAME IS LOCKED / TIME OVER</span>
+            <span>🔒 GAME IS LOCKED / TIME OVER</span>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main Content (Untouched Core Logic & Structure) -->
         <main class="main-content">
             <!-- Controllers Panel -->
             <div class="control-panel">
@@ -207,6 +313,17 @@
     <!-- Hidden Thermal Printing Container -->
     <iframe id="silent-print-frame" style="display:none; visibility:hidden;"></iframe>
 
+    <script>
+        // Password Show/Hide Feature for International UI
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+    </script>
     <script src="app.js"></script>
 </body>
 </html>
