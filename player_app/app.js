@@ -152,6 +152,10 @@ function closeTicketHistory() {
 // MODULE 2: AUTHENTICATION & UI SWITCHING
 // ==========================================
 
+// ==========================================
+// MODULE 2: AUTHENTICATION & UI SWITCHING (Fixed)
+// ==========================================
+
 function setupEventListeners() {
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
@@ -171,11 +175,18 @@ function setupEventListeners() {
             if (userIdTextEl) userIdTextEl.innerText = AppState.currentUser;
             if (drawerUserIdEl) drawerUserIdEl.innerText = AppState.currentUser;
 
+            // লগইন মডাল লুকানোর এবং ড্যাশবোর্ড দেখানোর সঠিক সিএসএস হ্যান্ডলিং
             const loginModal = document.getElementById('login-modal');
             const appContainer = document.getElementById('app-container');
 
-            if (loginModal) loginModal.classList.add('hidden');
-            if (appContainer) appContainer.classList.remove('hidden');
+            if (loginModal) {
+                loginModal.style.display = 'none';
+                loginModal.classList.add('hidden');
+            }
+            if (appContainer) {
+                appContainer.style.display = 'block';
+                appContainer.classList.remove('hidden');
+            }
             
             playVoiceAlert('LOGGED_IN');
             renderSingleBoard();
@@ -183,6 +194,24 @@ function setupEventListeners() {
             updateLiveResultDisplay();
         });
     }
+
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            const loginModal = document.getElementById('login-modal');
+            const appContainer = document.getElementById('app-container');
+
+            if (appContainer) {
+                appContainer.style.display = 'none';
+                appContainer.classList.add('hidden');
+            }
+            if (loginModal) {
+                loginModal.style.display = 'flex';
+                loginModal.classList.remove('hidden');
+            }
+        });
+    }
+}
 
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
