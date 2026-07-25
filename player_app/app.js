@@ -675,6 +675,8 @@ function renderRecentResults() {
 }
 
 function evaluateTicketWinners(result) {
+    let totalWonThisDraw = 0;
+
     AppState.ticketHistory.forEach(ticket => {
         if (ticket.status === 'P') {
             let winTotal = 0;
@@ -687,13 +689,24 @@ function evaluateTicketWinners(result) {
             if (winTotal > 0) {
                 ticket.status = 'Y';
                 ticket.winningPts = winTotal;
+                totalWonThisDraw += winTotal; // মোট জেতা পয়েন্ট যোগ করা হলো
             } else {
                 ticket.status = 'N';
             }
         }
     });
-}
 
+    // যদি ইউজার এই ড্রয়ে জিতে থাকে, তবে তার মেইন ব্যালেন্সে পয়েন্ট যোগ হবে
+    if (totalWonThisDraw > 0) {
+        AppState.playPoints += totalWonThisDraw;
+        
+        // UI তে ব্যালেন্স আপডেট করা
+        const playPtsEl = document.getElementById('play-points');
+        if (playPtsEl) {
+            playPtsEl.innerText = AppState.playPoints.toLocaleString();
+        }
+    }
+}
 function checkTicketBarcode() {
     const input = document.getElementById('barcode-check-input');
     if (!input || !input.value.trim()) return;
