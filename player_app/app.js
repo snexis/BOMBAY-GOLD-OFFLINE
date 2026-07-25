@@ -153,7 +153,7 @@ function closeTicketHistory() {
 }
 
 // ==========================================
-// MODULE 2: AUTHENTICATION & UI SWITCHING
+// MODULE 2: AUTHENTICATION & UI SWITCHING (Fixed)
 // ==========================================
 
 function setupEventListeners() {
@@ -161,32 +161,48 @@ function setupEventListeners() {
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const usernameInput = document.getElementById('username');
-            const userTypeInput = document.getElementById('user-type');
+            try {
+                const usernameInput = document.getElementById('username');
+                const userTypeInput = document.getElementById('user-type');
 
-            const username = usernameInput ? usernameInput.value.trim() : 'DEMO_PLAYER_01';
-            const userType = userTypeInput ? userTypeInput.value : 'demo';
+                const username = usernameInput ? usernameInput.value.trim() : 'player01';
+                const userType = userTypeInput ? userTypeInput.value : 'demo';
 
-            AppState.currentUser = username || 'DEMO_PLAYER_01';
-            AppState.userType = userType;
+                AppState.currentUser = username || 'DEMO_PLAYER_01';
+                AppState.userType = userType;
 
-            const userIdTextEl = document.getElementById('user-id-text');
-            const drawerUserIdEl = document.getElementById('drawer-user-id');
-            if (userIdTextEl) userIdTextEl.innerText = AppState.currentUser;
-            if (drawerUserIdEl) drawerUserIdEl.innerText = AppState.currentUser;
+                const userIdTextEl = document.getElementById('user-id-text');
+                const drawerUserIdEl = document.getElementById('drawer-user-id');
+                if (userIdTextEl) userIdTextEl.innerText = AppState.currentUser;
+                if (drawerUserIdEl) drawerUserIdEl.innerText = AppState.currentUser;
 
+                const loginModal = document.getElementById('login-modal');
+                const appContainer = document.getElementById('app-container');
+
+                if (loginModal) loginModal.classList.add('hidden');
+                if (appContainer) appContainer.classList.remove('hidden');
+                
+                playVoiceAlert('LOGGED_IN');
+                renderSingleBoard();
+                renderTripleBoard();
+                updateLiveResultDisplay();
+            } catch (err) {
+                console.error("Login Error Catch: ", err);
+            }
+        });
+    }
+
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
             const loginModal = document.getElementById('login-modal');
             const appContainer = document.getElementById('app-container');
 
-            if (loginModal) loginModal.classList.add('hidden');
-            if (appContainer) appContainer.classList.remove('hidden');
-            
-            playVoiceAlert('LOGGED_IN');
-            renderSingleBoard();
-            renderTripleBoard();
-            updateLiveResultDisplay();
+            if (appContainer) appContainer.classList.add('hidden');
+            if (loginModal) loginModal.classList.remove('hidden');
         });
     }
+}
 
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
