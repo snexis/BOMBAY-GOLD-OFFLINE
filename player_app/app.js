@@ -200,13 +200,15 @@ function setupEventListeners() {
 // MODULE 3: SINGLE BOARD ENGINE (0-9)
 // ==========================================
 
-const SingleData = [
-    { digit: '1', word: 'A' }, { digit: '2', word: 'B' },
-    { digit: '3', word: 'C' }, { digit: '4', word: 'D' },
-    { digit: '5', word: 'E' }, { digit: '6', word: 'F' },
-    { digit: '7', word: 'G' }, { digit: '8', word: 'H' },
-    { digit: '9', word: 'I' }, { digit: '0', word: 'J' }
-];
+if (typeof SingleData === 'undefined') {
+    var SingleData = [
+        { digit: '1', word: 'A' }, { digit: '2', word: 'B' },
+        { digit: '3', word: 'C' }, { digit: '4', word: 'D' },
+        { digit: '5', word: 'E' }, { digit: '6', word: 'F' },
+        { digit: '7', word: 'G' }, { digit: '8', word: 'H' },
+        { digit: '9', word: 'I' }, { digit: '0', word: 'J' }
+    ];
+}
 
 function renderSingleBoard() {
     const gridContainer = document.getElementById('single-board-grid');
@@ -548,206 +550,30 @@ function executeSilentThermalPrint(ticket) {
 
     let itemsHtml = ticket.items.map(i => `<div>${i.digit} (${i.word}) x ${i.amount} PTS</div>`).join('');
 
-    const slipHtml = `
+    const printContent = `
         <html>
         <head>
             <style>
-                body { font-family: monospace; width: 58mm; margin: 0; padding: 5px; font-size: 11px; }
+                body { font-family: monospace; width: 250px; padding: 10px; font-size: 12px; }
                 .center { text-align: center; }
-                .line { border-bottom: 1px dashed #000; margin: 5px 0; }
             </style>
         </head>
         <body>
-            <div class="center"><b>A2Z BOMBAY</b></div>
-            <div class="center">ID: ${ticket.id}</div>
-            <div class="line"></div>
+            <div class="center"><strong>A2Z BOMBAY</strong></div>
+            <div class="center">Ticket ID: ${ticket.id}</div>
             <div>Time: ${ticket.time}</div>
-            <div>User: ${AppState.currentUser}</div>
-            <div class="line"></div>
+            <hr/>
             ${itemsHtml}
-            <div class="line"></div>
-            <div><b>TOTAL PTS: ${ticket.points}</b></div>
-            <div class="center">*** GOOD LUCK ***</div>
+            <hr/>
+            <div><strong>Total: ${ticket.points} PTS</strong></div>
         </body>
         </html>
     `;
 
     const doc = iframe.contentWindow.document;
     doc.open();
-    doc.write(slipHtml);
+    doc.write(printContent);
     doc.close();
-
-    setTimeout(() => {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-    }, 200);
-}
-
-// ==========================================
-// MODULE 6: DRAW TIMER & RECENT RESULTS BOARD
-// ==========================================
-
-function initDrawTimerEngine() {
-    if (AppState.timerState.timerId) clearInterval(AppState.timerState.timerId);
-    AppState.timerState.timerId = setInterval(runClockCycle, 1000);
-    runClockCycle();
-}
-
-function runClockCycle() {
-    const now = new Date();
-    const intervalMs = AppState.drawSettings.intervalMinutes * 60 * 1000;
-    
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    const currentMs = now.getTime() - startOfDay;
-    
-    const msIntoCurrentDraw = currentMs % intervalMs;
-    const msRemaining = intervalMs - msIntoCurrentDraw;
-    
-    const totalSecondsRemaining = Math.floor(msRemaining / 1000);
-    AppState.timerState.secondsRemaining = totalSecondsRemaining;
-
-    if (totalSecondsRemaining === 15 && !AppState.timerState.warnedLastChance) {
-        AppState.timerState.warnedLastChance = true;
-        playVoiceAlert('LAST_CHANCE');
-    }
-
-    const isLockPeriod = totalSecondsRemaining <= AppState.drawSettings.lockSecondsBefore;
-
-    if (isLockPeriod && !AppState.timerState.isLocked) {
-        setLockState(true);
-        playVoiceAlert('GAME_LOCKED');
-    } else if (!isLockPeriod && AppState.timerState.isLocked) {
-        setLockState(false);
-        AppState.timerState.warnedLastChance = false;
-        onNewDrawStart();
-    }
-
-    updateTimerUI(now, msRemaining, totalSecondsRemaining);
-}
-
-function setLockState(locked) {
-    AppState.timerState.isLocked = locked;
-    const lockBanner = document.getElementById('game-lock-banner');
-    if (lockBanner) lockBanner.classList.toggle('hidden', !locked);
-
-    renderSingleBoard();
-    renderTripleBoard();
-}
-
-function onNewDrawStart() {
-    const randomTriple = TripleData[Math.floor(Math.random() * TripleData.length)];
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    AppState.currentResult = {
-        digit: randomTriple.digit,
-        word: randomTriple.word,
-        time: timeStr
-    };
-
-    AppState.recentResults.unshift({ ...AppState.currentResult });
-    if (AppState.recentResults.length > 10) AppState.recentResults.pop();
-
-    evaluateTicketWinners(AppState.currentResult);
-
-    updateLiveResultDisplay();
-    renderRecentResults();
-}
-
-function renderRecentResults() {
-    const container = document.getElementById('recent-results-stripe');
-    if (!container) return;
-
-    container.innerHTML = '';
-    AppState.recentResults.forEach(res => {
-        const item = document.createElement('div');
-        item.className = 'recent-item';
-        item.innerText = `${res.time} | ${res.digit} ${res.word}`;
-        container.appendChild(item);
-    });
-}
-
-function evaluateTicketWinners(result) {
-    let totalWonThisDraw = 0;
-
-    AppState.ticketHistory.forEach(ticket => {
-        if (ticket.status === 'P') {
-            let winTotal = 0;
-            ticket.items.forEach(item => {
-                if (item.digit === result.digit || item.word === result.word) {
-                    winTotal += item.amount * item.winningRatio;
-                }
-            });
-
-            if (winTotal > 0) {
-                ticket.status = 'Y';
-                ticket.winningPts = winTotal;
-                totalWonThisDraw += winTotal;
-            } else {
-                ticket.status = 'N';
-            }
-        }
-    });
-
-    if (totalWonThisDraw > 0) {
-        AppState.playPoints += totalWonThisDraw;
-        
-        const playPtsEl = document.getElementById('play-points');
-        if (playPtsEl) {
-            playPtsEl.innerText = AppState.playPoints.toLocaleString();
-        }
-    }
-}
-
-function checkTicketBarcode() {
-    const input = document.getElementById('barcode-check-input');
-    if (!input || !input.value.trim()) return;
-
-    const barcode = input.value.trim();
-    const ticket = AppState.ticketHistory.find(t => t.id === barcode);
-
-    if (!ticket) {
-        alert("TICKET NOT FOUND!");
-        return;
-    }
-
-    if (ticket.status === 'Y') {
-        alert(`WINNING TICKET!\nWon: ${ticket.winningPts.toFixed(0)} PTS`);
-    } else if (ticket.status === 'N') {
-        alert(`NOT A WINNING TICKET`);
-    } else {
-        alert(`TICKET PENDING FOR DRAW`);
-    }
-}
-
-function renderTicketHistoryTable() {
-    const tbody = document.getElementById('history-table-body');
-    if (!tbody) return;
-
-    tbody.innerHTML = '';
-    AppState.ticketHistory.forEach(ticket => {
-        const tr = document.createElement('tr');
-        
-        let statusBadge = '<span class="status-pending">P (Pending)</span>';
-        if (ticket.status === 'Y') statusBadge = `<span class="status-won">Y (Won ${ticket.winningPts.toFixed(0)} PTS)</span>`;
-        if (ticket.status === 'N') statusBadge = '<span class="status-lost">N (Lost)</span>';
-
-        tr.innerHTML = `
-            <td>${ticket.id}</td>
-            <td>${ticket.points} PTS</td>
-            <td>${ticket.time}</td>
-            <td>${statusBadge}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-function updateTimerUI(nowDate, msRemaining, totalSecs) {
-    const minutes = Math.floor(totalSecs / 60);
-    const seconds = totalSecs % 60;
-    
-    const timeFormatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-    const drawTimeEl = document.getElementById('draw-time-val');
-    if (drawTimeEl) drawTimeEl.innerText = timeFormatted;
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
 }
