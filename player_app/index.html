@@ -1,212 +1,25 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A2Z BOMBAY</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-    <!-- Network Offline Guard Overlay -->
-    <div id="network-offline-overlay" class="network-overlay hidden">
-        <div class="network-card">
-            <h3>ইন্টারনেট সংযোগ বিচ্ছিন্ন!</h3>
-            <p>অনুগ্রহ করে আপনার নেটওয়ার্ক সংযোগ চেক করুন</p>
-        </div>
-    </div>
-
-    <!-- Login Modal -->
+<!-- Login Modal -->
     <div id="login-modal" class="modal-overlay">
         <div class="login-card">
             <h2>A2Z BOMBAY LOGIN</h2>
-            <p>আপনার আইডি ও পাসওয়ার্ড দিন</p>
+            <p>Enter your ID and Password</p>
             <form id="login-form">
                 <div class="form-group">
-                    <label for="user-type">ইউজার টাইপ:</label>
+                    <label for="user-type">User Type:</label>
                     <select id="user-type">
-                        <option value="demo">Demo Player (ডেমো প্লেয়ার)</option>
+                        <option value="demo">Demo Player</option>
                         <option value="real">Real Player</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="username">ইউজার নেম:</label>
+                    <label for="username">Username:</label>
                     <input type="text" id="username" value="DEMO_PLAYER_01" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">পাসওয়ার্ড:</label>
+                    <label for="password">Password:</label>
                     <input type="password" id="password" value="123456" required>
                 </div>
-                <button type="submit" class="btn-submit">লগইন করুন</button>
+                <button type="submit" class="btn-submit">Login</button>
             </form>
         </div>
     </div>
-
-    <!-- Main App Container -->
-    <div id="app-container" class="hidden">
-        
-        <!-- Side Navigation Drawer -->
-        <aside id="side-drawer" class="side-drawer closed">
-            <div class="drawer-header">
-                <div class="profile-avatar">
-                    <img id="user-avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f0ff'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Profile Logo">
-                </div>
-                <div class="drawer-user-id" id="drawer-user-id">DEMO_PLAYER_01</div>
-                <button class="btn-close-drawer" onclick="toggleDrawer()">✕</button>
-            </div>
-            <div class="drawer-menu">
-                <button class="drawer-btn" onclick="openTicketHistory()">📜 Ticket History</button>
-            </div>
-        </aside>
-
-        <!-- Ticket History Modal -->
-        <div id="history-modal" class="modal-overlay hidden">
-            <div class="history-card">
-                <div class="history-header">
-                    <h3>Ticket Betting History</h3>
-                    <button class="btn-close-modal" onclick="closeTicketHistory()">✕</button>
-                </div>
-                <div class="history-body">
-                    <table class="history-table">
-                        <thead>
-                            <tr>
-                                <th>Barcode / Ticket ID</th>
-                                <th>Points</th>
-                                <th>Time</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-table-body">
-                            <!-- Dynamic Content -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Top Header Bar -->
-        <header class="top-header">
-            <div class="header-left">
-                <button class="btn-menu-toggle" onclick="toggleDrawer()">☰</button>
-                <div class="glow-text">A2Z BOMBAY</div>
-            </div>
-            
-            <div class="header-center-info">
-                <div class="live-result-box">
-                    <div class="result-title">LIVE RESULT</div>
-                    <div id="top-result-display" class="result-value">100 AXZ</div>
-                </div>
-                <div class="live-result-box">
-                    <div class="result-title">DRAW TIMER</div>
-                    <div id="draw-time-val" class="result-value" style="color: #00f0ff;">02:00</div>
-                </div>
-
-                <!-- Recent Results Notice Stripe -->
-                <div class="recent-results-container">
-                    <div class="recent-title">RECENT RESULTS</div>
-                    <div id="recent-results-stripe" class="recent-results-stripe">
-                        <!-- Dynamic Results -->
-                    </div>
-                </div>
-
-                <!-- Ticket Barcode Win Checker -->
-                <div class="win-checker-box">
-                    <input type="text" id="barcode-check-input" placeholder="Enter Barcode / Ticket ID" onkeyup="if(event.key==='Enter') checkTicketBarcode()">
-                    <button class="btn-check-barcode" onclick="checkTicketBarcode()">CHECK</button>
-                </div>
-            </div>
-
-            <div class="user-info">
-                <!-- Sound & Print Controls -->
-                <button id="btn-toggle-sound" class="btn-icon-control active" onclick="toggleSound()" title="Sound On/Off">🔊</button>
-                <button id="btn-toggle-print" class="btn-icon-control active" onclick="togglePrint()" title="Silent Printing On/Off">🖨️</button>
-
-                <div class="user-badge">ID: <strong id="user-id-text">DEMO_PLAYER_01</strong></div>
-                <div class="points-badge">PTS: <strong id="play-points">5,000</strong></div>
-                <button id="logout-btn" class="btn-logout">Logout</button>
-            </div>
-        </header>
-
-        <!-- Lock Overlay Notification -->
-        <div id="game-lock-banner" class="lock-banner hidden">
-            <span>🔒 GAME IS LOCKED / TIME OVER</span>
-        </div>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Controllers Panel -->
-            <div class="control-panel">
-                <div class="mode-selector">
-                    <span class="label-text">MODE:</span>
-                    <button id="btn-mode-both" class="btn-mode active" onclick="switchViewMode('BOTH')">BOTH</button>
-                    <button id="btn-mode-word" class="btn-mode" onclick="switchViewMode('WORD')">WORD</button>
-                    <button id="btn-mode-digit" class="btn-mode" onclick="switchViewMode('DIGIT')">DIGIT</button>
-                </div>
-                <div class="label-text">DATE: <span id="current-date-display" style="color: #fff;"></span></div>
-            </div>
-
-            <!-- Single Board -->
-            <div class="board-section">
-                <div class="section-header">SINGLE BOARD (0-9)</div>
-                <div id="single-board-grid" class="single-grid"></div>
-            </div>
-
-            <!-- Triple Board -->
-            <div class="board-section">
-                <div class="triple-board-bar">
-                    <div class="section-header" style="margin-bottom:0;">TRIPLE 220 MATRIX</div>
-                    <div class="range-selector">
-                        <span class="label-text">RANGE:</span>
-                        <button id="btn-range-all" class="btn-range active" onclick="filterRange('ALL')">ALL</button>
-                        <button id="btn-range-a" class="btn-range" onclick="filterRange('A')">A (1-55)</button>
-                        <button id="btn-range-b" class="btn-range" onclick="filterRange('B')">B (56-110)</button>
-                        <button id="btn-range-c" class="btn-range" onclick="filterRange('C')">C (111-165)</button>
-                        <button id="btn-range-d" class="btn-range" onclick="filterRange('D')">D (166-220)</button>
-                        <button id="btn-range-jora" class="btn-range" onclick="filterRange('JORA')">JORA</button>
-                    </div>
-                </div>
-
-                <div class="triple-grid-header">
-                    <div class="col-head">1</div><div class="col-head">2</div><div class="col-head">3</div>
-                    <div class="col-head">4</div><div class="col-head">5</div><div class="col-head">6</div>
-                    <div class="col-head">7</div><div class="col-head">8</div><div class="col-head">9</div>
-                    <div class="col-head">0</div>
-                </div>
-
-                <div id="triple-board-grid" class="triple-grid"></div>
-            </div>
-
-            <!-- Betting & Summary Panel -->
-            <div class="bottom-bet-container">
-                <div class="bet-chip-section">
-                    <span class="label-text">CHIP:</span>
-                    <button class="btn-chip active" onclick="setBetAmount(10)">10</button>
-                    <button class="btn-chip" onclick="setBetAmount(50)">50</button>
-                    <button class="btn-chip" onclick="setBetAmount(100)">100</button>
-                    <button class="btn-chip" onclick="setBetAmount(500)">500</button>
-                    <input type="number" id="custom-bet-input" placeholder="Custom" oninput="setCustomAmount(this.value)">
-                </div>
-
-                <div class="selected-summary-box">
-                    <div class="summary-header">
-                        <span>SELECTED: <strong id="selected-count" style="color: #00f0ff;">0</strong></span>
-                        <span class="total-pts">TOTAL PTS: <strong id="total-bet-points">0</strong></span>
-                    </div>
-                    <div id="selected-items-display" class="selected-items-list">
-                        <span class="empty-msg">No items selected</span>
-                    </div>
-                    <div class="action-btn-group">
-                        <button class="btn-reset" onclick="clearAllSelections()">RESET</button>
-                        <button class="btn-submit-bet" onclick="submitBetAndPrint()">SUBMIT & PRINT</button>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Hidden Thermal Printing Container -->
-    <iframe id="silent-print-frame" style="display:none; visibility:hidden;"></iframe>
-
-    <script src="app.js"></script>
-</body>
-</html>
