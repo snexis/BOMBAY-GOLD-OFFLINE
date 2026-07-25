@@ -10,20 +10,18 @@ window.AppState = window.AppState || {
     playPoints: 5000,
     winPoints: 0,
     
-    currentMode: 'BOTH', // 'BOTH', 'WORD', or 'DIGIT'
+    currentMode: 'BOTH',
     allowedModes: ['BOTH', 'WORD', 'DIGIT'],
     
-    // Live Result State (Dynamic Default based on Current Time)
     currentResult: {
         digit: '---',
         word: '---',
         time: '--:--'
     },
     
-    recentResults: [], // Holds last 10 draws
-    ticketHistory: [], // Holds all bet tickets
+    recentResults: [],
+    ticketHistory: [],
     
-    // Hardware & Audio Toggles
     soundEnabled: true,
     printEnabled: true,
     
@@ -106,7 +104,6 @@ function setupNetworkGuard() {
     updateOnlineStatus();
 }
 
-// Sound & Print Controls
 function toggleSound() {
     AppState.soundEnabled = !AppState.soundEnabled;
     const btn = document.getElementById('btn-toggle-sound');
@@ -134,7 +131,6 @@ function playVoiceAlert(type) {
     synth.speak(utterance);
 }
 
-// Side Drawer Navigation & History Modal
 function toggleDrawer() {
     const drawer = document.getElementById('side-drawer');
     if (drawer) drawer.classList.toggle('closed');
@@ -153,7 +149,7 @@ function closeTicketHistory() {
 }
 
 // ==========================================
-// MODULE 2: AUTHENTICATION & UI SWITCHING (Fixed)
+// MODULE 2: AUTHENTICATION & UI SWITCHING
 // ==========================================
 
 function setupEventListeners() {
@@ -161,48 +157,32 @@ function setupEventListeners() {
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            try {
-                const usernameInput = document.getElementById('username');
-                const userTypeInput = document.getElementById('user-type');
+            const usernameInput = document.getElementById('username');
+            const userTypeInput = document.getElementById('user-type');
 
-                const username = usernameInput ? usernameInput.value.trim() : 'player01';
-                const userType = userTypeInput ? userTypeInput.value : 'demo';
+            const username = usernameInput ? usernameInput.value.trim() : 'DEMO_PLAYER_01';
+            const userType = userTypeInput ? userTypeInput.value : 'demo';
 
-                AppState.currentUser = username || 'player01';
-                AppState.userType = userType;
+            AppState.currentUser = username || 'DEMO_PLAYER_01';
+            AppState.userType = userType;
 
-                const userIdTextEl = document.getElementById('user-id-text');
-                const drawerUserIdEl = document.getElementById('drawer-user-id');
-                if (userIdTextEl) userIdTextEl.innerText = AppState.currentUser;
-                if (drawerUserIdEl) drawerUserIdEl.innerText = AppState.currentUser;
+            const userIdTextEl = document.getElementById('user-id-text');
+            const drawerUserIdEl = document.getElementById('drawer-user-id');
+            if (userIdTextEl) userIdTextEl.innerText = AppState.currentUser;
+            if (drawerUserIdEl) drawerUserIdEl.innerText = AppState.currentUser;
 
-                const loginModal = document.getElementById('login-modal');
-                const appContainer = document.getElementById('app-container');
-
-                if (loginModal) loginModal.classList.add('hidden');
-                if (appContainer) appContainer.classList.remove('hidden');
-                
-                playVoiceAlert('LOGGED_IN');
-                renderSingleBoard();
-                renderTripleBoard();
-                updateLiveResultDisplay();
-            } catch (err) {
-                console.error("Login Error Catch: ", err);
-            }
-        });
-    }
-
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
             const loginModal = document.getElementById('login-modal');
             const appContainer = document.getElementById('app-container');
 
-            if (appContainer) appContainer.classList.add('hidden');
-            if (loginModal) loginModal.classList.remove('hidden');
+            if (loginModal) loginModal.classList.add('hidden');
+            if (appContainer) appContainer.classList.remove('hidden');
+            
+            playVoiceAlert('LOGGED_IN');
+            renderSingleBoard();
+            renderTripleBoard();
+            updateLiveResultDisplay();
         });
     }
-}
 
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
@@ -298,7 +278,7 @@ function updateLiveResultDisplay() {
 }
 
 // ==========================================
-// MODULE 4: TRIPLE 220 MATRIX BOARD (MASTER CHART)
+// MODULE 4: TRIPLE 220 MATRIX BOARD
 // ==========================================
 
 const RawTripleDigits = [
