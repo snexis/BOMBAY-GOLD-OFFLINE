@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>A2Z BOMBAY</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* International Login Screen Custom Styling */
+        /* International Login Screen & Offline Overlay Custom Styling */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -19,22 +19,22 @@
             align-items: center;
             z-index: 99999;
         }
-        .login-card {
+        .login-card, .history-card {
             background: #0f172a;
             border: 1px solid #1e293b;
             padding: 35px 30px;
             border-radius: 12px;
-            box-shadow: 0 0 40px rgba(0, 240, 255, 0.2), 0 15px 30px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.25), 0 15px 30px rgba(0, 0, 0, 0.8);
             width: 90%;
             max-width: 400px;
             text-align: center;
         }
         .login-card h2 {
-            color: #00f0ff;
+            color: #ffd700;
             margin-bottom: 8px;
             font-size: 24px;
             letter-spacing: 1.5px;
-            text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
         }
         .login-card p {
             color: #94a3b8;
@@ -67,8 +67,8 @@
             transition: all 0.2s;
         }
         .form-group input:focus, .form-group select:focus {
-            border-color: #00f0ff;
-            box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+            border-color: #ffd700;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
         }
         .password-container {
             position: relative;
@@ -85,12 +85,12 @@
             font-size: 14px;
         }
         .toggle-password:hover {
-            color: #00f0ff;
+            color: #ffd700;
         }
         .btn-submit {
             width: 100%;
             padding: 12px;
-            background: #00f0ff;
+            background: #ffd700;
             color: #000;
             font-weight: bold;
             border: none;
@@ -103,15 +103,169 @@
             transition: all 0.2s ease;
         }
         .btn-submit:hover {
-            background: #38bdf8;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+            background: #ffea75;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
         }
+
+        /* Premium Offline Animated Overlay */
+        .network-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, #0f172a 0%, #020617 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999999;
+            animation: fadeInOverlay 0.3s ease-in-out;
+        }
+        .network-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #ffd700;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+        }
+        .network-card h3 {
+            color: #ffd700;
+            font-size: 22px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+        .network-card p {
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+        @keyframes fadeInOverlay {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Golden Yellow Card Shadows & Compact Layout Tweaks */
+        .single-grid .grid-item, .triple-grid .grid-item, .login-card, .history-card, .network-card, .top-header, .bottom-bet-container {
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.25) !important;
+            border-color: rgba(255, 215, 0, 0.3) !important;
+        }
+
+        /* Side Navigation Drawer Fix */
+        .side-drawer {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background: #0f172a;
+            border-right: 1px solid rgba(255, 215, 0, 0.3);
+            z-index: 99998;
+            transition: left 0.3s ease;
+            box-shadow: 5px 0 25px rgba(0,0,0,0.8);
+        }
+        .side-drawer.open {
+            left: 0;
+        }
+        .drawer-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+            position: relative;
+        }
+        .profile-avatar img {
+            width: 40px;
+            height: 40px;
+        }
+        .drawer-user-id {
+            color: #ffd700;
+            font-weight: bold;
+            margin-left: 12px;
+            font-size: 14px;
+        }
+        .btn-close-drawer {
+            position: absolute;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .drawer-menu {
+            padding: 15px;
+        }
+        .drawer-btn {
+            width: 100%;
+            padding: 12px 15px;
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .drawer-btn:hover {
+            background: #334155;
+            border-color: #ffd700;
+            color: #ffd700;
+        }
+
+        /* Ticket History Modal */
+        .history-card {
+            max-width: 650px;
+            width: 95%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .history-header h3 {
+            color: #ffd700;
+            font-size: 18px;
+        }
+        .btn-close-modal {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .history-body {
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+        .history-table th, .history-table td {
+            padding: 10px;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+        }
+        .history-table th {
+            color: #ffd700;
+            background: #1e293b;
+        }
+
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- Network Offline Guard Overlay -->
+    <!-- Network Offline Guard Overlay (Covers entire screen with animation, zero background leak) -->
     <div id="network-offline-overlay" class="network-overlay hidden">
         <div class="network-card">
             <h3>Connection Warning!</h3>
@@ -148,7 +302,7 @@
         <aside id="side-drawer" class="side-drawer closed">
             <div class="drawer-header">
                 <div class="profile-avatar">
-                    <img id="user-avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f0ff'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Profile Logo">
+                    <img id="user-avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffd700'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Profile Logo">
                 </div>
                 <div class="drawer-user-id" id="drawer-user-id">DEMO_PLAYER_01</div>
                 <button class="btn-close-drawer" onclick="toggleDrawer()">✕</button>
@@ -197,7 +351,7 @@
                 </div>
                 <div class="live-result-box">
                     <div class="result-title">DRAW TIMER</div>
-                    <div id="draw-time-val" class="result-value" style="color: #00f0ff;">02:00</div>
+                    <div id="draw-time-val" class="result-value" style="color: #ffd700;">02:00</div>
                 </div>
 
                 <!-- Recent Results Notice Stripe -->
@@ -231,9 +385,9 @@
             <span>🔒 GAME IS LOCKED / TIME OVER</span>
         </div>
 
-        <!-- Main Content (Untouched Core Logic & Structure) -->
+        <!-- Main Content -->
         <main class="main-content">
-            <!-- Controllers Panel -->
+            <!-- Controllers Panel (Compact Layout with Date & Current Time in One Layer) -->
             <div class="control-panel">
                 <div class="mode-selector">
                     <span class="label-text">MODE:</span>
@@ -241,7 +395,7 @@
                     <button id="btn-mode-word" class="btn-mode" onclick="switchViewMode('WORD')">WORD</button>
                     <button id="btn-mode-digit" class="btn-mode" onclick="switchViewMode('DIGIT')">DIGIT</button>
                 </div>
-                <div class="label-text">DATE: <span id="current-date-display" style="color: #fff;"></span></div>
+                <div class="label-text">DATE & TIME: <span id="current-date-display" style="color: #ffd700;"></span></div>
             </div>
 
             <!-- Single Board -->
@@ -279,16 +433,16 @@
             <div class="bottom-bet-container">
                 <div class="bet-chip-section">
                     <span class="label-text">CHIP:</span>
-                    <button class="btn-chip active" onclick="setBetAmount(10)">10</button>
-                    <button class="btn-chip" onclick="setBetAmount(50)">50</button>
-                    <button class="btn-chip" onclick="setBetAmount(100)">100</button>
-                    <button class="btn-chip" onclick="setBetAmount(500)">500</button>
+                    <button class="btn-chip active" onclick="setBetAmount(10)">10 PTS</button>
+                    <button class="btn-chip" onclick="setBetAmount(50)">50 PTS</button>
+                    <button class="btn-chip" onclick="setBetAmount(100)">100 PTS</button>
+                    <button class="btn-chip" onclick="setBetAmount(500)">500 PTS</button>
                     <input type="number" id="custom-bet-input" placeholder="Custom" oninput="setCustomAmount(this.value)">
                 </div>
 
                 <div class="selected-summary-box">
                     <div class="summary-header">
-                        <span>SELECTED: <strong id="selected-count" style="color: #00f0ff;">0</strong></span>
+                        <span>SELECTED: <strong id="selected-count" style="color: #ffd700;">0</strong></span>
                         <span class="total-pts">TOTAL PTS: <strong id="total-bet-points">0</strong></span>
                     </div>
                     <div id="selected-items-display" class="selected-items-list">
