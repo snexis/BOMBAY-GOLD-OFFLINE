@@ -1,6 +1,6 @@
 /* ==========================================================
-   A2Z BOMBAY - PROFESSIONAL PREMIUM GOLDEN THEME CSS
-   ================================================---------- */
+   A2Z BOMBAY - ABSOLUTE FIXED GRID LAYOUT CSS
+   ========================================================== */
 
 * {
     box-sizing: border-box;
@@ -9,386 +9,176 @@
 }
 
 body, html {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden; /* স্ক্রোলবার পুরোপুরি বন্ধ রাখতে */
+    width: 100%;
+    height: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #070b12;
     color: #e2e8f0;
+    overflow-x: hidden;
 }
 
-/* মেইন অ্যাপ কন্টেইনার ফ্রেম */
+/* মেইন অ্যাপ কন্টেইনার */
 #app-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-    padding: 6px;
-    gap: 6px;
+    min-height: 100vh;
+    width: 100%;
+    padding: 8px;
+    gap: 8px;
     background: #0b0f19;
-    border: 1px solid rgba(255, 215, 0, 0.35);
-    box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 215, 0, 0.3);
 }
 
-/* --- টপ হেডার বার --- */
+/* টপ হেডার বার */
 .top-header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
-    padding: 6px 12px;
+    padding: 8px 12px;
     border-radius: 6px;
     border-bottom: 2px solid #ffd700;
-    box-shadow: 0 0 12px rgba(255, 215, 0, 0.25);
-    min-height: 48px;
+    gap: 8px;
 }
 
-.header-left {
+.header-left, .header-center-info, .user-info {
     display: flex;
     align-items: center;
-    gap: 10px;
-}
-
-.btn-menu-toggle {
-    background: #1e293b;
-    border: 1px solid rgba(255, 215, 0, 0.4);
-    color: #ffd700;
-    padding: 4px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
+    gap: 8px;
 }
 
 .glow-text {
     color: #ffd700;
-    font-size: 16px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-}
-
-.header-center-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.live-result-box {
-    background: #1e293b;
-    padding: 2px 8px;
-    border-radius: 4px;
-    border: 1px solid #334155;
-    text-align: center;
-}
-
-.result-title {
-    font-size: 9px;
-    color: #94a3b8;
-    text-transform: uppercase;
-}
-
-.result-value {
-    font-size: 12px;
-    font-weight: bold;
-    color: #fff;
-}
-
-.recent-results-container {
-    display: flex;
-    flex-direction: column;
-}
-
-.recent-title {
-    font-size: 9px;
-    color: #94a3b8;
-}
-
-.recent-results-stripe {
-    display: flex;
-    gap: 4px;
-    font-size: 11px;
-    color: #ffd700;
-}
-
-.win-checker-box {
-    display: flex;
-    gap: 4px;
-}
-
-.win-checker-box input {
-    background: #1e293b;
-    border: 1px solid #334155;
-    color: #fff;
-    padding: 3px 6px;
-    border-radius: 4px;
-    font-size: 11px;
-    width: 120px;
-}
-
-.btn-check-barcode {
-    background: #ffd700;
-    color: #000;
-    border: none;
-    padding: 3px 8px;
-    font-weight: bold;
-    border-radius: 4px;
-    font-size: 11px;
-    cursor: pointer;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 12px;
-}
-
-.btn-icon-control {
-    background: #1e293b;
-    border: 1px solid #334155;
-    padding: 4px 6px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.user-badge, .points-badge {
-    background: #1e293b;
-    padding: 3px 8px;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 215, 0, 0.3);
-}
-
-.points-badge strong {
-    color: #ffd700;
-}
-
-.btn-logout {
-    background: #dc2626;
-    color: #fff;
-    border: none;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    cursor: pointer;
+    font-size: 15px;
     font-weight: bold;
 }
 
-/* --- মেইন কন্টেন্ট লেআউট --- */
+/* মেইন কন্টেন্ট এলাকা */
 .main-content {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    gap: 5px;
-    overflow: hidden;
+    gap: 8px;
+    width: 100%;
 }
 
+/* কন্ট্রোল প্যানেল */
 .control-panel {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: #111827;
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 4px;
     border: 1px solid rgba(255, 215, 0, 0.2);
-    font-size: 12px;
 }
 
-.mode-selector {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.label-text {
-    color: #94a3b8;
-    font-weight: 600;
-    font-size: 11px;
-}
-
-.btn-mode, .btn-range {
-    background: #1e293b;
-    border: 1px solid #334155;
-    color: #cbd5e1;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    cursor: pointer;
-}
-
-.btn-mode.active, .btn-range.active {
-    background: #ffd700;
-    color: #000;
-    font-weight: bold;
-    border-color: #ffd700;
-}
-
-/* --- বোর্ড সেকশন (সিঙ্গেল এবং ট্রিপল বোর্ড) --- */
+/* বোর্ড সেকশন */
 .board-section {
     background: #0f172a;
-    border-radius: 4px;
-    padding: 5px 8px;
+    border-radius: 6px;
+    padding: 8px;
     border: 1px solid rgba(255, 215, 0, 0.2);
+    width: 100%;
 }
 
 .section-header {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
     color: #ffd700;
-    margin-bottom: 3px;
+    margin-bottom: 6px;
     text-transform: uppercase;
 }
 
-.triple-board-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.range-selector {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
+/* ট্রিপল বোর্ড হেডার এবং গ্রিড ফিক্স (অবশ্যই ১০ কলাম রাখতে হবে) */
 .triple-grid-header {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     background: #1e293b;
     text-align: center;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
     color: #ffd700;
-    padding: 2px 0;
-    border-radius: 3px;
-    margin-top: 3px;
+    padding: 4px 0;
+    border-radius: 4px;
+    margin-bottom: 4px;
 }
 
 .single-grid, .triple-grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
-    gap: 3px;
-    margin-top: 3px;
+    gap: 4px;
+    width: 100%;
 }
 
-/* সেল স্টাইল (গ্রিড আইটেম) */
-.single-grid .grid-item, .triple-grid .grid-item {
+/* ঘরের ভেতরে লেখা বা ডিজাইন যাতে বাইরে না যায় */
+.single-grid .grid-item, .triple-grid .grid-item, .premium-gaming-card, .triple-cell, .single-cell {
     background: linear-gradient(145deg, #1e293b, #0f172a);
     border: 1px solid rgba(255, 215, 0, 0.25);
-    border-radius: 3px;
+    border-radius: 4px;
     text-align: center;
-    padding: 4px 1px;
+    padding: 6px 2px;
+    font-size: 12px;
+    color: #fff;
     cursor: pointer;
-    transition: all 0.15s ease;
+    min-height: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    word-break: break-all;
 }
 
 .single-grid .grid-item:hover, .triple-grid .grid-item:hover {
     border-color: #ffd700;
-    box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+    background: #273548;
 }
 
-/* --- বটম বেটিং ও সামারি প্যানেল --- */
+/* বটম বেটিং প্যানেল */
 .bottom-bet-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     background: #111827;
-    padding: 6px 10px;
-    border-radius: 4px;
+    padding: 10px;
+    border-radius: 6px;
     border: 1px solid rgba(255, 215, 0, 0.25);
     gap: 10px;
     align-items: center;
 }
 
-.bet-chip-section {
+.bet-chip-section, .selected-summary-box, .action-btn-group {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
 }
 
-.btn-chip {
-    background: #1e293b;
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    color: #e2e8f0;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.btn-chip.active {
-    background: #ffd700;
-    color: #000;
-    border-color: #fff;
-}
-
-#custom-bet-input {
+.btn-chip, .btn-mode, .btn-range {
     background: #1e293b;
     border: 1px solid #334155;
-    color: #fff;
-    padding: 3px 6px;
-    width: 65px;
-    border-radius: 4px;
-    font-size: 11px;
-}
-
-.selected-summary-box {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex: 1;
-    justify-content: flex-end;
-}
-
-.summary-header {
-    font-size: 11px;
-    display: flex;
-    gap: 10px;
-}
-
-.selected-items-list {
-    max-height: 25px;
-    overflow: hidden;
-    font-size: 10px;
-    color: #94a3b8;
-    max-width: 200px;
-}
-
-.action-btn-group {
-    display: flex;
-    gap: 5px;
-}
-
-.btn-reset {
-    background: #334155;
-    color: #fff;
-    border: none;
+    color: #e2e8f0;
     padding: 5px 10px;
     border-radius: 4px;
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 12px;
     cursor: pointer;
+}
+
+.btn-chip.active, .btn-mode.active, .btn-range.active {
+    background: #ffd700;
+    color: #000;
+    font-weight: bold;
+    border-color: #ffd700;
 }
 
 .btn-submit-bet {
     background: linear-gradient(135deg, #ffd700 0%, #cca100 100%);
     color: #000;
     border: none;
-    padding: 5px 12px;
+    padding: 6px 14px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
-}
-
-.btn-submit-bet:hover {
-    background: linear-gradient(135deg, #ffea75, #ffd700);
-}
-
-/* সাইড ড্রয়ার ও মডালের গোল্ডেন গ্লো বর্ডার ফিক্স */
-.login-card, .history-card, .network-card, .side-drawer {
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.25) !important;
-    border-color: rgba(255, 215, 0, 0.35) !important;
 }
 
 .hidden {
