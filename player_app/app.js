@@ -168,7 +168,7 @@ function setupEventListeners() {
                 const username = usernameInput ? usernameInput.value.trim() : 'player01';
                 const userType = userTypeInput ? userTypeInput.value : 'demo';
 
-                AppState.currentUser = username || 'DEMO_PLAYER_01';
+                AppState.currentUser = username || 'player01';
                 AppState.userType = userType;
 
                 const userIdTextEl = document.getElementById('user-id-text');
