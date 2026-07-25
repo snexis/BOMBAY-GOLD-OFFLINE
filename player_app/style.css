@@ -412,3 +412,30 @@ body {
     cursor: pointer;
     font-size: 11px;
 }
+/* Fix Layout Shift & Solid Login Background */
+body {
+    position: relative;
+    overflow-x: hidden;
+}
+
+#login-modal.modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: #080c14 !important; /* সলিড ব্যাকগ্রাউন্ড যাতে পিছনের ড্যাশবোর্ড সম্পূর্ণ ঢেকে যায় */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    z-index: 999999 !important;
+}
+
+/* Ensure App Container Stays Intact */
+#app-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+}
