@@ -73,8 +73,9 @@ function initApp() {
 function updateDateDisplay() {
     const today = new Date();
     const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const dateEl = document.getElementById('current-date-display');
-    if (dateEl) dateEl.innerText = dateStr;
+    if (dateEl) dateEl.innerText = `${dateStr} | ${timeStr}`;
 }
 
 function fetchDeviceIP() {
@@ -133,7 +134,7 @@ function playVoiceAlert(type) {
 
 function toggleDrawer() {
     const drawer = document.getElementById('side-drawer');
-    if (drawer) drawer.classList.toggle('closed');
+    if (drawer) drawer.classList.toggle('open');
 }
 
 function openTicketHistory() {
@@ -149,7 +150,7 @@ function closeTicketHistory() {
 }
 
 // ==========================================
-// MODULE 2: AUTHENTICATION & UI SWITCHING (Force Display Fix)
+// MODULE 2: AUTHENTICATION & UI SWITCHING
 // ==========================================
 
 function setupEventListeners() {
@@ -160,20 +161,16 @@ function setupEventListeners() {
             e.stopPropagation();
 
             const usernameInput = document.getElementById('username');
-            const userTypeInput = document.getElementById('user-type');
-
             const username = usernameInput ? usernameInput.value.trim() : 'DEMO_PLAYER_01';
-            const userType = userTypeInput ? userTypeInput.value : 'demo';
 
             AppState.currentUser = username || 'DEMO_PLAYER_01';
-            AppState.userType = userType;
+            AppState.userType = 'demo';
 
             const userIdTextEl = document.getElementById('user-id-text');
             const drawerUserIdEl = document.getElementById('drawer-user-id');
             if (userIdTextEl) userIdTextEl.innerText = AppState.currentUser;
             if (drawerUserIdEl) drawerUserIdEl.innerText = AppState.currentUser;
 
-            // ফোর্সফুলভাবে লগইন উইন্ডো হাইড এবং ড্যাশবোর্ড শো করা
             const loginModal = document.getElementById('login-modal');
             const appContainer = document.getElementById('app-container');
 
@@ -416,7 +413,7 @@ function setBetAmount(amount) {
     
     document.querySelectorAll('.bet-chip-section .btn-chip').forEach(btn => {
         btn.classList.remove('active');
-        if (btn.innerText.trim() === amount.toString()) btn.classList.add('active');
+        if (btn.innerText.trim().includes(amount.toString())) btn.classList.add('active');
     });
 
     const customInput = document.getElementById('custom-bet-input');
@@ -583,6 +580,7 @@ function executeSilentThermalPrint(ticket) {
             ${itemsHtml}
             <hr/>
             <div><strong>Total: ${ticket.points} PTS</strong></div>
+            <div class="center" style="margin-top: 10px; font-size: 10px;">Announcement Only - Ticket Not For Sale</div>
         </body>
         </html>
     `;
