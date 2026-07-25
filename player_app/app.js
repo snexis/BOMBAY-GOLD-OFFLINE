@@ -1,535 +1,734 @@
-/**
- * 3D Matka Betting Engine & Terminal Controller
- * Production Ready - Secure Architecture & Modular Logic
- */
+// ==========================================
+// MODULE 1: GLOBAL DYNAMIC STATE & CONFIG
+// ==========================================
 
-const AppState = {
-    user: null,
-    points: 10000,
-    activeMode: 'SINGLE', // 'SINGLE' or 'TRIPLE'
-    activeChip: 5,
-    activeRange: 'ALL',
-    selectedBets: new Map(), // Key: selection, Value: amount
-    isLocked: false,
+window.AppState = window.AppState || {
+    currentUser: null,
+    userType: 'demo',
+    deviceIP: '0.0.0.0',
+    
+    playPoints: 5000,
+    winPoints: 0,
+    
+    currentMode: 'BOTH', // 'BOTH', 'WORD', or 'DIGIT'
+    allowedModes: ['BOTH', 'WORD', 'DIGIT'],
+    
+    // Live Result State
+    currentResult: {
+        digit: '100',
+        word: 'AXZ'
+    },
+    
+    recentResults: [], // Holds last 10 draws
+    ticketHistory: [], // Holds all bet tickets
+    
+    // Hardware & Audio Toggles
     soundEnabled: true,
-    autoPrintEnabled: true,
-    drawIntervalSeconds: 120, // 2-minute draws
-    currentDrawId: 0,
-    timerSecondsLeft: 0,
-    lastServerTimeSync: 0,
-    recentResults: [], // Stores last 10 draw results
-    betHistory: []
-};
-
-// 220 Standard Pana Matrix Table Generation Logic
-function generate220PanaList() {
-    const panaList = [];
-    for (let i = 0; i <= 999; i++) {
-        let str = i.toString().padStart(3, '0');
-        let d1 = parseInt(str[0]), d2 = parseInt(str[1]), d3 = parseInt(str[2]);
-        // Pana rule: digits must be in non-decreasing order (e.g., 123, 133, 000)
-        let validOrder = false;
-        if (d1 === 0 && d2 === 0 && d3 === 0) validOrder = true;
-        else if (d1 === 0 && d2 <= d3) validOrder = true;
-        else if (d1 <= d2 && d2 <= d3 && d1 !== 0) validOrder = true;
-
-        if (validOrder) {
-            let sum = (d1 + d2 + d3) % 10;
-            panaList.push({ pana: str, singleDigit: sum });
-        }
+    printEnabled: true,
+    
+    activeRange: 'ALL',
+    selectedBetAmount: 10,
+    selectedCart: [],
+    
+    winningRatios: {
+        SINGLE: 9.00,
+        TRIPLE: 11.50
+    },
+    
+    drawSettings: {
+        intervalMinutes: 2,
+        lockSecondsBefore: 1
+    },
+    
+    timerState: {
+        isLocked: false,
+        secondsRemaining: 120,
+        timerId: null,
+        warnedLastChance: false
     }
-    return panaList;
-}
-
-const PANA_MASTER_LIST = generate220PanaList();
-
-// Utility Helper: Calculate Single Digit Badge from Pana String
-function getSingleFromPana(panaStr) {
-    if (!panaStr || panaStr.length !== 3) return '-';
-    let sum = panaStr.split('').reduce((acc, curr) => acc + parseInt(curr), 0);
-    return sum % 10;
-}
-
-// DOM Elements Reference
-const DOM = {
-    loginModal: document.getElementById('login-modal'),
-    loginForm: document.getElementById('login-form'),
-    networkOverlay: document.getElementById('network-overlay'),
-    historyModal: document.getElementById('history-modal'),
-    historyModalTitle: document.getElementById('history-modal-title'),
-    historyTableHead: document.getElementById('history-table-head'),
-    historyTableBody: document.getElementById('history-table-body'),
-    sideDrawer: document.getElementById('side-drawer'),
-    drawerUserId: document.getElementById('drawer-user-id'),
-    displayUserId: document.getElementById('display-user-id'),
-    displayUserPoints: document.getElementById('display-user-points'),
-    drawTimerClock: document.getElementById('draw-timer-clock'),
-    lockBanner: document.getElementById('lock-banner'),
-    lastDrawResult: document.getElementById('last-draw-result'),
-    recentResultsStripe: document.getElementById('recent-results-stripe'),
-    singleBoardContainer: document.getElementById('single-board-container'),
-    tripleBoardContainer: document.getElementById('triple-board-container'),
-    tripleBoardGrid: document.getElementById('triple-board-grid'),
-    tripleRangeControls: document.getElementById('triple-range-controls'),
-    selectedItemsList: document.getElementById('selected-items-list'),
-    summaryCount: document.getElementById('summary-count'),
-    summaryTotalPts: document.getElementById('summary-total-pts'),
-    customBetInput: document.getElementById('custom-bet-input')
 };
 
-// Application Initialization
+var AppState = window.AppState;
+
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
+    setupNetworkGuard();
+    fetchDeviceIP();
+    initDrawTimerEngine();
 });
 
 function initApp() {
+    updateDateDisplay();
     setupEventListeners();
-    generateSampleRecentResults();
-    renderRecentResultsStripe();
-    initDrawTimerEngine();
+    checkAndAutoRefillBalance();
+    renderRecentResults();
 }
 
-// Security: Anti-Time Tampering Guard
-function verifySystemTimeIntegrity() {
-    const clientTime = Date.now();
-    if (AppState.lastServerTimeSync > 0) {
-        const drift = Math.abs(clientTime - AppState.lastServerTimeSync);
-        if (drift > 10000) { // Time jumped more than 10 seconds artificially
-            DOM.networkOverlay.classList.remove('hidden');
-            AppState.isLocked = true;
-            return false;
+function updateDateDisplay() {
+    const today = new Date();
+    const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const dateEl = document.getElementById('current-date-display');
+    if (dateEl) dateEl.innerText = dateStr;
+}
+
+function fetchDeviceIP() {
+    AppState.deviceIP = "192.168.1." + Math.floor(Math.random() * 200 + 10);
+}
+
+function checkAndAutoRefillBalance() {
+    if ((AppState.userType === 'demo' || AppState.currentUser === 'DEMO_PLAYER_01') && AppState.playPoints <= 0) {
+        AppState.playPoints = 5000;
+        const playPtsEl = document.getElementById('play-points');
+        if (playPtsEl) playPtsEl.innerText = AppState.playPoints.toLocaleString();
+    }
+}
+
+function setupNetworkGuard() {
+    function updateOnlineStatus() {
+        const overlay = document.getElementById('network-offline-overlay');
+        if (!overlay) return;
+        if (navigator.onLine) {
+            overlay.classList.add('hidden');
+        } else {
+            overlay.classList.remove('hidden');
         }
     }
-    AppState.lastServerTimeSync = clientTime + 1000;
-    DOM.networkOverlay.classList.add('hidden');
-    return true;
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
 }
 
-// Event Listeners Setup
+// Sound & Print Controls
+function toggleSound() {
+    AppState.soundEnabled = !AppState.soundEnabled;
+    const btn = document.getElementById('btn-toggle-sound');
+    if (btn) btn.classList.toggle('active', AppState.soundEnabled);
+}
+
+function togglePrint() {
+    AppState.printEnabled = !AppState.printEnabled;
+    const btn = document.getElementById('btn-toggle-print');
+    if (btn) btn.classList.toggle('active', AppState.printEnabled);
+}
+
+function playVoiceAlert(type) {
+    if (!AppState.soundEnabled) return;
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+
+    let text = "";
+    if (type === 'LAST_CHANCE') text = "Last Chance!";
+    if (type === 'GAME_LOCKED') text = "Game is Locked! Time Over.";
+    if (type === 'LOGGED_IN') text = "Logged in successfully.";
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.0;
+    synth.speak(utterance);
+}
+
+// Side Drawer Navigation & History Modal
+function toggleDrawer() {
+    const drawer = document.getElementById('side-drawer');
+    if (drawer) drawer.classList.toggle('closed');
+}
+
+function openTicketHistory() {
+    toggleDrawer();
+    renderTicketHistoryTable();
+    const modal = document.getElementById('history-modal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeTicketHistory() {
+    const modal = document.getElementById('history-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+// ==========================================
+// MODULE 2: AUTHENTICATION & UI SWITCHING
+// ==========================================
+
 function setupEventListeners() {
-    // Login
-    DOM.loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const username = document.getElementById('username').value;
-        if (username) {
-            AppState.user = username;
-            DOM.displayUserId.innerText = `ID: ${username}`;
-            DOM.drawerUserId.innerText = `Terminal #${username}`;
-            DOM.loginModal.classList.add('hidden');
-            renderBoards();
-        }
-    });
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const usernameInput = document.getElementById('username');
+            const userTypeInput = document.getElementById('user-type');
 
-    // Drawer Controls
-    document.getElementById('btn-menu-toggle').addEventListener('click', () => {
-        DOM.sideDrawer.classList.remove('closed');
-    });
-    document.getElementById('btn-close-drawer').addEventListener('click', () => {
-        DOM.sideDrawer.classList.add('closed');
-    });
+            const username = usernameInput ? usernameInput.value.trim() : 'DEMO_PLAYER_01';
+            const userType = userTypeInput ? userTypeInput.value : 'demo';
 
-    // History & Result Modals
-    document.getElementById('btn-close-history').addEventListener('click', () => {
-        DOM.historyModal.classList.add('hidden');
-    });
-    document.getElementById('btn-drawer-history').addEventListener('click', () => {
-        openHistoryModal('BET_HISTORY');
-        DOM.sideDrawer.classList.add('closed');
-    });
-    document.getElementById('btn-drawer-results').addEventListener('click', () => {
-        openHistoryModal('RESULTS_HISTORY');
-        DOM.sideDrawer.classList.add('closed');
-    });
-    document.getElementById('btn-view-recent-modal').addEventListener('click', () => {
-        openHistoryModal('RESULTS_HISTORY');
-    });
+            AppState.currentUser = username || 'DEMO_PLAYER_01';
+            AppState.userType = userType;
 
-    // Logout
-    document.getElementById('btn-logout').addEventListener('click', handleLogout);
-    document.getElementById('btn-drawer-logout').addEventListener('click', handleLogout);
+            const userIdTextEl = document.getElementById('user-id-text');
+            const drawerUserIdEl = document.getElementById('drawer-user-id');
+            if (userIdTextEl) userIdTextEl.innerText = AppState.currentUser;
+            if (drawerUserIdEl) drawerUserIdEl.innerText = AppState.currentUser;
 
-    // Game Mode Switchers
-    document.querySelectorAll('.btn-mode').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            AppState.activeMode = e.target.dataset.mode;
+            const loginModal = document.getElementById('login-modal');
+            const appContainer = document.getElementById('app-container');
+
+            if (loginModal) loginModal.classList.add('hidden');
+            if (appContainer) appContainer.classList.remove('hidden');
             
-            if (AppState.activeMode === 'TRIPLE') {
-                DOM.singleBoardContainer.classList.add('hidden');
-                DOM.tripleBoardContainer.classList.remove('hidden');
-                DOM.tripleRangeControls.classList.remove('hidden');
-            } else {
-                DOM.singleBoardContainer.classList.remove('hidden');
-                DOM.tripleBoardContainer.classList.add('hidden');
-                DOM.tripleRangeControls.classList.add('hidden');
-            }
-            clearBetCart();
-            renderBoards();
-        });
-    });
-
-    // Pana Range Selector
-    document.querySelectorAll('.btn-range').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.btn-range').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            AppState.activeRange = e.target.dataset.range;
+            playVoiceAlert('LOGGED_IN');
+            renderSingleBoard();
             renderTripleBoard();
+            updateLiveResultDisplay();
         });
-    });
+    }
 
-    // Chip Value Selector
-    document.querySelectorAll('.btn-chip').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.btn-chip').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            AppState.activeChip = parseInt(e.target.dataset.val);
-            DOM.customBetInput.value = '';
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            const loginModal = document.getElementById('login-modal');
+            const appContainer = document.getElementById('app-container');
+
+            if (appContainer) appContainer.classList.add('hidden');
+            if (loginModal) loginModal.classList.remove('hidden');
         });
-    });
-
-    DOM.customBetInput.addEventListener('input', (e) => {
-        let val = parseInt(e.target.value);
-        if (val > 0) {
-            document.querySelectorAll('.btn-chip').forEach(b => b.classList.remove('active'));
-            AppState.activeChip = val;
-        }
-    });
-
-    // Clear & Submit Action Buttons
-    document.getElementById('btn-clear-cart').addEventListener('click', clearBetCart);
-    document.getElementById('btn-submit-ticket').addEventListener('click', processSubmitTicket);
-
-    // Barcode Checker
-    document.getElementById('btn-check-barcode').addEventListener('click', () => {
-        const barcode = document.getElementById('barcode-input').value.trim();
-        if (!barcode) return;
-        alert(`Checking Barcode/Ticket: ${barcode}\nStatus: No winning payout found or ticket expired.`);
-        document.getElementById('barcode-input').value = '';
-    });
-
-    // Sound & Print Toggles
-    document.getElementById('btn-toggle-sound').addEventListener('click', (e) => {
-        AppState.soundEnabled = !AppState.soundEnabled;
-        e.target.classList.toggle('active', AppState.soundEnabled);
-    });
-    document.getElementById('btn-toggle-print').addEventListener('click', (e) => {
-        AppState.autoPrintEnabled = !AppState.autoPrintEnabled;
-        e.target.classList.toggle('active', AppState.autoPrintEnabled);
-    });
+    }
 }
 
-function handleLogout() {
-    AppState.user = null;
-    DOM.loginModal.classList.remove('hidden');
-    DOM.sideDrawer.classList.add('closed');
-}
+// ==========================================
+// MODULE 3: SINGLE BOARD ENGINE (0-9)
+// ==========================================
 
-// Render Logic for Single & Triple Boards
-function renderBoards() {
-    renderSingleBoard();
-    renderTripleBoard();
-}
+const SingleData = [
+    { digit: '1', word: 'A' }, { digit: '2', word: 'B' },
+    { digit: '3', word: 'C' }, { digit: '4', word: 'D' },
+    { digit: '5', word: 'E' }, { digit: '6', word: 'F' },
+    { digit: '7', word: 'G' }, { digit: '8', word: 'H' },
+    { digit: '9', word: 'I' }, { digit: '0', word: 'J' }
+];
 
 function renderSingleBoard() {
-    DOM.singleBoardContainer.innerHTML = '';
-    for (let i = 0; i <= 9; i++) {
+    const gridContainer = document.getElementById('single-board-grid');
+    if (!gridContainer) return;
+
+    gridContainer.innerHTML = '';
+
+    SingleData.forEach(item => {
         const cell = document.createElement('div');
-        cell.className = `single-cell ${AppState.selectedBets.has(i.toString()) ? 'selected' : ''}`;
-        cell.dataset.val = i.toString();
+        cell.className = 'single-cell';
+        if (AppState.timerState.isLocked) cell.classList.add('disabled-cell');
+        
+        cell.onclick = (e) => {
+            e.preventDefault();
+            if (AppState.timerState.isLocked) return;
+            addBetToCart(`SINGLE-${item.digit}`, item.digit, item.word, 'SINGLE', AppState.selectedBetAmount);
+        };
+
+        cell.oncontextmenu = (e) => {
+            e.preventDefault();
+            if (AppState.timerState.isLocked) return;
+            reduceBetFromCart(`SINGLE-${item.digit}`, AppState.selectedBetAmount);
+        };
+
+        let mainText = item.digit;
+        let subText = item.word;
+
+        if (AppState.currentMode === 'WORD') {
+            mainText = item.word;
+            subText = '';
+        } else if (AppState.currentMode === 'DIGIT') {
+            mainText = item.digit;
+            subText = '';
+        }
+
         cell.innerHTML = `
-            <div class="single-val-main">${i}</div>
-            <div class="single-val-sub">SINGLE</div>
+            <div class="single-val-main">${mainText}</div>
+            ${subText ? `<div class="single-val-sub">${subText}</div>` : ''}
         `;
-        cell.addEventListener('click', () => handleCellBetClick(i.toString()));
-        DOM.singleBoardContainer.appendChild(cell);
+        gridContainer.appendChild(cell);
+    });
+}
+
+function switchViewMode(mode) {
+    AppState.currentMode = mode;
+
+    document.querySelectorAll('.mode-selector .btn-mode').forEach(btn => btn.classList.remove('active'));
+    if (mode === 'BOTH') document.getElementById('btn-mode-both')?.classList.add('active');
+    if (mode === 'WORD') document.getElementById('btn-mode-word')?.classList.add('active');
+    if (mode === 'DIGIT') document.getElementById('btn-mode-digit')?.classList.add('active');
+
+    renderSingleBoard();
+    renderTripleBoard();
+    updateLiveResultDisplay();
+    updateCartDisplay();
+}
+
+function updateLiveResultDisplay() {
+    const resultBox = document.getElementById('top-result-display');
+    if (!resultBox || !AppState.currentResult) return;
+
+    if (AppState.currentMode === 'BOTH') {
+        resultBox.innerText = `${AppState.currentResult.digit} ${AppState.currentResult.word}`;
+    } else if (AppState.currentMode === 'WORD') {
+        resultBox.innerText = AppState.currentResult.word;
+    } else if (AppState.currentMode === 'DIGIT') {
+        resultBox.innerText = AppState.currentResult.digit;
     }
+}
+
+// ==========================================
+// MODULE 4: TRIPLE 220 MATRIX BOARD (MASTER CHART)
+// ==========================================
+
+const RawTripleDigits = [
+    // Column 1
+    "100", "678", "777", "560", "470", "380", "290", "119", "137", "236", "146", "669", "579", "399", "588", "489", "245", "155", "227", "344", "335", "128",
+    // Column 2
+    "200", "345", "444", "570", "480", "390", "660", "129", "237", "336", "246", "679", "255", "147", "228", "499", "688", "778", "138", "156", "110", "589",
+    // Column 3
+    "300", "120", "114", "580", "490", "670", "238", "139", "337", "157", "346", "689", "355", "247", "256", "166", "599", "148", "788", "445", "229", "779",
+    // Column 4
+    "400", "789", "888", "590", "130", "680", "248", "149", "347", "158", "446", "699", "455", "266", "112", "356", "239", "338", "257", "220", "770", "167",
+    // Column 5
+    "500", "456", "555", "140", "230", "690", "258", "159", "357", "799", "267", "780", "447", "366", "113", "122", "177", "249", "339", "889", "348", "168",
+    // Column 6
+    "600", "123", "222", "150", "330", "240", "268", "169", "367", "448", "899", "178", "790", "466", "358", "880", "114", "556", "259", "349", "457", "277",
+    // Column 7
+    "700", "890", "999", "160", "340", "250", "278", "179", "377", "467", "115", "124", "223", "566", "557", "368", "359", "449", "269", "133", "188", "458",
+    // Column 8
+    "800", "567", "666", "170", "350", "260", "288", "189", "116", "233", "459", "125", "224", "477", "990", "134", "558", "369", "378", "440", "279", "468",
+    // Column 9
+    "900", "234", "333", "180", "360", "270", "450", "199", "117", "469", "126", "667", "478", "135", "225", "144", "379", "559", "289", "388", "577", "568",
+    // Column 0
+    "000", "127", "190", "280", "370", "460", "550", "235", "118", "578", "145", "479", "668", "299", "334", "488", "389", "226", "569", "677", "136", "244"
+];
+
+const TripleData = [];
+for (let i = 0; i < 220; i++) {
+    const colNum = (i % 10) + 1;
+    const wordVal = String.fromCharCode(65 + (i % 26)) + String.fromCharCode(65 + ((i + 1) % 26)) + String.fromCharCode(65 + ((i + 2) % 26));
+    
+    TripleData.push({
+        id: i + 1,
+        col: colNum,
+        digit: RawTripleDigits[i],
+        word: wordVal
+    });
 }
 
 function renderTripleBoard() {
-    DOM.tripleBoardGrid.innerHTML = '';
-    
-    let filteredList = PANA_MASTER_LIST;
-    if (AppState.activeRange !== 'ALL') {
-        let rangePrefix = AppState.activeRange.charAt(0);
-        filteredList = PANA_MASTER_LIST.filter(p => p.pana.startsWith(rangePrefix));
-    }
+    const gridContainer = document.getElementById('triple-board-grid');
+    if (!gridContainer) return;
 
-    filteredList.forEach(item => {
+    gridContainer.innerHTML = '';
+    const filteredItems = getFilteredTripleData();
+
+    filteredItems.forEach(item => {
         const cell = document.createElement('div');
-        cell.className = `triple-cell ${AppState.selectedBets.has(item.pana) ? 'selected' : ''}`;
-        cell.dataset.val = item.pana;
+        cell.className = 'triple-cell';
+        cell.id = `triple-cell-${item.id}`;
+        if (AppState.timerState.isLocked) cell.classList.add('disabled-cell');
+
+        cell.onclick = (e) => {
+            e.preventDefault();
+            if (AppState.timerState.isLocked) return;
+            addBetToCart(`TRIPLE-${item.id}`, item.digit, item.word, 'TRIPLE', AppState.selectedBetAmount);
+        };
+
+        cell.oncontextmenu = (e) => {
+            e.preventDefault();
+            if (AppState.timerState.isLocked) return;
+            reduceBetFromCart(`TRIPLE-${item.id}`, AppState.selectedBetAmount);
+        };
+
+        let mainText = item.digit;
+        let subText = item.word;
+
+        if (AppState.currentMode === 'WORD') {
+            mainText = item.word;
+            subText = '';
+        } else if (AppState.currentMode === 'DIGIT') {
+            mainText = item.digit;
+            subText = '';
+        }
+
         cell.innerHTML = `
-            <div class="triple-val-digit">${item.pana}</div>
-            <div class="triple-val-word">[${item.singleDigit}]</div>
+            <div class="triple-val-digit">${mainText}</div>
+            ${subText ? `<div class="triple-val-word">${subText}</div>` : ''}
         `;
-        cell.addEventListener('click', () => handleCellBetClick(item.pana));
-        DOM.tripleBoardGrid.appendChild(cell);
+        gridContainer.appendChild(cell);
     });
 }
 
-// Bet Selection Handler
-function handleCellBetClick(selection) {
-    if (AppState.isLocked) {
-        alert("Betting is currently locked for draw processing!");
-        return;
-    }
-
-    let currentBet = AppState.selectedBets.get(selection) || 0;
-    let newBet = currentBet + AppState.activeChip;
-
-    AppState.selectedBets.set(selection, newBet);
-    updateCartSummaryUI();
-    
-    // Highlight UI
-    const targetCell = document.querySelector(`[data-val="${selection}"]`);
-    if (targetCell) targetCell.classList.add('selected');
-}
-
-function clearBetCart() {
-    AppState.selectedBets.clear();
-    updateCartSummaryUI();
-    document.querySelectorAll('.single-cell, .triple-cell').forEach(c => c.classList.remove('selected'));
-}
-
-function updateCartSummaryUI() {
-    DOM.selectedItemsList.innerHTML = '';
-    let totalPoints = 0;
-    let count = 0;
-
-    AppState.selectedBets.forEach((amount, selection) => {
-        totalPoints += amount;
-        count++;
-
-        const badge = document.createElement('div');
-        badge.className = 'chip-item-badge';
-        badge.innerHTML = `${selection} : ${amount} Pts`;
-        badge.addEventListener('click', () => {
-            AppState.selectedBets.delete(selection);
-            updateCartSummaryUI();
-            const targetCell = document.querySelector(`[data-val="${selection}"]`);
-            if (targetCell) targetCell.classList.remove('selected');
+function getFilteredTripleData() {
+    if (AppState.activeRange === 'A') return TripleData.slice(0, 55);
+    if (AppState.activeRange === 'B') return TripleData.slice(55, 110);
+    if (AppState.activeRange === 'C') return TripleData.slice(110, 165);
+    if (AppState.activeRange === 'D') return TripleData.slice(165, 220);
+    if (AppState.activeRange === 'JORA') {
+        return TripleData.filter(item => {
+            const d = item.digit;
+            return d[0] === d[1] || d[1] === d[2] || d[0] === d[2];
         });
-        DOM.selectedItemsList.appendChild(badge);
-    });
-
-    DOM.summaryCount.innerText = count;
-    DOM.summaryTotalPts.innerText = totalPoints;
+    }
+    return TripleData;
 }
 
-// Process Ticket & ESC/POS Silent Direct Thermal Print Call
-function processSubmitTicket() {
-    if (AppState.selectedBets.size === 0) {
-        alert("Please select at least one number to place bet.");
+function filterRange(rangeKey) {
+    AppState.activeRange = rangeKey;
+
+    document.querySelectorAll('.range-selector .btn-range').forEach(btn => btn.classList.remove('active'));
+    if (rangeKey === 'ALL') document.getElementById('btn-range-all')?.classList.add('active');
+    if (rangeKey === 'A') document.getElementById('btn-range-a')?.classList.add('active');
+    if (rangeKey === 'B') document.getElementById('btn-range-b')?.classList.add('active');
+    if (rangeKey === 'C') document.getElementById('btn-range-c')?.classList.add('active');
+    if (rangeKey === 'D') document.getElementById('btn-range-d')?.classList.add('active');
+    if (rangeKey === 'JORA') document.getElementById('btn-range-jora')?.classList.add('active');
+
+    renderTripleBoard();
+}
+
+// ==========================================
+// MODULE 5: BETTING & SLIP SUMMARY ENGINE
+// ==========================================
+
+function setBetAmount(amount) {
+    AppState.selectedBetAmount = amount;
+    
+    document.querySelectorAll('.bet-chip-section .btn-chip').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.innerText.trim() === amount.toString()) btn.classList.add('active');
+    });
+
+    const customInput = document.getElementById('custom-bet-input');
+    if (customInput) customInput.value = '';
+}
+
+function setCustomAmount(val) {
+    const num = parseInt(val);
+    if (num && num > 0) {
+        AppState.selectedBetAmount = num;
+        document.querySelectorAll('.bet-chip-section .btn-chip').forEach(btn => btn.classList.remove('active'));
+    }
+}
+
+function addBetToCart(uniqueId, digitVal, wordVal, type, amount) {
+    if (AppState.timerState.isLocked) return;
+
+    const existingIndex = AppState.selectedCart.findIndex(i => i.uniqueId === uniqueId);
+
+    if (existingIndex > -1) {
+        AppState.selectedCart[existingIndex].amount += amount;
+    } else {
+        const ratio = type === 'SINGLE' ? AppState.winningRatios.SINGLE : AppState.winningRatios.TRIPLE;
+        AppState.selectedCart.push({
+            uniqueId: uniqueId,
+            digit: digitVal,
+            word: wordVal,
+            type: type,
+            amount: amount,
+            winningRatio: ratio
+        });
+    }
+
+    updateCartDisplay();
+}
+
+function reduceBetFromCart(uniqueId, amount) {
+    if (AppState.timerState.isLocked) return;
+
+    const existingIndex = AppState.selectedCart.findIndex(i => i.uniqueId === uniqueId);
+
+    if (existingIndex > -1) {
+        AppState.selectedCart[existingIndex].amount -= amount;
+        if (AppState.selectedCart[existingIndex].amount <= 0) {
+            AppState.selectedCart.splice(existingIndex, 1);
+        }
+        updateCartDisplay();
+    }
+}
+
+function updateCartDisplay() {
+    const listContainer = document.getElementById('selected-items-display');
+    const countDisplay = document.getElementById('selected-count');
+    const totalDisplay = document.getElementById('total-bet-points');
+
+    if (!listContainer) return;
+
+    if (AppState.selectedCart.length === 0) {
+        listContainer.innerHTML = '<span class="empty-msg">No items selected</span>';
+        if (countDisplay) countDisplay.innerText = '0';
+        if (totalDisplay) totalDisplay.innerText = '0';
         return;
     }
 
-    let totalCost = 0;
-    AppState.selectedBets.forEach(val => totalCost += val);
+    listContainer.innerHTML = '';
+    let totalPoints = 0;
 
-    if (totalCost > AppState.points) {
-        alert("Insufficient points balance!");
-        return;
-    }
+    AppState.selectedCart.forEach(item => {
+        totalPoints += item.amount;
+        const badge = document.createElement('span');
+        badge.className = 'chip-item-badge';
+
+        let label = item.digit;
+        if (AppState.currentMode === 'WORD') label = item.word;
+        if (AppState.currentMode === 'BOTH') label = `${item.digit}(${item.word})`;
+
+        const potentialWin = item.amount * item.winningRatio;
+
+        // Strict Points Labeling (No Currency Symbol)
+        badge.innerText = `${label} : ${item.amount} PTS [Est Win: ${potentialWin.toFixed(0)} PTS]`;
+        listContainer.appendChild(badge);
+    });
+
+    if (countDisplay) countDisplay.innerText = AppState.selectedCart.length.toString();
+    if (totalDisplay) totalDisplay.innerText = totalPoints.toLocaleString();
+}
+
+function clearAllSelections() {
+    AppState.selectedCart = [];
+    updateCartDisplay();
+}
+
+// Silent Thermal & Bluetooth Printing Handler
+function submitBetAndPrint() {
+    if (AppState.timerState.isLocked) return;
+
+    if (AppState.selectedCart.length === 0) return;
+
+    let totalCost = AppState.selectedCart.reduce((sum, item) => sum + item.amount, 0);
+
+    if (AppState.playPoints < totalCost) return;
 
     // Deduct Balance
-    AppState.points -= totalCost;
-    DOM.displayUserPoints.innerText = AppState.points;
+    AppState.playPoints -= totalCost;
+    const playPtsEl = document.getElementById('play-points');
+    if (playPtsEl) playPtsEl.innerText = AppState.playPoints.toLocaleString();
 
-    // Record History
-    const ticketId = 'TK' + Math.floor(100000 + Math.random() * 900000);
-    AppState.selectedBets.forEach((amount, selection) => {
-        AppState.betHistory.unshift({
-            time: new Date().toLocaleTimeString(),
-            drawId: `#${AppState.currentDrawId}`,
-            type: selection.length === 1 ? 'SINGLE' : 'TRIPLE',
-            selection: selection,
-            amount: amount,
-            status: 'PENDING'
-        });
-    });
+    // Generate Unique Ticket Barcode
+    const ticketId = "TKT" + Date.now().toString().slice(-8) + Math.floor(Math.random() * 89 + 10);
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    if (AppState.autoPrintEnabled) {
-        triggerThermalPrinterReceipt(ticketId, totalCost);
-    } else {
-        alert(`Ticket Placed Successfully!\nTicket ID: ${ticketId}\nTotal Amount: ${totalCost} PTS`);
+    // Store Ticket Entry
+    const ticketRecord = {
+        id: ticketId,
+        points: totalCost,
+        time: timeStr,
+        items: [...AppState.selectedCart],
+        status: 'P', // P = Pending, Y = Won, N = Lost
+        winningPts: 0
+    };
+    AppState.ticketHistory.unshift(ticketRecord);
+
+    // Silent Thermal Print (ESC/POS Plain Template)
+    if (AppState.printEnabled) {
+        executeSilentThermalPrint(ticketRecord);
     }
 
-    clearBetCart();
+    clearAllSelections();
 }
 
-function triggerThermalPrinterReceipt(ticketId, amount) {
-    // Esc/POS Raw Command String Simulation
-    console.log(`%c [PRINTER OUTPUT] \n--- TICKET: ${ticketId} ---\nDraw: #${AppState.currentDrawId}\nAmount: ${amount} PTS\n-----------------------`, "color: #00f0ff; font-weight: bold;");
-    alert(`[THERMAL PRINTER] Printing Ticket: ${ticketId}`);
+function executeSilentThermalPrint(ticket) {
+    const iframe = document.getElementById('silent-print-frame');
+    if (!iframe) return;
+
+    let itemsHtml = ticket.items.map(i => `<div>${i.digit} (${i.word}) x ${i.amount} PTS</div>`).join('');
+
+    const slipHtml = `
+        <html>
+        <head>
+            <style>
+                body { font-family: monospace; width: 58mm; margin: 0; padding: 5px; font-size: 11px; }
+                .center { text-align: center; }
+                .line { border-bottom: 1px dashed #000; margin: 5px 0; }
+            </style>
+        </head>
+
+        <body>
+            <div class="center"><b>A2Z BOMBAY</b></div>
+            <div class="center">ID: ${ticket.id}</div>
+            <div class="line"></div>
+            <div>Time: ${ticket.time}</div>
+            <div>User: ${AppState.currentUser}</div>
+            <div class="line"></div>
+            ${itemsHtml}
+            <div class="line"></div>
+            <div><b>TOTAL PTS: ${ticket.points}</b></div>
+            <div class="center">*** GOOD LUCK ***</div>
+        </body>
+        </html>
+    `;
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(slipHtml);
+    doc.close();
+
+    setTimeout(() => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }, 200);
 }
 
-// Continuous Draw Timer & Anti-Tampering Loop Engine
+// ==========================================
+// MODULE 6: DRAW TIMER & RECENT RESULTS BOARD
+// ==========================================
+
 function initDrawTimerEngine() {
-    AppState.currentDrawId = Math.floor(Date.now() / (120 * 1000));
-    
-    setInterval(() => {
-        if (!verifySystemTimeIntegrity()) return;
-
-        const now = Date.now();
-        const drawCycleMs = 120 * 1000;
-        const currentCycleElapsed = now % drawCycleMs;
-        const remainingMs = drawCycleMs - currentCycleElapsed;
-        
-        AppState.timerSecondsLeft = Math.floor(remainingMs / 1000);
-
-        // Format Clock
-        const mins = String(Math.floor(AppState.timerSecondsLeft / 60)).padStart(2, '0');
-        const secs = String(AppState.timerSecondsLeft % 60).padStart(2, '0');
-        DOM.drawTimerClock.innerText = `${mins}:${secs}`;
-
-        // Lock Betting in Last 10 Seconds of Draw
-        if (AppState.timerSecondsLeft <= 10) {
-            if (!AppState.isLocked) {
-                AppState.isLocked = true;
-                DOM.lockBanner.classList.remove('hidden');
-            }
-        } else {
-            if (AppState.isLocked) {
-                AppState.isLocked = false;
-                DOM.lockBanner.classList.add('hidden');
-            }
-        }
-
-        // Trigger Draw Result Resolution at 00:00
-        if (AppState.timerSecondsLeft === 0) {
-            executeDrawResolution();
-        }
-    }, 1000);
+    if (AppState.timerState.timerId) clearInterval(AppState.timerState.timerId);
+    AppState.timerState.timerId = setInterval(runClockCycle, 1000);
+    runClockCycle();
 }
 
-// Draw Resolution Execution
-function executeDrawResolution() {
-    AppState.currentDrawId++;
+function runClockCycle() {
+    const now = new Date();
+    const intervalMs = AppState.drawSettings.intervalMinutes * 60 * 1000;
     
-    // Pick Random Winning Pana
-    const randomIndex = Math.floor(Math.random() * PANA_MASTER_LIST.length);
-    const winningPanaObj = PANA_MASTER_LIST[randomIndex];
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const currentMs = now.getTime() - startOfDay;
     
-    const newResult = {
-        drawId: AppState.currentDrawId,
-        pana: winningPanaObj.pana,
-        single: winningPanaObj.singleDigit
+    const msIntoCurrentDraw = currentMs % intervalMs;
+    const msRemaining = intervalMs - msIntoCurrentDraw;
+    
+    const totalSecondsRemaining = Math.floor(msRemaining / 1000);
+    AppState.timerState.secondsRemaining = totalSecondsRemaining;
+
+    // Dynamic Voice Alerts
+    if (totalSecondsRemaining === 15 && !AppState.timerState.warnedLastChance) {
+        AppState.timerState.warnedLastChance = true;
+        playVoiceAlert('LAST_CHANCE');
+    }
+
+    const isLockPeriod = totalSecondsRemaining <= AppState.drawSettings.lockSecondsBefore;
+
+    if (isLockPeriod && !AppState.timerState.isLocked) {
+        setLockState(true);
+        playVoiceAlert('GAME_LOCKED');
+    } else if (!isLockPeriod && AppState.timerState.isLocked) {
+        setLockState(false);
+        AppState.timerState.warnedLastChance = false;
+        onNewDrawStart();
+    }
+
+    updateTimerUI(now, msRemaining, totalSecondsRemaining);
+}
+
+function setLockState(locked) {
+    AppState.timerState.isLocked = locked;
+    const lockBanner = document.getElementById('game-lock-banner');
+    if (lockBanner) lockBanner.classList.toggle('hidden', !locked);
+
+    // Only render boards if user is logged in and app is visible
+    const appContainer = document.getElementById('app-container');
+    if (appContainer && !appContainer.classList.contains('hidden')) {
+        renderSingleBoard();
+        renderTripleBoard();
+    }
+}
+
+function onNewDrawStart() {
+    const randomTriple = TripleData[Math.floor(Math.random() * TripleData.length)];
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    AppState.currentResult = {
+        digit: randomTriple.digit,
+        word: randomTriple.word,
+        time: timeStr
     };
 
-    // Update Recent Results (Max 10)
-    AppState.recentResults.unshift(newResult);
+    // Store in Recent Results (Max 10)
+    AppState.recentResults.unshift({ ...AppState.currentResult });
     if (AppState.recentResults.length > 10) AppState.recentResults.pop();
 
-    // Render Recent Results Bar & Highlight Header
-    renderRecentResultsStripe();
-    DOM.lastDrawResult.innerText = `${winningPanaObj.pana} [ ${winningPanaObj.singleDigit} ]`;
+    // Evaluate Winning Tickets
+    evaluateTicketWinners(AppState.currentResult);
 
-    // Process Bet Statuses
-    AppState.betHistory.forEach(bet => {
-        if (bet.status === 'PENDING') {
-            if (bet.type === 'SINGLE' && parseInt(bet.selection) === winningPanaObj.singleDigit) {
-                bet.status = 'WON';
-                AppState.points += bet.amount * 9; // 9x Payout for Single
-            } else if (bet.type === 'TRIPLE' && bet.selection === winningPanaObj.pana) {
-                bet.status = 'WON';
-                AppState.points += bet.amount * 180; // 180x Payout for Triple
+    updateLiveResultDisplay();
+    renderRecentResults();
+}
+
+function renderRecentResults() {
+    const container = document.getElementById('recent-results-stripe');
+    if (!container) return;
+
+    container.innerHTML = '';
+    AppState.recentResults.forEach(res => {
+        const item = document.createElement('div');
+        item.className = 'recent-item';
+        item.innerText = `${res.time} | ${res.digit} ${res.word}`;
+        container.appendChild(item);
+    });
+}
+
+function evaluateTicketWinners(result) {
+    AppState.ticketHistory.forEach(ticket => {
+        if (ticket.status === 'P') {
+            let winTotal = 0;
+            ticket.items.forEach(item => {
+                if (item.digit === result.digit || item.word === result.word) {
+                    winTotal += item.amount * item.winningRatio;
+                }
+            });
+
+            if (winTotal > 0) {
+                ticket.status = 'Y';
+                ticket.winningPts = winTotal;
             } else {
-                bet.status = 'LOST';
+                ticket.status = 'N';
             }
         }
     });
-
-    DOM.displayUserPoints.innerText = AppState.points;
 }
 
-// Pre-fill 10 Results for Visual Verification
-function generateSampleRecentResults() {
-    AppState.recentResults = [];
-    for (let i = 0; i < 10; i++) {
-        let panaObj = PANA_MASTER_LIST[Math.floor(Math.random() * PANA_MASTER_LIST.length)];
-        AppState.recentResults.push({
-            drawId: 1000 - i,
-            pana: panaObj.pana,
-            single: panaObj.singleDigit
-        });
+// Ticket Barcode Checker
+function checkTicketBarcode() {
+    const input = document.getElementById('barcode-check-input');
+    if (!input || !input.value.trim()) return;
+
+    const barcode = input.value.trim();
+    const ticket = AppState.ticketHistory.find(t => t.id === barcode);
+
+    if (!ticket) {
+        alert("TICKET NOT FOUND!");
+        return;
     }
-    const latest = AppState.recentResults[0];
-    DOM.lastDrawResult.innerText = `${latest.pana} [ ${latest.single} ]`;
+
+    if (ticket.status === 'Y') {
+        alert(`🏆 WINNING TICKET!\nWon: ${ticket.winningPts.toFixed(0)} PTS`);
+    } else if (ticket.status === 'N') {
+        alert(`❌ NOT A WINNING TICKET`);
+    } else {
+        alert(`⏳ TICKET PENDING FOR DRAW`);
+    }
 }
 
-// Render Recent 10 Results Notice Stripe (Fit 10 No Scrollbar)
-function renderRecentResultsStripe() {
-    DOM.recentResultsStripe.innerHTML = '';
+function renderTicketHistoryTable() {
+    const tbody = document.getElementById('history-table-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    AppState.ticketHistory.forEach(ticket => {
+        const tr = document.createElement('tr');
+        
+        let statusBadge = '<span class="status-pending">P (Pending)</span>';
+        if (ticket.status === 'Y') statusBadge = `<span class="status-won">Y (Won ${ticket.winningPts.toFixed(0)} PTS)</span>`;
+        if (ticket.status === 'N') statusBadge = '<span class="status-lost">N (Lost)</span>';
+
+        tr.innerHTML = `
+            <td>${ticket.id}</td>
+            <td>${ticket.points} PTS</td>
+            <td>${ticket.time}</td>
+            <td>${statusBadge}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function updateTimerUI(nowDate, msRemaining, totalSecs) {
+    const minutes = Math.floor(totalSecs / 60);
+    const seconds = totalSecs % 60;
     
-    // Always fill exactly 10 slots
-    for (let i = 0; i < 10; i++) {
-        const item = AppState.recentResults[i] || { pana: '---', single: '-' };
-        const el = document.createElement('div');
-        el.className = 'recent-item';
-        el.innerHTML = `
-            <span class="recent-pana">${item.pana}</span>
-            <span class="recent-single-badge">${item.single}</span>
-        `;
-        DOM.recentResultsStripe.appendChild(el);
-    }
-}
+    const timeFormatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-// Result / History Modal Content Switcher
-function openHistoryModal(type) {
-    DOM.historyModal.classList.remove('hidden');
-    DOM.historyTableBody.innerHTML = '';
-
-    if (type === 'BET_HISTORY') {
-        DOM.historyModalTitle.innerText = "Terminal Betting History";
-        DOM.historyTableHead.innerHTML = `
-            <tr>
-                <th>Time</th>
-                <th>Draw</th>
-                <th>Type</th>
-                <th>Selection</th>
-                <th>Amount</th>
-                <th>Status</th>
-            </tr>
-        `;
-
-        if (AppState.betHistory.length === 0) {
-            DOM.historyTableBody.innerHTML = `<tr><td colspan="6" style="color:#9ca3af;">No bets placed yet.</td></tr>`;
-            return;
-        }
-
-        AppState.betHistory.forEach(bet => {
-            const tr = document.createElement('tr');
-            let statusClass = bet.status === 'WON' ? 'status-won' : bet.status === 'LOST' ? 'status-lost' : 'status-pending';
-            tr.innerHTML = `
-                <td>${bet.time}</td>
-                <td>${bet.drawId}</td>
-                <td>${bet.type}</td>
-                <td style="color:#00f0ff; font-weight:bold;">${bet.selection}</td>
-                <td>${bet.amount}</td>
-                <td class="${statusClass}">${bet.status}</td>
-            `;
-            DOM.historyTableBody.appendChild(tr);
-        });
-    } else if (type === 'RESULTS_HISTORY') {
-        DOM.historyModalTitle.innerText = "Recent Draw Results";
-        DOM.historyTableHead.innerHTML = `
-            <tr>
-                <th>Draw ID</th>
-                <th>Winning Pana</th>
-                <th>Single Highlight Badge</th>
-            </tr>
-        `;
-
-        AppState.recentResults.forEach(res => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>#${res.drawId}</td>
-                <td style="color:#f59e0b; font-weight:bold; font-size:14px;">${res.pana}</td>
-                <td><span class="recent-single-badge" style="font-size:11px; padding:2px 6px;">[ ${res.single} ]</span></td>
-            `;
-            DOM.historyTableBody.appendChild(tr);
-        });
-    }
+    const drawTimeEl = document.getElementById('draw-time-val');
+    if (drawTimeEl) drawTimeEl.innerText = timeFormatted;
 }
