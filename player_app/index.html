@@ -1,25 +1,631 @@
-<!-- Login Modal -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Game Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: #080c14;
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Modals & Overlays */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            background: #080c14;
+        }
+
+        .login-card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 35px rgba(0, 240, 255, 0.25), 0 10px 25px rgba(0, 0, 0, 0.8);
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            color: #00f0ff;
+            margin-bottom: 6px;
+            font-size: 22px;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+
+        .login-card p {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+            font-size: 13px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: #00f0ff;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 10px;
+            background: #00f0ff;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background: #38bdf8;
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+        }
+
+        /* Top Header */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f172a;
+            padding: 8px 14px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .glow-text {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00f0ff;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+        }
+
+        .header-center-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .live-result-box {
+            background: #1e293b;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+
+        .result-title {
+            font-size: 9px;
+            color: #94a3b8;
+        }
+
+        .result-value {
+            font-size: 13px;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-badge, .points-badge {
+            font-size: 11px;
+            background: #1e293b;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .control-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f172a;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .label-text {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: bold;
+        }
+
+        .btn-mode {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .btn-mode.active {
+            background: #00f0ff;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .board-section {
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .section-header {
+            font-size: 12px;
+            font-weight: bold;
+            color: #00f0ff;
+            margin-bottom: 8px;
+        }
+
+        /* Grid Styles */
+        .grid-container-single {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 6px;
+        }
+
+        .single-cell {
+            position: relative;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 10px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            min-height: 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .single-cell:hover {
+            border-color: #00f0ff;
+        }
+
+        .single-cell.selected-cell-active {
+            border-color: #00f0ff !important;
+            background: rgba(0, 240, 255, 0.15) !important;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+            transform: scale(1.03);
+            animation: cellPulse 1.2s infinite alternate;
+        }
+
+        @keyframes cellPulse {
+            0% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.4); }
+            100% { box-shadow: 0 0 18px rgba(0, 240, 255, 0.9); }
+        }
+
+        .cell-bet-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: #00f0ff;
+            color: #000;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        /* Bottom Container */
+        .bottom-bet-container {
+            display: flex;
+            justify-content: space-between;
+            background: #0f172a;
+            padding: 10px 14px;
+            border-radius: 6px;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .bet-chip-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #direct-bet-input {
+            width: 90px;
+            padding: 6px 8px;
+            background: #1e293b;
+            border: 1px solid #00f0ff;
+            color: #00f0ff;
+            font-weight: bold;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+            text-align: center;
+        }
+
+        .selected-summary-box {
+            flex-grow: 1;
+            background: #1e293b;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+
+        .total-pts {
+            color: #00f0ff;
+            font-weight: bold;
+        }
+
+        .action-btn-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .btn-reset {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .btn-submit-bet {
+            padding: 6px 16px;
+            background: #00f0ff;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Modal -->
     <div id="login-modal" class="modal-overlay">
         <div class="login-card">
-            <h2>A2Z BOMBAY LOGIN</h2>
-            <p>Enter your ID and Password</p>
-            <form id="login-form">
+            <h2>Game Login</h2>
+            <p>Enter your credentials to start playing</p>
+            <form id="login-form" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label for="user-type">User Type:</label>
-                    <select id="user-type">
-                        <option value="demo">Demo Player</option>
-                        <option value="real">Real Player</option>
-                    </select>
+                    <label>Username</label>
+                    <input type="text" id="login-username" required placeholder="Enter username">
                 </div>
                 <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" value="DEMO01" required>
+                    <label>PIN / Password</label>
+                    <input type="password" id="login-pin" required placeholder="Enter PIN">
                 </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" value="123456" required>
-                </div>
-                <button type="submit" class="btn-submit">Login</button>
+                <button type="submit" class="btn-submit">Login to Dashboard</button>
             </form>
         </div>
     </div>
+
+    <!-- Main App Container -->
+    <div id="app-container" class="hidden">
+        <header class="top-header">
+            <div class="header-left">
+                <div class="glow-text">GAME PORTAL</div>
+            </div>
+            <div class="header-center-info">
+                <div class="live-result-box">
+                    <div class="result-title">LIVE RESULT</div>
+                    <div id="live-result-val" class="result-value">---</div>
+                </div>
+                <div class="user-info">
+                    <div id="display-user" class="user-badge">User: Player</div>
+                    <div id="display-points" class="points-badge">Bal: 5000 pts</div>
+                    <button class="btn-logout" onclick="handleLogout()">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="control-panel">
+                <div class="mode-selector">
+                    <span class="label-text">MODE:</span>
+                    <button class="btn-mode active" onclick="setMode('BOTH')">Both</button>
+                    <button class="btn-mode" onclick="setMode('DIGIT')">Digit Only</button>
+                    <button class="btn-mode" onclick="setMode('WORD')">Word Only</button>
+                </div>
+            </div>
+
+            <section class="board-section">
+                <div class="section-header">SINGLE BOARD</div>
+                <div id="single-board-grid" class="grid-container-single"></div>
+            </section>
+        </main>
+
+        <footer class="bottom-bet-container">
+            <div class="bet-chip-section">
+                <span class="label-text">AMOUNT:</span>
+                <!-- সরাসরি কিবোর্ড দিয়ে সংখ্যা টাইপ করার বক্স -->
+                <input type="number" id="direct-bet-input" value="10" min="1" oninput="updateBetAmount(this.value)">
+            </div>
+            <div class="selected-summary-box">
+                <div class="summary-header">
+                    <span>Selected Bets: <strong id="cart-count">0 items</strong></span>
+                    <span>Total Points: <strong id="cart-total" class="total-pts">0</strong></span>
+                </div>
+                <div class="action-btn-group">
+                    <button class="btn-reset" onclick="resetCart()">Reset</button>
+                    <button class="btn-submit-bet" onclick="submitBetAndPrint()">Submit & Print (Enter)</button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const AppState = {
+            isLoggedIn: false,
+            username: '',
+            balance: 5000,
+            currentMode: 'BOTH',
+            selectedBetAmount: 10,
+            selectedCart: []
+        };
+
+        const SingleData = [
+            { digit: '0', word: 'Zero' },
+            { digit: '1', word: 'One' },
+            { digit: '2', word: 'Two' },
+            { digit: '3', word: 'Three' },
+            { digit: '4', word: 'Four' },
+            { digit: '5', word: 'Five' },
+            { digit: '6', word: 'Six' },
+            { digit: '7', word: 'Seven' },
+            { digit: '8', word: 'Eight' },
+            { digit: '9', word: 'Nine' }
+        ];
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('login-username').value;
+            if (!usernameInput) return;
+
+            AppState.isLoggedIn = true;
+            AppState.username = usernameInput;
+
+            document.getElementById('login-modal').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            document.getElementById('display-user').innerText = `User: ${AppState.username}`;
+            document.getElementById('display-points').innerText = `Bal: ${AppState.balance} pts`;
+
+            renderSingleBoard();
+        }
+
+        function handleLogout() {
+            AppState.isLoggedIn = false;
+            document.getElementById('app-container').classList.add('hidden');
+            document.getElementById('login-modal').classList.remove('hidden');
+            document.getElementById('login-form').reset();
+        }
+
+        function setMode(mode) {
+            AppState.currentMode = mode;
+            document.querySelectorAll('.btn-mode').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderSingleBoard();
+        }
+
+        function updateBetAmount(val) {
+            const num = parseInt(val);
+            if (!isNaN(num) && num > 0) {
+                AppState.selectedBetAmount = num;
+            } else {
+                AppState.selectedBetAmount = 0;
+            }
+        }
+
+        function addBetToCart(uniqueId, digit, word, type, amount) {
+            if (amount <= 0) return;
+
+            let existingItem = AppState.selectedCart.find(i => i.uniqueId === uniqueId);
+            if (existingItem) {
+                existingItem.amount += amount;
+            } else {
+                AppState.selectedCart.push({ uniqueId, digit, word, type, amount });
+            }
+
+            updateCartSummary();
+            renderSingleBoard();
+        }
+
+        function reduceBetFromCart(uniqueId, amount) {
+            if (amount <= 0) return;
+
+            let index = AppState.selectedCart.findIndex(i => i.uniqueId === uniqueId);
+            if (index !== -1) {
+                AppState.selectedCart[index].amount -= amount;
+                if (AppState.selectedCart[index].amount <= 0) {
+                    AppState.selectedCart.splice(index, 1);
+                }
+            }
+
+            updateCartSummary();
+            renderSingleBoard();
+        }
+
+        function resetCart() {
+            AppState.selectedCart = [];
+            updateCartSummary();
+            renderSingleBoard();
+        }
+
+        function updateCartSummary() {
+            const totalCount = AppState.selectedCart.reduce((acc, item) => acc + item.amount, 0);
+            const totalItems = AppState.selectedCart.length;
+
+            document.getElementById('cart-count').innerText = `${totalItems} items`;
+            document.getElementById('cart-total').innerText = totalCount;
+        }
+
+        function renderSingleBoard() {
+            const gridContainer = document.getElementById('single-board-grid');
+            if (!gridContainer) return;
+
+            gridContainer.innerHTML = '';
+
+            SingleData.forEach(item => {
+                const cell = document.createElement('div');
+                cell.className = 'single-cell';
+                const uniqueId = `SINGLE-${item.digit}`;
+                
+                const cartItem = AppState.selectedCart.find(i => i.uniqueId === uniqueId);
+                if (cartItem) {
+                    cell.classList.add('selected-cell-active');
+                }
+
+                cell.onclick = (e) => {
+                    e.preventDefault();
+                    addBetToCart(uniqueId, item.digit, item.word, 'SINGLE', AppState.selectedBetAmount);
+                };
+
+                cell.oncontextmenu = (e) => {
+                    e.preventDefault();
+                    reduceBetFromCart(uniqueId, AppState.selectedBetAmount);
+                };
+
+                let mainText = item.digit;
+                let subText = item.word;
+
+                if (AppState.currentMode === 'WORD') {
+                    mainText = item.word;
+                    subText = '';
+                } else if (AppState.currentMode === 'DIGIT') {
+                    mainText = item.digit;
+                    subText = '';
+                }
+
+                cell.innerHTML = `
+                    <div style="font-size: 16px; font-weight: bold; color: ${cartItem ? '#00f0ff' : '#fff'};">${mainText}</div>
+                    ${subText ? `<div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">${subText}</div>` : ''}
+                    ${cartItem ? `<div class="cell-bet-badge">${cartItem.amount}</div>` : ''}
+                `;
+                gridContainer.appendChild(cell);
+            });
+        }
+
+        function submitBetAndPrint() {
+            if (AppState.selectedCart.length === 0) {
+                alert('Please select at least one bet point before submitting.');
+                return;
+            }
+
+            const totalBet = AppState.selectedCart.reduce((sum, item) => sum + item.amount, 0);
+            if (totalBet > AppState.balance) {
+                alert('Insufficient balance!');
+                return;
+            }
+
+            AppState.balance -= totalBet;
+            document.getElementById('display-points').innerText = `Bal: ${AppState.balance} pts`;
+            
+            alert(`Bets successfully submitted! Total Points: ${totalBet}`);
+            resetCart();
+        }
+
+        // Enter কি প্রেস করে সরাসরি সাবমিট করার শর্টকাট
+        document.addEventListener('keydown', (e) => {
+            if (!AppState.isLoggedIn) return;
+
+            if (e.key === 'Enter') {
+                if (document.activeElement.tagName !== 'INPUT') {
+                    submitBetAndPrint();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
