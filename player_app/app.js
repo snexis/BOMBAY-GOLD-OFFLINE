@@ -149,11 +149,7 @@ function closeTicketHistory() {
 }
 
 // ==========================================
-// MODULE 2: AUTHENTICATION & UI SWITCHING
-// ==========================================
-
-// ==========================================
-// MODULE 2: AUTHENTICATION & UI SWITCHING (Fixed)
+// MODULE 2: AUTHENTICATION & UI SWITCHING (Force Display Fix)
 // ==========================================
 
 function setupEventListeners() {
@@ -161,6 +157,8 @@ function setupEventListeners() {
     if (loginForm) {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            e.stopPropagation();
+
             const usernameInput = document.getElementById('username');
             const userTypeInput = document.getElementById('user-type');
 
@@ -175,16 +173,16 @@ function setupEventListeners() {
             if (userIdTextEl) userIdTextEl.innerText = AppState.currentUser;
             if (drawerUserIdEl) drawerUserIdEl.innerText = AppState.currentUser;
 
-            // লগইন মডাল লুকানোর এবং ড্যাশবোর্ড দেখানোর সঠিক সিএসএস হ্যান্ডলিং
+            // ফোর্সফুলভাবে লগইন উইন্ডো হাইড এবং ড্যাশবোর্ড শো করা
             const loginModal = document.getElementById('login-modal');
             const appContainer = document.getElementById('app-container');
 
             if (loginModal) {
-                loginModal.style.display = 'none';
+                loginModal.style.setProperty('display', 'none', 'important');
                 loginModal.classList.add('hidden');
             }
             if (appContainer) {
-                appContainer.style.display = 'block';
+                appContainer.style.setProperty('display', 'block', 'important');
                 appContainer.classList.remove('hidden');
             }
             
@@ -192,6 +190,8 @@ function setupEventListeners() {
             renderSingleBoard();
             renderTripleBoard();
             updateLiveResultDisplay();
+            
+            return false;
         });
     }
 
@@ -202,25 +202,13 @@ function setupEventListeners() {
             const appContainer = document.getElementById('app-container');
 
             if (appContainer) {
-                appContainer.style.display = 'none';
+                appContainer.style.setProperty('display', 'none', 'important');
                 appContainer.classList.add('hidden');
             }
             if (loginModal) {
-                loginModal.style.display = 'flex';
+                loginModal.style.setProperty('display', 'flex', 'important');
                 loginModal.classList.remove('hidden');
             }
-        });
-    }
-}
-
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            const loginModal = document.getElementById('login-modal');
-            const appContainer = document.getElementById('app-container');
-
-            if (appContainer) appContainer.classList.add('hidden');
-            if (loginModal) loginModal.classList.remove('hidden');
         });
     }
 }
