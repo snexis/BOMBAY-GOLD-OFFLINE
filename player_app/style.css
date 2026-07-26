@@ -106,6 +106,8 @@ body, html {
 
 .single-grid, .triple-grid {
     display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(22, 1fr);
     grid-template-columns: repeat(10, 1fr);
     gap: 4px;
     width: 100%;
