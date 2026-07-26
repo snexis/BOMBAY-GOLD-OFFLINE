@@ -126,8 +126,8 @@ body, html {
 /* ৩. ঘরগুলোকে এক স্ক্রিনে আঁটানোর জন্য সাইজ অ্যাডজাস্টমেন্ট */
 .single-grid .grid-item, .triple-grid .grid-item {
     padding: 2px 1px; /* ওপর-নিচে প্যাডিং কমিয়ে দেওয়া হলো */
-    min-height: 22px; /* ঘরের উচ্চতা কমানো হলো যাতে ২২টা ঘর সহজে স্ক্রিনে ধরে */
-    font-size: 11px; /* ফন্ট সাইজ সামান্য কম্প্যাক্ট করা হলো */
+    min-height: 15px; /* ঘরের উচ্চতা কমানো হলো যাতে ২২টা ঘর সহজে স্ক্রিনে ধরে */
+    font-size: 18px; /* ফন্ট সাইজ সামান্য কম্প্যাক্ট করা হলো */
 }
 /* ঘরের ভেতরে লেখা বা ডিজাইন যাতে বাইরে না যায় */
 .single-grid .grid-item, .triple-grid .grid-item, .premium-gaming-card, .triple-cell, .single-cell {
