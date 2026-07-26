@@ -7,40 +7,49 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Network Disconnected Warning Overlay -->
-    <div id="network-overlay" class="network-overlay hidden">
-        <div class="network-card">
-            <h3>Network Disconnected!</h3>
-            <p>Please check your internet connection.</p>
-        </div>
+  <!-- Network Disconnected Warning Overlay -->
+<div id="network-overlay" class="network-overlay hidden">
+    <div class="network-card">
+        <h3>Network Disconnected!</h3>
+        <p>Please check your internet connection.</p>
     </div>
-   <!-- Login Modal Overlay -->
+</div>
+
+<!-- Login Modal Overlay -->
 <div id="login-modal" class="modal-overlay">
     <div class="login-card">
         <h2>A2Z BOMBAY</h2>
-         <div class="form-group">
-            <label for="user-id">User ID</label>
-            <input type="text" id="user-id" placeholder="Enter User ID" value="PLAYER_01">
-        </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <div class="password-field-wrap">
-                <input type="password" id="password" placeholder="Enter Password" value="******">
-                <button type="button" class="eye-btn" onclick="togglePasswordVisibility()">👁</button>
+        
+        <!-- Form matching your JS event listener -->
+        <form id="login-form">
+            <div class="form-group">
+                <label for="user-type">User Type</label>
+                <select id="user-type">
+                    <option value="player">Player</option>
+                    <option value="admin">Admin</option>
+                </select>
             </div>
-        </div>
 
-        <div class="form-row-check">
-            <input type="checkbox" id="remember-me">
-            <label for="remember-me">Remember Me</label>
-        </div>
+            <div class="form-group">
+                <label for="username">User ID</label>
+                <input type="text" id="username" placeholder="Enter User ID" value="PLAYER_01">
+            </div>
 
-        <button type="button" class="btn-submit" onclick="handleLogin()">LOGIN</button>
-    </div>
-</div>
-    <!-- Main Game Dashboard Container -->
-    <div id="app-container">
-        <!-- Dashboard and board elements will be loaded here by JavaScript -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-field-wrap">
+                    <input type="password" id="password" placeholder="Enter Password" value="******">
+                    <button type="button" class="eye-btn" id="toggle-password-btn">👁</button>
+                </div>
+            </div>
+
+            <div class="form-row-check">
+                <input type="checkbox" id="remember-me">
+                <label for="remember-me">Remember Me</label>
+            </div>
+
+            <button type="submit" class="btn-submit">LOGIN</button>
+        </form>
     </div>
     <script src="app.js"></script>
 </body>
