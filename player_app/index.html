@@ -1,144 +1,62 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A2Z BOMBAY</title>
+    <title>A2Z BOMBAY - Gaming Portal</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Network Offline Guard Overlay -->
-    <div id="network-offline-overlay" class="network-overlay hidden">
+    <!-- Network Disconnected Warning Overlay -->
+    <div id="network-overlay" class="network-overlay hidden">
         <div class="network-card">
-            <h3>ইন্টারনেট সংযোগ বিচ্ছিন্ন!</h3>
-            <p>অনুগ্রহ করে আপনার নেটওয়ার্ক কানেকশন চেক করুন।</p>
+            <h3>Network Disconnected!</h3>
+            <p>Please check your internet connection.</p>
         </div>
     </div>
 
-    <!-- Login Modal -->
+    <!-- Login Modal Overlay -->
     <div id="login-modal" class="modal-overlay">
         <div class="login-card">
-            <h2>A2Z BOMBAY LOGIN</h2>
-            <p>অ্যাডমিন বা প্লেয়ার আইডি নির্বাচন করুন</p>
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="user-type">ইউজার টাইপ:</label>
-                    <select id="user-type">
-                        <option value="demo">Demo Player (টেস্টিং মোড)</option>
-                        <option value="real">Real Player</option>
-                    </select>
+            <h2>A2Z BOMBAY</h2>
+            <p>International Gaming Portal</p>
+            
+            <div class="form-group">
+                <label for="user-type">User Type</label>
+                <select id="user-type">
+                    <option value="player">Player</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="user-id">User ID</label>
+                <input type="text" id="user-id" placeholder="Enter User ID" value="PLAYER_01">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-field-wrap">
+                    <input type="password" id="password" placeholder="Enter Password" value="******">
+                    <button type="button" class="eye-btn" onclick="togglePasswordVisibility()">👁</button>
                 </div>
-                <div class="form-group">
-                    <label for="username">ইউজার আইডি:</label>
-                    <input type="text" id="username" value="DEMO_PLAYER_01" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">পাসওয়ার্ড:</label>
-                    <input type="password" id="password" value="123456" required>
-                </div>
-                <button type="submit" class="btn-submit">লগইন করুন</button>
-            </form>
+            </div>
+
+            <div class="form-row-check">
+                <input type="checkbox" id="remember-me">
+                <label for="remember-me">Remember Me</label>
+            </div>
+
+            <button type="button" class="btn-submit" onclick="handleLogin()">LOGIN</button>
         </div>
     </div>
 
-    <!-- Main App Container -->
-    <div id="app-container" class="hidden">
-        <!-- Top Header Bar -->
-        <header class="top-header">
-            <div class="glow-text">A2Z BOMBAY</div>
-            
-            <div class="header-center-info">
-                <div class="live-result-box">
-                    <div class="result-title">LIVE RESULT</div>
-                    <div id="top-result-display" class="result-value">100 AXZ</div>
-                </div>
-                <div class="live-result-box">
-                    <div class="result-title">DRAW TIMER</div>
-                    <div id="draw-time-val" class="result-value" style="color: #00f0ff;">02:00</div>
-                </div>
-            </div>
-
-            <div class="user-info">
-                <div class="user-badge">ID: <strong id="user-id-text">DEMO_PLAYER_01</strong></div>
-                <div class="points-badge">PTS: <strong id="play-points">5,000</strong></div>
-                <button id="logout-btn" class="btn-logout">Logout</button>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Controllers Panel -->
-            <div class="control-panel">
-                <div class="mode-selector">
-                    <span class="label-text">MODE:</span>
-                    <button id="btn-mode-both" class="btn-mode active" onclick="switchViewMode('BOTH')">BOTH</button>
-                    <button id="btn-mode-word" class="btn-mode" onclick="switchViewMode('WORD')">WORD</button>
-                    <button id="btn-mode-digit" class="btn-mode" onclick="switchViewMode('DIGIT')">DIGIT</button>
-                </div>
-                <div class="label-text">DATE: <span id="current-date-display" style="color: #fff;"></span></div>
-            </div>
-
-            <!-- Single Board -->
-            <div class="board-section">
-                <div class="section-header">SINGLE BOARD (0-9)</div>
-                <div id="single-board-grid" class="single-grid"></div>
-            </div>
-
-            <!-- Triple Board -->
-            <div class="board-section">
-                <div class="triple-board-bar">
-                    <div class="section-header" style="margin-bottom:0;">TRIPLE 220 MATRIX</div>
-                    <div class="range-selector">
-                        <span class="label-text">RANGE:</span>
-                        <button id="btn-range-all" class="btn-range active" onclick="filterRange('ALL')">ALL</button>
-                        <button id="btn-range-a" class="btn-range" onclick="filterRange('A')">A (1-55)</button>
-                        <button id="btn-range-b" class="btn-range" onclick="filterRange('B')">B (56-110)</button>
-                        <button id="btn-range-c" class="btn-range" onclick="filterRange('C')">C (111-165)</button>
-                        <button id="btn-range-d" class="btn-range" onclick="filterRange('D')">D (166-220)</button>
-                        <button id="btn-range-jora" class="btn-range" onclick="filterRange('JORA')">JORA</button>
-                    </div>
-                </div>
-
-                <div class="triple-grid-header">
-                    <div class="col-head">1</div><div class="col-head">2</div><div class="col-head">3</div>
-                    <div class="col-head">4</div><div class="col-head">5</div><div class="col-head">6</div>
-                    <div class="col-head">7</div><div class="col-head">8</div><div class="col-head">9</div>
-                    <div class="col-head">0</div>
-                </div>
-
-                <div id="triple-board-grid" class="triple-grid"></div>
-            </div>
-
-            <!-- Betting & Summary Panel -->
-            <div class="bottom-bet-container">
-                <div class="bet-chip-section">
-                    <span class="label-text">CHIP:</span>
-                    <button class="btn-chip active" onclick="setBetAmount(10)">10</button>
-                    <button class="btn-chip" onclick="setBetAmount(50)">50</button>
-                    <button class="btn-chip" onclick="setBetAmount(100)">100</button>
-                    <button class="btn-chip" onclick="setBetAmount(500)">500</button>
-                    <input type="number" id="custom-bet-input" placeholder="Custom" oninput="setCustomAmount(this.value)">
-                </div>
-
-                <div class="selected-summary-box">
-                    <div class="summary-header">
-                        <span>SELECTED: <strong id="selected-count" style="color: #00f0ff;">0</strong></span>
-                        <span class="total-pts">TOTAL PTS: <strong id="total-bet-points">0</strong></span>
-                    </div>
-                    <div id="selected-items-display" class="selected-items-list">
-                        <span class="empty-msg">No items selected</span>
-                    </div>
-                    <div class="action-btn-group">
-                        <button class="btn-reset" onclick="clearAllSelections()">RESET</button>
-                        <button class="btn-submit-bet" onclick="submitBetAndPrint()">SUBMIT & PRINT</button>
-                    </div>
-                </div>
-            </div>
-        </main>
+    <!-- Main Game Dashboard Container -->
+    <div id="app-container">
+        <!-- Dashboard and board elements will be loaded here by JavaScript -->
     </div>
 
-    <!-- Script Import (Only Once At Bottom) -->
     <script src="app.js"></script>
 </body>
 </html>
