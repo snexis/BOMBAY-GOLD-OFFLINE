@@ -1,833 +1,144 @@
-<div id="app-container" class="hidden">
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2Z BOMBAY</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-    <!-- ========================= -->
-    <!-- Premium Dashboard Wrapper -->
-    <!-- ========================= -->
-    <div class="dashboard-wrapper">
+    <!-- Network Offline Guard Overlay -->
+    <div id="network-offline-overlay" class="network-overlay hidden">
+        <div class="network-card">
+            <h3>ইন্টারনেট সংযোগ বিচ্ছিন্ন!</h3>
+            <p>অনুগ্রহ করে আপনার নেটওয়ার্ক কানেকশন চেক করুন।</p>
+        </div>
+    </div>
 
-        <!-- LEFT SIDEBAR -->
-        <aside class="left-sidebar">
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal-overlay">
+        <div class="login-card">
+            <h2>A2Z BOMBAY LOGIN</h2>
+            <p>অ্যাডমিন বা প্লেয়ার আইডি নির্বাচন করুন</p>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="user-type">ইউজার টাইপ:</label>
+                    <select id="user-type">
+                        <option value="demo">Demo Player (টেস্টিং মোড)</option>
+                        <option value="real">Real Player</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="username">ইউজার আইডি:</label>
+                    <input type="text" id="username" value="DEMO_PLAYER_01" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">পাসওয়ার্ড:</label>
+                    <input type="password" id="password" value="123456" required>
+                </div>
+                <button type="submit" class="btn-submit">লগইন করুন</button>
+            </form>
+        </div>
+    </div>
 
-            <div class="sidebar-logo">
-                <h2>A2Z BOMBAY</h2>
-                <span>Premium Edition</span>
+    <!-- Main App Container -->
+    <div id="app-container" class="hidden">
+        <!-- Top Header Bar -->
+        <header class="top-header">
+            <div class="glow-text">A2Z BOMBAY</div>
+            
+            <div class="header-center-info">
+                <div class="live-result-box">
+                    <div class="result-title">LIVE RESULT</div>
+                    <div id="top-result-display" class="result-value">100 AXZ</div>
+                </div>
+                <div class="live-result-box">
+                    <div class="result-title">DRAW TIMER</div>
+                    <div id="draw-time-val" class="result-value" style="color: #00f0ff;">02:00</div>
+                </div>
             </div>
 
-            <div class="sidebar-profile">
+            <div class="user-info">
+                <div class="user-badge">ID: <strong id="user-id-text">DEMO_PLAYER_01</strong></div>
+                <div class="points-badge">PTS: <strong id="play-points">5,000</strong></div>
+                <button id="logout-btn" class="btn-logout">Logout</button>
+            </div>
+        </header>
 
-                <div class="avatar">
-                    <img id="user-avatar-img" src="avatar.svg">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Controllers Panel -->
+            <div class="control-panel">
+                <div class="mode-selector">
+                    <span class="label-text">MODE:</span>
+                    <button id="btn-mode-both" class="btn-mode active" onclick="switchViewMode('BOTH')">BOTH</button>
+                    <button id="btn-mode-word" class="btn-mode" onclick="switchViewMode('WORD')">WORD</button>
+                    <button id="btn-mode-digit" class="btn-mode" onclick="switchViewMode('DIGIT')">DIGIT</button>
+                </div>
+                <div class="label-text">DATE: <span id="current-date-display" style="color: #fff;"></span></div>
+            </div>
+
+            <!-- Single Board -->
+            <div class="board-section">
+                <div class="section-header">SINGLE BOARD (0-9)</div>
+                <div id="single-board-grid" class="single-grid"></div>
+            </div>
+
+            <!-- Triple Board -->
+            <div class="board-section">
+                <div class="triple-board-bar">
+                    <div class="section-header" style="margin-bottom:0;">TRIPLE 220 MATRIX</div>
+                    <div class="range-selector">
+                        <span class="label-text">RANGE:</span>
+                        <button id="btn-range-all" class="btn-range active" onclick="filterRange('ALL')">ALL</button>
+                        <button id="btn-range-a" class="btn-range" onclick="filterRange('A')">A (1-55)</button>
+                        <button id="btn-range-b" class="btn-range" onclick="filterRange('B')">B (56-110)</button>
+                        <button id="btn-range-c" class="btn-range" onclick="filterRange('C')">C (111-165)</button>
+                        <button id="btn-range-d" class="btn-range" onclick="filterRange('D')">D (166-220)</button>
+                        <button id="btn-range-jora" class="btn-range" onclick="filterRange('JORA')">JORA</button>
+                    </div>
                 </div>
 
-                <div class="profile-info">
-                    <h4 id="drawer-user-id">DEMO_PLAYER_01</h4>
-                    <small>Player Account</small>
+                <div class="triple-grid-header">
+                    <div class="col-head">1</div><div class="col-head">2</div><div class="col-head">3</div>
+                    <div class="col-head">4</div><div class="col-head">5</div><div class="col-head">6</div>
+                    <div class="col-head">7</div><div class="col-head">8</div><div class="col-head">9</div>
+                    <div class="col-head">0</div>
                 </div>
 
+                <div id="triple-board-grid" class="triple-grid"></div>
             </div>
 
-            <nav class="sidebar-menu">
-
-                <button onclick="toggleDrawer()">
-                    Dashboard
-                </button>
-
-                <button onclick="openTicketHistory()">
-                    Ticket History
-                </button>
-
-                <button>
-                    Live Result
-                </button>
-
-                <button>
-                    Reports
-                </button>
-
-                <button>
-                    Settings
-                </button>
-
-            </nav>
-
-        </aside>
-
-        <!-- RIGHT MAIN AREA -->
-        <div class="dashboard-main">
-
-            <!-- Top Header -->
-            <header class="top-header">
-
-                <!-- এখানে আপনার বর্তমান Top Header-এর id গুলো থাকবে -->
-
-            </header>
-
-            <!-- Main Content -->
-            <main class="dashboard-content">
-
-                <!-- Single Board -->
-
-                <!-- Triple Board -->
-
-                <!-- Betting Panel -->
-
-            </main>
-
-        </div>
-
-    </div>
-    <!-- =======================================================
-     PREMIUM TOP HEADER (PART 1B)
-======================================================= -->
-
-<header class="top-header">
-
-    <!-- LEFT -->
-
-    <div class="header-left">
-
-        <button class="btn-menu-toggle"
-                onclick="toggleDrawer()">
-            ☰
-        </button>
-
-        <div class="logo-area">
-
-            <h2>A2Z BOMBAY</h2>
-
-            <span>
-                Premium Gaming Dashboard
-            </span>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- CENTER -->
-
-    <div class="header-center">
-
-        <div class="header-card live-card">
-
-            <span class="card-title">
-                LIVE RESULT
-            </span>
-
-            <h2 id="top-result-display">
-                ---
-            </h2>
-
-        </div>
-
-
-
-        <div class="header-card timer-card">
-
-            <span class="card-title">
-                DRAW TIMER
-            </span>
-
-            <h2 id="draw-time-val">
-                02:00
-            </h2>
-
-        </div>
-
-
-
-        <div class="header-card status-card">
-
-            <span class="card-title">
-                STATUS
-            </span>
-
-            <h2 class="online-status">
-                ● ONLINE
-            </h2>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- RIGHT -->
-
-    <div class="header-right">
-
-        <button
-            id="btn-toggle-sound"
-            class="header-icon-btn active"
-            onclick="toggleSound()">
-
-            🔊
-
-        </button>
-
-
-
-        <button
-            id="btn-toggle-print"
-            class="header-icon-btn active"
-            onclick="togglePrint()">
-
-            🖨
-
-        </button>
-
-
-
-        <div class="user-box">
-
-            <div class="user-title">
-
-                PLAYER ID
-
+            <!-- Betting & Summary Panel -->
+            <div class="bottom-bet-container">
+                <div class="bet-chip-section">
+                    <span class="label-text">CHIP:</span>
+                    <button class="btn-chip active" onclick="setBetAmount(10)">10</button>
+                    <button class="btn-chip" onclick="setBetAmount(50)">50</button>
+                    <button class="btn-chip" onclick="setBetAmount(100)">100</button>
+                    <button class="btn-chip" onclick="setBetAmount(500)">500</button>
+                    <input type="number" id="custom-bet-input" placeholder="Custom" oninput="setCustomAmount(this.value)">
+                </div>
+
+                <div class="selected-summary-box">
+                    <div class="summary-header">
+                        <span>SELECTED: <strong id="selected-count" style="color: #00f0ff;">0</strong></span>
+                        <span class="total-pts">TOTAL PTS: <strong id="total-bet-points">0</strong></span>
+                    </div>
+                    <div id="selected-items-display" class="selected-items-list">
+                        <span class="empty-msg">No items selected</span>
+                    </div>
+                    <div class="action-btn-group">
+                        <button class="btn-reset" onclick="clearAllSelections()">RESET</button>
+                        <button class="btn-submit-bet" onclick="submitBetAndPrint()">SUBMIT & PRINT</button>
+                    </div>
+                </div>
             </div>
-
-            <strong id="user-id-text">
-
-                DEMO_PLAYER_01
-
-            </strong>
-
-        </div>
-
-
-
-        <div class="balance-box">
-
-            <div class="balance-title">
-
-                PLAY POINTS
-
-            </div>
-
-            <strong id="play-points">
-
-                5000
-
-            </strong>
-
-        </div>
-        <button
-            id="logout-btn"
-            class="logout-btn">
-
-            Logout
-
-        </button>
-
+        </main>
     </div>
 
-</header>
-    <!-- ==========================================================
-     PART 1C-1
-     PREMIUM CONTROL PANEL
-=========================================================== -->
-
-<section class="control-panel">
-
-    <!-- LEFT SIDE -->
-
-    <div class="control-left">
-
-        <div class="control-title">
-
-            <h3>GAME CONTROL CENTER</h3>
-
-            <small>
-                Professional Dashboard
-            </small>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- CENTER -->
-
-    <div class="control-center">
-
-        <div class="mode-box">
-
-            <span class="mode-label">
-
-                VIEW MODE
-
-            </span>
-
-            <div class="mode-buttons">
-
-                <button
-                    id="btn-mode-both"
-                    class="btn-mode active"
-                    onclick="switchViewMode('BOTH')">
-
-                    BOTH
-
-                </button>
-
-
-
-                <button
-                    id="btn-mode-word"
-                    class="btn-mode"
-                    onclick="switchViewMode('WORD')">
-
-                    WORD
-
-                </button>
-
-
-
-                <button
-                    id="btn-mode-digit"
-                    class="btn-mode"
-                    onclick="switchViewMode('DIGIT')">
-
-                    DIGIT
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- RIGHT -->
-
-    <div class="control-right">
-
-        <div class="date-card">
-
-            <span>
-
-                DATE & TIME
-
-            </span>
-
-            <strong
-                id="current-date-display">
-
-            </strong>
-
-        </div>
-
-
-
-        <div class="server-card">
-
-            <span>
-
-                SERVER
-
-            </span>
-
-            <strong class="server-online">
-
-                ● ONLINE
-
-            </strong>
-
-        </div>
-
-
-
-        <div class="security-card">
-
-            <span>
-
-                SECURITY
-
-            </span>
-
-            <strong>
-
-                AES-256
-
-            </strong>
-
-        </div>
-
-    </div>
-
-</section>
-
-</div>
-<!-- ==========================================================
-     PART 1C-2
-     PREMIUM SINGLE BOARD
-========================================================== -->
-
-<section class="board-section premium-single-board">
-
-    <!-- Header -->
-
-    <div class="board-header">
-
-        <div class="board-title">
-
-            <h2>SINGLE BOARD</h2>
-
-            <span>
-                Numbers 0 - 9
-            </span>
-
-        </div>
-
-
-
-        <div class="board-status">
-
-            <div class="status-item">
-
-                <span class="status-dot"></span>
-
-                ACTIVE
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-
-
-    <!-- Information Cards -->
-
-    <div class="board-info-row">
-
-        <div class="info-card">
-
-            <small>GAME</small>
-
-            <strong>SINGLE</strong>
-
-        </div>
-
-
-
-        <div class="info-card">
-
-            <small>SELECTION</small>
-
-            <strong>0 - 9</strong>
-
-        </div>
-
-
-
-        <div class="info-card">
-
-            <small>WIN TYPE</small>
-
-            <strong>DIRECT</strong>
-
-        </div>
-
-
-
-        <div class="info-card">
-
-            <small>STATUS</small>
-
-            <strong class="online-text">
-
-                OPEN
-
-            </strong>
-
-        </div>
-
-    </div>
-
-
-
-
-
-    <!-- Dynamic Grid -->
-
-    <div class="single-board-wrapper">
-
-        <div
-            id="single-board-grid"
-            class="single-grid">
-
-            <!--
-            JavaScript এখানেই 0-9 Cell তৈরি করবে।
-            কোন HTML এখানে লিখবেন না।
-            -->
-
-        </div>
-
-    </div>
-
-
-
-
-
-    <!-- Footer -->
-
-    <div class="board-footer">
-
-        <div class="footer-item">
-
-            ✔ Left Click = Add Bet
-
-        </div>
-
-
-
-        <div class="footer-item">
-
-            ✔ Right Click = Remove Bet
-
-        </div>
-
-
-
-        <div class="footer-item">
-
-            ✔ Dynamic Selection
-
-        </div>
-
-    </div>
-
-</section>
-<!-- ==========================================================
-     PART 1C-3
-     PREMIUM TRIPLE 220 MATRIX
-========================================================== -->
-
-<section class="board-section premium-triple-board">
-
-    <!-- ========================= -->
-    <!-- BOARD HEADER -->
-    <!-- ========================= -->
-
-    <div class="board-header">
-
-        <div class="board-title">
-
-            <h2>TRIPLE 220 MATRIX</h2>
-
-            <span>
-                Professional Matrix Board
-            </span>
-
-        </div>
-
-
-
-        <div class="board-live-status">
-
-            <span class="live-dot"></span>
-
-            LIVE
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ========================= -->
-    <!-- RANGE FILTER -->
-    <!-- ========================= -->
-
-    <div class="range-selector">
-
-        <span class="range-label">
-
-            RANGE
-
-        </span>
-
-
-
-        <button
-        id="btn-range-all"
-        class="btn-range active"
-        onclick="filterRange('ALL')">
-
-        ALL
-
-        </button>
-
-
-
-        <button
-        id="btn-range-a"
-        class="btn-range"
-        onclick="filterRange('A')">
-
-        A
-
-        </button>
-
-
-
-        <button
-        id="btn-range-b"
-        class="btn-range"
-        onclick="filterRange('B')">
-
-        B
-
-        </button>
-
-
-
-        <button
-        id="btn-range-c"
-        class="btn-range"
-        onclick="filterRange('C')">
-
-        C
-
-        </button>
-
-
-
-        <button
-        id="btn-range-d"
-        class="btn-range"
-        onclick="filterRange('D')">
-
-        D
-
-        </button>
-
-
-
-        <button
-        id="btn-range-jora"
-        class="btn-range"
-        onclick="filterRange('JORA')">
-
-        JORA
-
-        </button>
-
-    </div>
-
-
-
-    <!-- ========================= -->
-    <!-- COLUMN HEADER -->
-    <!-- ========================= -->
-
-    <div class="triple-grid-header">
-
-        <div class="col-head">1</div>
-        <div class="col-head">2</div>
-        <div class="col-head">3</div>
-        <div class="col-head">4</div>
-        <div class="col-head">5</div>
-
-        <div class="col-head">6</div>
-        <div class="col-head">7</div>
-        <div class="col-head">8</div>
-        <div class="col-head">9</div>
-        <div class="col-head">0</div>
-
-    </div>
-
-
-
-    <!-- ========================= -->
-    <!-- DYNAMIC MATRIX -->
-    <!-- ========================= -->
-
-    <div class="matrix-wrapper">
-
-        <div
-        id="triple-board-grid"
-        class="triple-grid">
-
-        <!--
-        এখানে JavaScript
-        220 Cell নিজে তৈরি করবে।
-
-        কোন Cell HTML লিখবেন না।
-        -->
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ========================= -->
-    <!-- FOOTER -->
-    <!-- ========================= -->
-
-    <div class="matrix-footer">
-
-        <div class="matrix-info">
-
-            TOTAL MATRIX :
-            <strong>
-
-            220
-
-            </strong>
-
-        </div>
-
-
-
-        <div class="matrix-info">
-
-            MODE :
-
-            <strong>
-
-            AUTO
-
-            </strong>
-
-        </div>
-
-
-
-        <div class="matrix-info">
-
-            STATUS :
-
-            <strong class="online">
-
-            ACTIVE
-
-            </strong>
-
-        </div>
-
-    </div>
-
-</section>
-<!-- ==========================================================
-     PART 1C-4
-     PREMIUM BETTING PANEL
-========================================================== -->
-
-<aside class="right-sidebar">
-
-    <!-- BET POINT -->
-
-    <div class="bet-section-box">
-
-        <h3>BET POINT</h3>
-
-        <input
-            id="bet-point-input"
-            type="number"
-            placeholder="Enter Point">
-
-    </div>
-
-
-
-    <!-- BET TYPE -->
-
-    <div class="bet-section-box">
-
-        <h3>BET TYPE</h3>
-
-        <div class="bet-type-list">
-
-            <button class="bet-type active">Single</button>
-
-            <button class="bet-type">Triple</button>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- SELECTED NUMBERS -->
-
-    <div class="bet-section-box">
-
-        <h3>SELECTED NUMBERS</h3>
-
-        <div
-            id="selected-list"
-            class="selected-list">
-
-            <!-- JavaScript এখানেই Item যোগ করবে -->
-
-        </div>
-
-    </div>
-
-
-
-    <!-- SUMMARY -->
-
-    <div class="bet-section-box">
-
-        <h3>SUMMARY</h3>
-
-        <div class="summary-row">
-
-            <span>Total Bet</span>
-
-            <strong id="total-bets">
-
-                0
-
-            </strong>
-
-        </div>
-
-        <div class="summary-row">
-
-            <span>Total Point</span>
-
-            <strong id="total-points">
-
-                0
-
-            </strong>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ACTION BUTTON -->
-
-    <div class="bet-section-box">
-
-        <button
-            id="submit-bet-btn"
-            class="primary-btn">
-
-            SUBMIT BET
-
-        </button>
-
-        <button
-            id="clear-bet-btn"
-            class="danger-btn">
-
-            CLEAR ALL
-
-        </button>
-
-    </div>
-
-</aside>
+    <!-- Script Import (Only Once At Bottom) -->
+    <script src="app.js"></script>
+</body>
+</html>
