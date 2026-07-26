@@ -1,5 +1,5 @@
 /* ==========================================================
-   A2Z BOMBAY - ABSOLUTE FIXED GRID LAYOUT CSS
+   A2Z BOMBAY - EXACT REFERENCE MATCHED BOXED UI CSS
    ========================================================== */
 
 * {
@@ -9,113 +9,172 @@
 }
 
 body, html {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #070b12;
+    background-color: #030712;
     color: #e2e8f0;
-    overflow: hidden; /* স্ক্রলবার সম্পূর্ণরূপে বন্ধ করার জন্য */
+    overflow: hidden; /* স্ক্রলবার বাদ দিয়ে এক স্ক্রিনে ফিক্স রাখার জন্য */
 }
 
-/* মেইন অ্যাপ কন্টেইনার - এক স্ক্রিনে ফিক্স রাখার জন্য */
+/* পুরো অ্যাপ কন্টেইনার */
 #app-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
     width: 100vw;
+    height: 100vh;
     padding: 6px;
     gap: 6px;
-    background: #0b0f19;
-    border: 1px solid rgba(255, 215, 0, 0.3);
+    background: #060a13;
 }
 
-/* টপ হেডার বার - প্রিমিয়াম ইন্টারন্যাশনাল বক্স লুক */
+/* ==========================================================
+   ১. টপ হেডার সেকশন (বক্স স্টাইল)
+   ========================================================== */
 .top-header {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(135deg, #0f172a 0%, #1f2937 100%);
-    padding: 6px 10px;
-    border-radius: 6px;
-    border-bottom: 2px solid #ffd700;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-    gap: 6px;
+    background: #0b1329;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    height: 48px;
+    flex-shrink: 0;
 }
 
-.header-left, .header-center-info, .user-info {
+/* হেডারের ভেতরের প্রফাইল ও ব্যালেন্স বক্সগুলো */
+.top-header .profile-box, 
+.top-header .balance-box,
+.top-header > div {
+    background: #0f1c3f;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    padding: 4px 10px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     gap: 6px;
+    font-size: 12px;
 }
 
-.glow-text {
-    color: #ffd700;
-    font-size: 14px;
-    font-weight: bold;
+/* ==========================================================
+   ২. মেইন বডি: সাইড-বাই-সাইড ৩ কলাম লেআউট
+   ========================================================== */
+.dashboard-body {
+    display: flex;
+    width: 100%;
+    flex: 1;
+    gap: 6px;
+    overflow: hidden;
 }
 
-/* মেইন কন্টেন্ট এলাকা */
-.main-content {
+/* --- বাঁপাশের নেভিগেশন সাইডবার বক্স --- */
+.left-sidebar {
+    width: 200px;
+    background: #0b1329;
+    border-radius: 8px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+}
+
+/* বাঁপাশের প্রতিটি মেনু অপশন বা বাটন বক্স */
+.left-sidebar button, .left-sidebar .menu-item {
+    background: #0f1c3f;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+    padding: 7px 10px;
+    border-radius: 6px;
+    text-align: left;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.left-sidebar button:hover, .left-sidebar .menu-item.active {
+    background: #1e3a8a;
+    border-color: #3b82f6;
+    color: #fff;
+}
+
+/* --- মাঝের মেইন বোর্ড কন্টেইনার --- */
+.middle-board-container {
+    flex: 1;
+    background: #0f172a;
+    border-radius: 8px;
+    padding: 6px;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    width: 100%;
-    flex: 1;
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    overflow: hidden;
 }
 
-/* কন্ট্রোল প্যানেল */
+/* কন্ট্রোল প্যানেল (প্রিন্ট, লাইভ, ভিউ বাই বাটন) */
 .control-panel {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #111827;
-    padding: 4px 10px;
-    border-radius: 4px;
+    background: #0b1329;
+    padding: 4px 8px;
+    border-radius: 6px;
     border: 1px solid rgba(255, 215, 0, 0.2);
 }
 
-/* বোর্ড সেকশন */
+/* বোর্ড সেকশন বক্স */
 .board-section {
-    background: #0f172a;
+    background: #0b1329;
     border-radius: 6px;
     padding: 6px;
-    border: 1px solid rgba(255, 215, 0, 0.2);
+    border: 1px solid rgba(255, 215, 0, 0.15);
     width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.section-header {
-    font-size: 11px;
-    font-weight: bold;
-    color: #ffd700;
-    margin-bottom: 4px;
-    text-transform: uppercase;
+/* --- ডানপাশের বেটিং প্যানেল বক্স --- */
+.right-sidebar {
+    width: 260px;
+    background: #0b1329;
+    border-radius: 8px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+    overflow-y: auto;
 }
 
-/* ট্রিপل বোর্ড হেডার এবং গ্রিড ফিক্স (অবশ্যই ১০ কলাম রাখতে হবে) */
-.triple-grid-header {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    background: #1e293b;
-    text-align: center;
-    font-size: 11px;
-    font-weight: bold;
-    color: #ffd700;
-    padding: 3px 0;
-    border-radius: 4px;
-    margin-bottom: 3px;
+/* ডানপাশের প্যানেলের ভেতরের প্রতিটি সেকশন বক্স (যেমন: Number Range, Bet Type ইত্যাদি) */
+.bet-section-box, .right-sidebar > div {
+    background: #0f1c3f;
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    border-radius: 6px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-/* ১. ওপরের সিঙ্গেল বোর্ডের লেআউট */
+/* ==========================================================
+   ৩. গ্রিড এবং ঘরের স্টাইল (মান অপরিবর্তিত রেখে পারフェক্ট ফিট)
+   ========================================================== */
 .single-grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 2px;
     width: 100%;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
-/* ২. নিচের ট্রিপল বোর্ডের লেআউট (লম্বালম্বি ২২ লাইন) */
 .triple-grid {
     display: grid;
     grid-auto-flow: column;
@@ -123,24 +182,22 @@ body, html {
     grid-template-columns: repeat(10, 1fr);
     gap: 2px;
     width: 100%;
+    flex: 1;
 }
 
-/* ৩. ঘরের ভেতরের লেখা ও ডিজাইন - এক স্ক্রিনে পারফেক্ট ফিট হওয়ার জন্য অপ্টিমাইজড */
-.single-grid .grid-item, .triple-grid .grid-item, .premium-gaming-card, .triple-cell, .single-cell {
+.single-grid .grid-item, .triple-grid .grid-item {
     background: linear-gradient(145deg, #1e293b, #0f172a);
-    border: 1px solid rgba(255, 215, 0, 0.25);
+    border: 1px solid rgba(255, 215, 0, 0.2);
     border-radius: 3px;
     text-align: center;
     padding: 1px;
     font-size: 11px;
     color: #fff;
-    cursor: pointer;
-    min-height: 20px;
+    min-height: 18px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    word-break: break-all;
 }
 
 .single-grid .grid-item:hover, .triple-grid .grid-item:hover {
@@ -148,53 +205,8 @@ body, html {
     background: #273548;
 }
 
-/* বটম বেটিং প্যানেল */
-.bottom-bet-container {
+/* বটম বা অ্যাকশন বাটন সেকশন */
+.action-btn-group, .bottom-action-box {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    background: #111827;
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 215, 0, 0.25);
-    gap: 6px;
-    align-items: center;
-}
-
-.bet-chip-section, .selected-summary-box, .action-btn-group {
-    display: flex;
-    align-items: center;
     gap: 4px;
-}
-
-.btn-chip, .btn-mode, .btn-range {
-    background: #1e293b;
-    border: 1px solid #334155;
-    color: #e2e8f0;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    cursor: pointer;
-}
-
-.btn-chip.active, .btn-mode.active, .btn-range.active {
-    background: #ffd700;
-    color: #000;
-    font-weight: bold;
-    border-color: #ffd700;
-}
-
-.btn-submit-bet {
-    background: linear-gradient(135deg, #ffd700 0%, #cca100 100%);
-    color: #000;
-    border: none;
-    padding: 5px 12px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.hidden {
-    display: none !important;
 }
