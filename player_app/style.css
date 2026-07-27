@@ -253,26 +253,26 @@ body {
 
 .live-result-box strong {
     color: #ffd700;
-    font-size: 10px;
-    margin-left: 8px;
+    font-size: 12px;
+    margin-left:10px;
 }
 
 .draw-timer-box strong {
     color: #00ffcc;
-    font-size: 18px;
-    margin-left: 8px;
+    font-size: 20px;
+    margin-left: 10px;
 }
 
 .recent-results-section {
     background: #151515;
     border: 1px solid #222;
     border-radius: 10px;
-    padding: 10px 15px;
+    padding:18px 25px;
     margin-bottom: 20px;
 }
 
-.recent-results-section h2 {
-    font-size: 13px;
+.recent-results-section h4{
+    font-size: 15px;
     color: #888;
     margin-bottom: 8px;
     text-transform: uppercase;
