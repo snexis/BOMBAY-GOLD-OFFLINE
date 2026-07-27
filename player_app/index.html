@@ -3,56 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A2Z BOMBAY - Gaming Portal</title>
+    <title>A2Z BOMBAY - Live Gaming & Announcement System</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Network Disconnected Warning Overlay -->
-<div id="network-overlay" class="network-overlay hidden">
-    <div class="network-card">
-        <h3>Network Disconnected!</h3>
-        <p>Please check your internet connection.</p>
+
+    <!-- Network Offline Overlay -->
+    <div id="network-offline-overlay" class="hidden">
+        <div class="offline-box">
+            <h2>Connection Lost</h2>
+            <p>Please check your internet connection...</p>
+        </div>
     </div>
-</div>
 
-<!-- Login Modal Overlay -->
-<div id="login-modal" class="modal-overlay">
-    <div class="login-card">
-        <h2>A2Z BOMBAY</h2>
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal-overlay">
+        <div class="login-card premium-gaming-card">
+            <h2>A2Z BOMBAY PORTAL</h2>
+            <p>Enter your credentials to start playing</p>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">User ID / Terminal Name</label>
+                    <input type="text" id="username" placeholder="e.g. DEMO_PLAYER_01" value="DEMO_PLAYER_01" required>
+                </div>
+                <button type="submit" class="btn-primary">Login / Enter Game</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App Container (Hidden until login) -->
+    <div id="app-container" class="hidden" style="display: none;">
         
-        <!-- Form matching your JS event listener -->
-        <form id="login-form">
-            <div class="form-group">
-                <label for="user-type">User Type</label>
-                <select id="user-type">
-                    <option value="player">Player</option>
-                    <option value="admin">Admin</option>
-                </select>
+        <!-- Top Navigation Bar -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="btn-icon" onclick="toggleDrawer()">&#9776;</button>
+                <h1 class="brand-title">A2Z BOMBAY</h1>
             </div>
-
-            <div class="form-group">
-                <label for="username">User ID</label>
-                <input type="text" id="username" placeholder="Enter User ID" value="PLAYER_01">
+            <div class="header-center">
+                <div id="current-date-display">--:-- | --/--/----</div>
             </div>
+            <div class="header-right">
+                <div class="balance-display">
+                    <span>Points: </span>
+                    <strong id="play-points">5000</strong>
+                </div>
+                <button id="btn-toggle-sound" class="btn-control active" onclick="toggleSound()">🔊</button>
+                <button id="btn-toggle-print" class="btn-control active" onclick="togglePrint()">🖨️</button>
+                <button id="logout-btn" class="btn-danger">Logout</button>
+            </div>
+        </header>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <div class="password-field-wrap">
-                    <input type="password" id="password" placeholder="Enter Password" value="******">
-                    <button type="button" class="eye-btn" id="toggle-password-btn">👁</button>
+        <!-- Side Drawer -->
+        <aside id="side-drawer" class="side-drawer">
+            <div class="drawer-header">
+                <h3>Terminal Info</h3>
+                <button class="close-drawer" onclick="toggleDrawer()">&times;</button>
+            </div>
+            <div class="drawer-body">
+                <p>User: <strong id="drawer-user-id">---</strong></p>
+                <hr>
+                <button class="btn-menu-item" onclick="openTicketHistory()">📋 Ticket History & Status</button>
+                <div class="barcode-checker-section" style="margin-top: 20px;">
+                    <h4>Check Ticket Barcode</h4>
+                    <input type="text" id="barcode-check-input" placeholder="Enter Ticket ID">
+                    <button class="btn-secondary" onclick="checkTicketBarcode()">Verify Ticket</button>
                 </div>
             </div>
+        </aside>
 
-            <div class="form-row-check">
-                <input type="checkbox" id="remember-me">
-                <label for="remember-me">Remember Me</label>
+        <!-- Game Lock Banner -->
+        <div id="game-lock-banner" class="game-lock-banner hidden">
+            🔒 GAME IS LOCKED FOR DRAW CALCULATION 🔒
+        </div>
+
+        <!-- Main Dashboard Layout -->
+        <main class="dashboard-main">
+            
+            <!-- Top Live Result & Timer Strip -->
+            <section class="live-strip">
+                <div class="live-result-box">
+                    <span>Latest Result:</span>
+                    <strong id="top-result-display">---</strong>
+                </div>
+                <div class="draw-timer-box">
+                    <span>Next Draw In:</span>
+                    <strong id="draw-time-val">02:00</strong>
+                </div>
+            </section>
+
+            <!-- Recent Results Stripe -->
+            <section class="recent-results-section">
+                <h3>Recent Draws</h3>
+                <div id="recent-results-stripe" class="recent-stripe-container">
+                    <!-- Dynamic Items Render Here -->
+                </div>
+            </section>
+
+            <!-- Mode Selector -->
+            <section class="mode-selector">
+                <button id="btn-mode-both" class="btn-mode active" onclick="switchViewMode('BOTH')">Both (Digit & Word)</button>
+                <button id="btn-mode-word" class="btn-mode" onclick="switchViewMode('WORD')">Word Only</button>
+                <button id="btn-mode-digit" class="btn-mode" onclick="switchViewMode('DIGIT')">Digit Only</button>
+            </section>
+
+            <!-- Single Board Section (0-9) -->
+            <section class="board-section">
+                <h3>Single Board (0-9)</h3>
+                <div id="single-board-grid" class="single-grid">
+                    <!-- Dynamic Single Cells Render Here -->
+                </div>
+            </section>
+
+            <!-- Range & Filter Selector for Triple -->
+            <section class="range-selector">
+                <button id="btn-range-all" class="btn-range active" onclick="filterRange('ALL')">All</button>
+                <button id="btn-range-a" class="btn-range" onclick="filterRange('A')">Range A</button>
+                <button id="btn-range-b" class="btn-range" onclick="filterRange('B')">Range B</button>
+                <button id="btn-range-c" class="btn-range" onclick="filterRange('C')">Range C</button>
+                <button id="btn-range-d" class="btn-range" onclick="filterRange('D')">Range D</button>
+                <button id="btn-range-jora" class="btn-range" onclick="filterRange('JORA')">Jora</button>
+            </section>
+
+            <!-- Triple Board Section (220 Matrix) -->
+            <section class="board-section">
+                <h3>Triple Board (220 Matrix)</h3>
+                <div id="triple-board-grid" class="triple-grid">
+                    <!-- Dynamic Triple Cells Render Here -->
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Betting & Cart Summary Panel -->
+        <footer class="betting-footer-panel">
+            <div class="bet-chip-section">
+                <button class="btn-chip active" onclick="setBetAmount(10)">10 PTS</button>
+                <button class="btn-chip" onclick="setBetAmount(50)">50 PTS</button>
+                <button class="btn-chip" onclick="setBetAmount(100)">100 PTS</button>
+                <button class="btn-chip" onclick="setBetAmount(500)">500 PTS</button>
+                <input type="number" id="custom-bet-input" placeholder="Custom" oninput="setCustomAmount(this.value)">
             </div>
 
-            <button type="submit" class="btn-submit">LOGIN</button>
-        </form>
-    </div>
-</div> <!-- এই ক্লোজিং ট্যাগটি যোগ করা হয়েছে -->
+            <div class="cart-summary-bar">
+                <div class="cart-info">
+                    <span>Items: <strong id="selected-count">0</strong></span>
+                    <span>Total Cost: <strong id="total-bet-points">0</strong> PTS</span>
+                </div>
+                <div id="selected-items-display" class="selected-items-scroll">
+                    <span class="empty-msg">No items selected</span>
+                </div>
+                <div class="cart-actions">
+                    <button class="btn-danger-light" onclick="clearAllSelections()">Clear All</button>
+                    <button class="btn-success" onclick="submitBetAndPrint()">Submit & Print</button>
+                </div>
+            </div>
+        </footer>
 
+    </div>
+
+    <!-- Ticket History Modal -->
+    <div id="history-modal" class="modal-overlay hidden">
+        <div class="modal-card premium-gaming-card">
+            <div class="modal-header">
+                <h3>Ticket History & Status</h3>
+                <button class="close-modal" onclick="closeTicketHistory()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Points</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        <!-- Dynamic History Rows Render Here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Silent Thermal Print Frame -->
+    <iframe id="silent-print-frame" style="display: none;"></iframe>
+
+    <!-- Load App Logic -->
     <script src="app.js"></script>
 </body>
 </html>
