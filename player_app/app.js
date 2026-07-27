@@ -87,6 +87,7 @@ function updateLiveClock() {
     if (clockElement) {
         clockElement.innerText = `${dateStr} | ${timeStr}`;
     }
+    updateDateDisplay();
 }
 
 function checkMidnightReset() {
@@ -102,7 +103,9 @@ function updateDateDisplay() {
     const dateStr = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const timeStr = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const dateEl = document.getElementById('current-date-display');
-    if (dateEl) dateEl.innerText = `${dateStr} | ${timeStr}`;
+    if (dateEl) {
+        dateEl.innerText = `${dateStr} | ${timeStr}`;
+    }
 }
 
 function fetchDeviceIP() {
@@ -355,6 +358,9 @@ function renderSingleBoard() {
     if (!gridContainer) return;
 
     gridContainer.innerHTML = '';
+    gridContainer.style.display = 'grid';
+    gridContainer.style.gridTemplateColumns = 'repeat(10, minmax(0, 1fr))';
+    gridContainer.style.gap = '8px';
 
     SingleData.forEach(item => {
         const cell = document.createElement('div');
@@ -487,6 +493,10 @@ function renderTripleBoard() {
     if (!gridContainer) return;
 
     gridContainer.innerHTML = '';
+    gridContainer.style.display = 'grid';
+    gridContainer.style.gridTemplateColumns = 'repeat(10, minmax(0, 1fr))';
+    gridContainer.style.gap = '8px';
+
     const filteredItems = getFilteredTripleData();
 
     filteredItems.forEach(item => {
@@ -535,6 +545,9 @@ function renderJuriBoard() {
     if (!juriGrid) return;
 
     juriGrid.innerHTML = '';
+    juriGrid.style.display = 'grid';
+    juriGrid.style.gridTemplateColumns = 'repeat(10, minmax(0, 1fr))';
+    juriGrid.style.gap = '8px';
 
     for (let i = 0; i < 100; i++) {
         let numStr = i < 10 ? '0' + i : i.toString();
