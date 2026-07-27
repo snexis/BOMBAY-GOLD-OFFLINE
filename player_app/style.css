@@ -216,7 +216,6 @@ body {
     box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
 }
 
-
 /* ==========================================================
    MAIN DASHBOARD 3-COLUMN LAYOUT STRUCTURE
    ========================================================== */
@@ -426,7 +425,6 @@ body {
     cursor: pointer;
 }
 
-
 /* ==========================================================
    2. CENTER MAIN GAME CONTENT
    ========================================================== */
@@ -612,6 +610,7 @@ body {
     cursor: pointer;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
     transition: all 0.15s;
+    position: relative;
 }
 
 .single-card:hover, .single-card.selected {
@@ -670,6 +669,7 @@ body {
     cursor: pointer;
     box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3);
     transition: all 0.15s ease;
+    position: relative;
 }
 
 .matrix-card:hover {
@@ -698,7 +698,6 @@ body {
     font-size: 12px;
     color: #f59e0b;
 }
-
 
 /* ==========================================================
    3. RIGHT BETTING PANEL SIDEBAR
@@ -959,4 +958,77 @@ body {
 
 .history-table th {
     color: #38bdf8;
+}
+
+/* ==========================================================
+   4. DYNAMIC JS UTILITY STYLES (NEW ADDITIONS)
+   ========================================================== */
+
+/* Dynamic Cart Items */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+.cart-item-num {
+    font-weight: bold;
+    color: #f8fafc;
+}
+
+.cart-item-pts {
+    color: #22c55e;
+    font-weight: bold;
+}
+
+.cart-item-remove {
+    background: none;
+    border: none;
+    color: #ef4444;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 6px;
+    line-height: 1;
+}
+
+.cart-item-remove:hover {
+    color: #ff6b6b;
+}
+
+/* Active Bet Highlights & Badges on Grid Cells */
+.matrix-card.has-active-bet,
+.single-card.has-active-bet {
+    border: 2px solid #f59e0b !important;
+    background: #fef08a !important;
+    color: #000 !important;
+    font-weight: 900;
+}
+
+.chip-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 8px;
+    font-weight: 800;
+    padding: 1px 4px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.8);
+    pointer-events: none;
+    z-index: 15;
+}
+
+/* Game Locked State */
+.disabled-cell,
+.triple-matrix-22x10.disabled,
+.single-cards-row.disabled {
+    opacity: 0.4;
+    pointer-events: none !important;
+    cursor: not-allowed !important;
 }
