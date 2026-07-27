@@ -43,19 +43,19 @@ body {
 .premium-gaming-card {
     background: linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(30, 30, 30, 0.95) 100%);
     border: 1px solid rgba(255, 215, 0, 0.4);
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.2), 0 25px 50px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.2), 0 20px 30px rgba(0, 0, 0, 0.9);
     border-radius: 16px;
     padding: 32px;
     color: #fff;
     width: 90%;
-    max-width: 420px;
+    max-width: 320px;
     text-align: center;
     backdrop-filter: blur(5px);
 }
 
 .login-brand-header h2 {
     color: #ffd700;
-    font-size: 26px;
+    font-size: 20px;
     margin-bottom: 6px;
     letter-spacing: 2px;
     text-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
@@ -186,8 +186,8 @@ body {
 
 .brand-title {
     color: #ffd700;
-    font-size: 20px;
-    letter-spacing: 1px;
+    font-size: 25px;
+    letter-spacing: 2px;
 }
 
 .btn-icon, .btn-control {
@@ -208,9 +208,9 @@ body {
 .balance-display {
     background: #1c1c1c;
     border: 1px solid #333;
-    padding: 6px 12px;
+    padding: 8px 12px;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 15px;
 }
 
 .balance-display strong {
@@ -240,7 +240,7 @@ body {
     background: linear-gradient(135deg, #181818, #242424);
     border: 1px solid rgba(255, 215, 0, 0.3);
     border-radius: 10px;
-    padding: 15px 20px;
+    padding: 20px 25px;
     margin-bottom: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
@@ -253,7 +253,7 @@ body {
 
 .live-result-box strong {
     color: #ffd700;
-    font-size: 18px;
+    font-size: 10px;
     margin-left: 8px;
 }
 
@@ -267,11 +267,11 @@ body {
     background: #151515;
     border: 1px solid #222;
     border-radius: 10px;
-    padding: 12px 18px;
+    padding: 10px 15px;
     margin-bottom: 20px;
 }
 
-.recent-results-section h3 {
+.recent-results-section h2 {
     font-size: 13px;
     color: #888;
     margin-bottom: 8px;
@@ -280,7 +280,7 @@ body {
 
 .recent-stripe-container {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     overflow-x: auto;
     padding-bottom: 5px;
 }
