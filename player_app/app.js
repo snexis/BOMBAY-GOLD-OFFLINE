@@ -25,7 +25,7 @@ window.AppState = window.AppState || {
     
     soundEnabled: true,
     printEnabled: true,
-    autoPaymentEnabled: true, // নতুন অটো-পেমেন্ট ফিচার
+    autoPaymentEnabled: true,
     
     activeRange: 'ALL',
     selectedBetAmount: 10,
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupNetworkGuard();
     fetchDeviceIP();
     initDrawTimerEngine();
-    injectDynamicModals(); // নতুন ভিউ ও উইনিং অ্যানিমেশন মডাল যুক্ত করা হলো
+    injectDynamicModals();
 });
 
 function initApp() {
@@ -74,7 +74,7 @@ function initApp() {
     }
 }
 
-// প্রতিদিন রাত ১২টায় টিকিট হিস্ট্রি অটো-ক্লিয়ার চেক
+// প্রতিদিন রাত ১২টায় টিকিট হিস্ট্রি অটো-ক্লিয়ার চেক
 function checkMidnightReset() {
     const todayStr = new Date().toDateString();
     if (AppState.lastResetDate && AppState.lastResetDate !== todayStr) {
@@ -103,19 +103,95 @@ function checkAndAutoRefillBalance() {
     }
 }
 
+// ==========================================
+// ENHANCED NETWORK GUARD & OFFLINE SECURITY
+// ==========================================
+
 function setupNetworkGuard() {
-    function updateOnlineStatus() {
-        const overlay = document.getElementById('network-offline-overlay');
-        if (!overlay) return;
-        if (navigator.onLine) {
-            overlay.classList.add('hidden');
+    function handleNetworkChange() {
+        if (!navigator.onLine) {
+            triggerOfflineShutdown();
         } else {
-            overlay.classList.remove('hidden');
+            removeOfflineOverlay();
         }
     }
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-    updateOnlineStatus();
+
+    window.addEventListener('online', handleNetworkChange);
+    window.addEventListener('offline', handleNetworkChange);
+    
+    if (!navigator.onLine) {
+        triggerOfflineShutdown();
+    }
+}
+
+function triggerOfflineShutdown() {
+    if (AppState.timerState.timerId) {
+        clearInterval(AppState.timerState.timerId);
+        AppState.timerState.timerId = null;
+    }
+
+    const appContainer = document.getElementById('app-container');
+    if (appContainer) {
+        appContainer.style.setProperty('display', 'none', 'important');
+        appContainer.classList.add('hidden');
+    }
+
+    let offlineOverlay = document.getElementById('network-offline-overlay');
+    if (!offlineOverlay) {
+        offlineOverlay = document.createElement('div');
+        offlineOverlay.id = 'network-offline-overlay';
+        document.body.appendChild(offlineOverlay);
+    }
+
+    offlineOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(5, 8, 22, 0.96);
+        backdrop-filter: blur(15px);
+        z-index: 999999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #ff4d4d;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    `;
+
+    offlineOverlay.innerHTML = `
+        <div style="background: rgba(20, 10, 10, 0.85); padding: 40px; border-radius: 16px; border: 1px solid #ff4d4d; box-shadow: 0 0 30px rgba(255, 77, 77, 0.3);">
+            <div style="font-size: 50px; margin-bottom: 15px;">📡❌</div>
+            <h1 style="font-size: 28px; margin: 0 0 10px 0; color: #ff4d4d; letter-spacing: 1px;">CONNECTION FAILED</h1>
+            <p style="font-size: 15px; color: #ccc; margin-bottom: 25px;">Internet connection lost. Game activity has been safely paused.</p>
+            <button onclick="attemptReconnect()" style="background: #ff4d4d; color: #fff; border: none; padding: 12px 30px; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 14px; box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);">RETRY CONNECTION</button>
+        </div>
+    `;
+
+    AppState.currentUser = null;
+    const loginModal = document.getElementById('login-modal');
+    if (loginModal) {
+        loginModal.style.setProperty('display', 'flex', 'important');
+        loginModal.classList.remove('hidden');
+    }
+}
+
+function attemptReconnect() {
+    if (navigator.onLine) {
+        removeOfflineOverlay();
+        showToast("Connection Restored! Please Login Again.");
+    } else {
+        showToast("Still Offline! Check your network.");
+    }
+}
+
+function removeOfflineOverlay() {
+    const offlineOverlay = document.getElementById('network-offline-overlay');
+    if (offlineOverlay) {
+        offlineOverlay.remove();
+    }
 }
 
 function toggleSound() {
@@ -137,7 +213,6 @@ function toggleAutoPayment() {
     showToast(AppState.autoPaymentEnabled ? "Auto-Payment: ON" : "Auto-Payment: OFF");
 }
 
-// স্ক্রিনে ছোট পপ-আপ বা টোস্ট নোটিফিকেশন দেখানোর জন্য
 function showToast(message) {
     let toast = document.getElementById('game-toast-notification');
     if (!toast) {
@@ -703,6 +778,23 @@ function runClockCycle() {
     updateTimerUI(now, msRemaining, totalSecondsRemaining);
 }
 
+// মিসিং টাইমার ইউআই ফাংশন যুক্ত করা হয়েছে
+function updateTimerUI(now, msRemaining, totalSecondsRemaining) {
+    const timerDisplay = document.getElementById('draw-timer-display') || document.getElementById('timer-display');
+    if (timerDisplay) {
+        const mins = Math.floor(totalSecondsRemaining / 60);
+        const secs = totalSecondsRemaining % 60;
+        timerDisplay.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    const countdownEl = document.getElementById('draw-count-down');
+    if (countdownEl) {
+        countdownEl.innerText = totalSecondsRemaining;
+    }
+
+    updateDateDisplay();
+}
+
 function setLockState(locked) {
     AppState.timerState.isLocked = locked;
     const lockBanner = document.getElementById('game-lock-banner');
@@ -779,13 +871,12 @@ function evaluateTicketWinners(result) {
     }
 }
 
-// উইনিং অ্যানিমেশন পপআপ (১-২ সেকেন্ড বা ক্লিক করে বন্ধ করার জন্য)
 function triggerWinningAnimation(winAmount) {
     let overlay = document.getElementById('winning-animation-overlay');
     if (!overlay) {
         overlay = document.createElement('div');
         overlay.id = 'winning-animation-overlay';
-        overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; cursor: pointer;";
+        overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 10000; cursor: pointer;";
         overlay.innerHTML = `<div style="background: linear-gradient(135deg, #00ffcc, #006644); padding: 40px; border-radius: 20px; text-align: center; color: #fff; box-shadow: 0 0 50px #00ffcc; animation: popIn 0.5s ease;">
             <h1 style="font-size: 36px; margin: 0 0 10px 0;">🎉 CONGRATULATIONS! 🎉</h1>
             <p style="font-size: 20px; margin: 0;">You Won</p>
@@ -824,7 +915,6 @@ function checkTicketBarcode() {
     }
 }
 
-// টিকিট হিস্ট্রি এক্সেল স্টাইল টেবিল এবং "View" বাটন সহ রেন্ডার করা
 function renderTicketHistoryTable() {
     const tbody = document.getElementById('history-table-body');
     if (!tbody) return;
@@ -848,73 +938,20 @@ function renderTicketHistoryTable() {
     });
 }
 
-// টিকিটের ভেতরে বেট করা ডিটেইলস দেখার জন্য ভিউ ফাংশন ও মডাল ইনজেকশন
+// টিকিটের ভেতরে বেট করা ডিটেইলস দেখার জন্য ফিক্সড ভিউ ফাংশন ও মডাল ইনজেকশন
 function injectDynamicModals() {
     if (document.getElementById('ticket-view-modal')) return;
     const modalHtml = `
-        <div id="ticket-view-modal" class="modal-overlay hidden" style="position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:10001;">
-            <div class="modal-card premium-gaming-card" style="background:#111; padding:20px; border-radius:10px; width:400px; color:#fff; border:1px solid #00ffcc;">
-                <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:10px;">
-                    <h3>Ticket Details</h3>
-                    <button onclick="closeTicketViewModal()" style="background:none; border:none; color:#fff; font-size:20px; cursor:pointer;">&times;</button>
+        <div id="ticket-view-modal" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 99999;">
+            <div style="background: #141e30; border: 1px solid #00ffcc; padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; color: #fff; box-shadow: 0 0 20px rgba(0,255,204,0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #00ffcc; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h3 style="margin: 0; color: #00ffcc;">Ticket Details</h3>
+                    <button onclick="closeTicketViewModal()" style="background: transparent; border: none; color: #ff4d4d; font-size: 20px; cursor: pointer; font-weight: bold;">&times;</button>
                 </div>
-                <div id="ticket-view-body" style="padding: 15px 0; max-height: 250px; overflow-y: auto;"></div>
-                <button class="btn-primary" onclick="closeTicketViewModal()" style="width:100%; padding:8px; background:#00ffcc; border:none; font-weight:bold; cursor:pointer; border-radius:5px;">Close</button>
-            </div>
-        </div>
-    `;
-    const div = document.createElement('div');
-    div.innerHTML = modalHtml;
-    document.body.appendChild(div);
-
-    // হিস্ট্রি টেবিল হেডার আপডেট করা যাতে 'Action' কলাম যুক্ত থাকে
-    const historyHeader = document.querySelector('.history-table thead tr');
-    if (historyHeader && !historyHeader.innerHTML.includes('Action')) {
-        const th = document.createElement('th');
-        th.innerText = 'Action';
-        historyHeader.appendChild(th);
-    }
-}
-
-function viewTicketItems(ticketId) {
-    const ticket = AppState.ticketHistory.find(t => t.id === ticketId);
-    const body = document.getElementById('ticket-view-body');
-    const modal = document.getElementById('ticket-view-modal');
-    if (!ticket || !body || !modal) return;
-
-    let html = `<p><strong>Ticket ID:</strong> ${ticket.id}</p><p><strong>Time:</strong> ${ticket.time}</p><hr style="border-color:#333;"><ul>`;
-    ticket.items.forEach(i => {
-        html += `<li style="margin-bottom: 5px;">${i.digit} (${i.word}) - <strong>${i.amount} PTS</strong></li>`;
-    });
-    html += `</ul><p><strong>Total Points:</strong> ${ticket.points} PTS</p>`;
-
-    body.innerHTML = html;
-    modal.style.display = 'flex';
-}
-
-function closeTicketViewModal() {
-    const modal = document.getElementById('ticket-view-modal');
-    if (modal) modal.style.display = 'none';
-}
-
-function updateTimerUI(nowDate, msRemaining, totalSecs) {
-    const minutes = Math.floor(totalSecs / 60);
-    const seconds = totalSecs % 60;
-    
-    const timeFormatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-    const drawTimeEl = document.getElementById('draw-time-val');
-    if (drawTimeEl) drawTimeEl.innerText = timeFormatted;
-}
-// টিকিটের ভেতরে বেট করা ডিটেইলস দেখার জন্য ভিউ ফাংশন ও মডাল ইনজেকশন
-function injectDynamicModals() {
-    if (document.getElementById('ticket-view-modal')) return;
-    const modalHtml = `
-        <div id="ticket-view-modal" class="modal-overlay hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 10000;">
-            <div style="background: #1a1a1a; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; color: #fff; border: 1px solid #00ffcc; box-shadow: 0 0 20px rgba(0,255,204,0.3);">
-                <h3 style="margin-top: 0; color: #00ffcc; text-align: center;">Ticket Details</h3>
-                <div id="ticket-view-content" style="max-height: 250px; overflow-y: auto; margin: 15px 0; font-family: monospace; font-size: 13px;"></div>
-                <button onclick="closeTicketViewModal()" style="width: 100%; background: #00ffcc; color: #000; border: none; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer;">Close</button>
+                <div id="ticket-view-details" style="max-height: 300px; overflow-y: auto;"></div>
+                <div style="text-align: right; margin-top: 15px;">
+                    <button onclick="closeTicketViewModal()" style="padding: 8px 18px; cursor: pointer; background: #333; color: #fff; border: 1px solid #666; border-radius: 6px;">Close</button>
+                </div>
             </div>
         </div>
     `;
@@ -925,35 +962,25 @@ function viewTicketItems(ticketId) {
     const ticket = AppState.ticketHistory.find(t => t.id === ticketId);
     if (!ticket) return;
 
-    injectDynamicModals();
-    const contentEl = document.getElementById('ticket-view-content');
-    if (contentEl) {
-        let html = `<div style="margin-bottom: 10px; border-bottom: 1px dashed #444; padding-bottom: 5px;">
-            <strong>ID:</strong> ${ticket.id}<br>
-            <strong>Time:</strong> ${ticket.time}<br>
-            <strong>Total Points:</strong> ${ticket.points} PTS
-        </div>`;
-        
-        ticket.items.forEach(item => {
-            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #222;">
-                <span>${item.digit} (${item.word}) [${item.type}]</span>
-                <span><strong>${item.amount} PTS</strong></span>
-            </div>`;
-        });
-        contentEl.innerHTML = html;
-    }
-
+    const detailsContainer = document.getElementById('ticket-view-details');
     const modal = document.getElementById('ticket-view-modal');
-    if (modal) {
+
+    if (detailsContainer && modal) {
+        let itemsHtml = `<p style="margin: 5px 0;"><strong>Ticket ID:</strong> ${ticket.id}</p>`;
+        itemsHtml += `<p style="margin: 5px 0;"><strong>Time:</strong> ${ticket.time}</p>`;
+        itemsHtml += `<p style="margin: 5px 0;"><strong>Total Bet:</strong> ${ticket.points} PTS</p><hr style="border-color: #333; margin: 10px 0;"/>`;
+        itemsHtml += `<ul style="list-style: none; padding: 0; margin: 0;">`;
+        ticket.items.forEach(item => {
+            itemsHtml += `<li style="padding: 6px 0; border-bottom: 1px solid #222; font-size: 13px;">${item.type} | Digit: <strong>${item.digit} (${item.word})</strong> - Amount: <span style="color:#00ffcc;">${item.amount} PTS</span></li>`;
+        });
+        itemsHtml += `</ul>`;
+
+        detailsContainer.innerHTML = itemsHtml;
         modal.style.display = 'flex';
-        modal.classList.remove('hidden');
     }
 }
 
 function closeTicketViewModal() {
     const modal = document.getElementById('ticket-view-modal');
-    if (modal) {
-        modal.style.display = 'none';
-        modal.classList.add('hidden');
-    }
+    if (modal) modal.style.display = 'none';
 }
