@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchDeviceIP();
     initDrawTimerEngine();
     injectDynamicModals();
-    updateLiveClock(); // ডাইনামিক ক্লক চালু করা
-    setInterval(updateLiveClock, 1000); // প্রতি ১ সেকেন্ডে ক্লক আপডেট
+    updateLiveClock();
+    setInterval(updateLiveClock, 1000);
 });
 
 function initApp() {
@@ -67,7 +67,7 @@ function initApp() {
     setupEventListeners();
     renderSingleBoard();
     renderTripleBoard();
-    renderJuriBoard(); // জুড়ি বোর্ড রেন্ডার কল
+    renderJuriBoard();
     checkAndAutoRefillBalance();
     
     if (AppState.currentResult.digit === '---') {
@@ -77,7 +77,6 @@ function initApp() {
     }
 }
 
-// ডাইনামিক রিয়েল-টাইম ডেট এবং ঘড়ি আপডেট ফাংশন
 function updateLiveClock() {
     const now = new Date();
     const optionsDate = { day: '2-digit', month: 'short', year: 'numeric' };
@@ -90,7 +89,6 @@ function updateLiveClock() {
     }
 }
 
-// প্রতিদিন রাত ১২টায় টিকিট হিস্ট্রি অটো-ক্লিয়ার চেক
 function checkMidnightReset() {
     const todayStr = new Date().toDateString();
     if (AppState.lastResetDate && AppState.lastResetDate !== todayStr) {
@@ -532,7 +530,6 @@ function renderTripleBoard() {
     syncBoardBetDisplays();
 }
 
-// জুড়ি বোর্ড (00 - 99) রেন্ডার করার ফাংশন
 function renderJuriBoard() {
     const juriGrid = document.getElementById('juri-board-grid');
     if (!juriGrid) return;
@@ -871,66 +868,60 @@ function onNewDrawStart() {
     };
 
     AppState.recentResults.unshift({ ...AppState.currentResult });
-    if (AppState.recentResults.length > 10) AppState.recentResults.pop();
+    if (AppState.recentResults.length > 10) {
+        AppState.recentResults.pop();
+    }
 
-    evaluateTicketWinners(AppState.currentResult);
-
-    updateLiveResultDisplay();
+    processDrawWinning(AppState.currentResult);
+    
     renderRecentResults();
+    updateLiveResultDisplay();
+}
+
+function processDrawWinning(result) {
+    let totalWinThisDraw = 0;
+
+    AppState.ticketHistory.forEach(ticket => {
+        if (ticket.status === 'P') {
+            let ticketWin = 0;
+            ticket.items.forEach(item => {
+                if (item.type === 'SINGLE' && item.digit === result.digit.slice(-1)) {
+                    ticketWin += item.amount * item.winningRatio;
+                } else if (item.type === 'TRIPLE' && item.digit === result.digit) {
+                    ticketWin += item.amount * item.winningRatio;
+                }
+            });
+
+            if (ticketWin > 0) {
+                ticket.status = 'W';
+                ticket.winningPts = ticketWin;
+                totalWinThisDraw += ticketWin;
+            } else {
+                ticket.status = 'L';
+            }
+        }
+    });
+
+    if (totalWinThisDraw > 0) {
+        AppState.winPoints += totalWinThisDraw;
+        AppState.playPoints += totalWinThisDraw;
+        
+        const playPtsEl = document.getElementById('play-points');
+        if (playPtsEl) playPtsEl.innerText = AppState.playPoints.toLocaleString();
+        
+        showToast(`Congratulations! You won ${totalWinThisDraw} Points!`);
+    }
 }
 
 function renderRecentResults() {
-    const container = document.getElementById('recent-results-stripe');
+    const container = document.getElementById('recent-results-container') || document.getElementById('recent-results-list');
     if (!container) return;
 
     container.innerHTML = '';
     AppState.recentResults.forEach(res => {
         const item = document.createElement('div');
-        item.className = 'recent-item';
-        item.innerText = `${res.time} | ${res.digit} ${res.word}`;
+        item.className = 'recent-result-badge';
+        item.innerText = `${res.time} - ${res.digit} (${res.word})`;
         container.appendChild(item);
     });
-}
-
-function evaluateTicketWinners(result) {
-    let totalWonThisDraw = 0;
-
-    AppState.ticketHistory.forEach(ticket => {
-        if (ticket.status === 'P') {
-            let winTotal = 0;
-            ticket.items.forEach(item => {
-                if (item.digit === result.digit || item.word === result.word) {
-                    winTotal += item.amount * item.winningRatio;
-                }
-            });
-
-            if (winTotal > 0) {
-                ticket.status = 'Y';
-                ticket.winningPts = winTotal;
-                totalWonThisDraw += winTotal;
-            } else {
-                ticket.status = 'N';
-            }
-        }
-    });
-
-    if (totalWonThisDraw > 0) {
-        if (AppState.autoPaymentEnabled) {
-            AppState.playPoints += totalWonThisDraw;
-        }
-        triggerWinningAnimation(totalWonThisDraw);
-        const playPtsEl = document.getElementById('play-points');
-        if (playPtsEl) {
-            playPtsEl.innerText = AppState.playPoints.toLocaleString();
-        }
-    }
-}
-
-function triggerWinningAnimation(winAmount) {
-    let overlay = document.getElementById('winning-animation-overlay');
-    if (!overlay) {
-        overlay = document.createElement('div');
-        overlay.id = 'winning-animation-overlay';
-        document.body.appendChild(overlay);
-    }
 }
