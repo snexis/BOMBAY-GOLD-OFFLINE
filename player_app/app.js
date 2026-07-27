@@ -778,7 +778,6 @@ function runClockCycle() {
     updateTimerUI(now, msRemaining, totalSecondsRemaining);
 }
 
-// মিসিং টাইমার ইউআই ফাংশন যুক্ত করা হয়েছে
 function updateTimerUI(now, msRemaining, totalSecondsRemaining) {
     const timerDisplay = document.getElementById('draw-timer-display') || document.getElementById('timer-display');
     if (timerDisplay) {
@@ -876,111 +875,122 @@ function triggerWinningAnimation(winAmount) {
     if (!overlay) {
         overlay = document.createElement('div');
         overlay.id = 'winning-animation-overlay';
-        overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 10000; cursor: pointer;";
-        overlay.innerHTML = `<div style="background: linear-gradient(135deg, #00ffcc, #006644); padding: 40px; border-radius: 20px; text-align: center; color: #fff; box-shadow: 0 0 50px #00ffcc; animation: popIn 0.5s ease;">
-            <h1 style="font-size: 36px; margin: 0 0 10px 0;">🎉 CONGRATULATIONS! 🎉</h1>
-            <p style="font-size: 20px; margin: 0;">You Won</p>
-            <h2 id="winning-amount-display" style="font-size: 48px; margin: 10px 0; color: #ffff00;">0 PTS</h2>
-            <p style="font-size: 14px; margin-top: 15px; opacity: 0.8;">Click anywhere to continue</p>
-        </div>`;
-        overlay.onclick = () => { overlay.style.display = 'none'; };
         document.body.appendChild(overlay);
     }
-    document.getElementById('winning-amount-display').innerText = `${winAmount.toFixed(0)} PTS`;
-    overlay.style.display = 'flex';
 
-    setTimeout(() => {
-        if (overlay) overlay.style.display = 'none';
-    }, 4000);
-}
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(5, 8, 22, 0.88);
+        backdrop-filter: blur(12px);
+        z-index: 999999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #00ffcc;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    `;
 
-function checkTicketBarcode() {
-    const input = document.getElementById('barcode-check-input');
-    if (!input || !input.value.trim()) return;
-
-    const barcode = input.value.trim();
-    const ticket = AppState.ticketHistory.find(t => t.id === barcode);
-
-    if (!ticket) {
-        alert("TICKET NOT FOUND!");
-        return;
-    }
-
-    if (ticket.status === 'Y') {
-        alert(`WINNING TICKET!\nWon: ${ticket.winningPts.toFixed(0)} PTS`);
-    } else if (ticket.status === 'N') {
-        alert(`NOT A WINNING TICKET`);
-    } else {
-        alert(`TICKET PENDING FOR DRAW`);
-    }
-}
-
-function renderTicketHistoryTable() {
-    const tbody = document.getElementById('history-table-body');
-    if (!tbody) return;
-
-    tbody.innerHTML = '';
-    AppState.ticketHistory.forEach(ticket => {
-        const tr = document.createElement('tr');
-        
-        let statusBadge = '<span class="status-pending">Pending</span>';
-        if (ticket.status === 'Y') statusBadge = `<span class="status-won" style="color:#00ffcc;">Won (${ticket.winningPts.toFixed(0)} PTS)</span>`;
-        if (ticket.status === 'N') statusBadge = '<span class="status-lost" style="color:#ff4444;">Lost</span>';
-
-        tr.innerHTML = `
-            <td>${ticket.id}</td>
-            <td>${ticket.points} PTS</td>
-            <td>${ticket.time}</td>
-            <td>${statusBadge}</td>
-            <td><button class="btn-secondary" onclick="viewTicketItems('${ticket.id}')" style="padding: 4px 10px; font-size: 11px; cursor: pointer;">View</button></td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// টিকিটের ভেতরে বেট করা ডিটেইলস দেখার জন্য ফিক্সড ভিউ ফাংশন ও মডাল ইনজেকশন
-function injectDynamicModals() {
-    if (document.getElementById('ticket-view-modal')) return;
-    const modalHtml = `
-        <div id="ticket-view-modal" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 99999;">
-            <div style="background: #141e30; border: 1px solid #00ffcc; padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; color: #fff; box-shadow: 0 0 20px rgba(0,255,204,0.3);">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #00ffcc; padding-bottom: 10px; margin-bottom: 15px;">
-                    <h3 style="margin: 0; color: #00ffcc;">Ticket Details</h3>
-                    <button onclick="closeTicketViewModal()" style="background: transparent; border: none; color: #ff4d4d; font-size: 20px; cursor: pointer; font-weight: bold;">&times;</button>
-                </div>
-                <div id="ticket-view-details" style="max-height: 300px; overflow-y: auto;"></div>
-                <div style="text-align: right; margin-top: 15px;">
-                    <button onclick="closeTicketViewModal()" style="padding: 8px 18px; cursor: pointer; background: #333; color: #fff; border: 1px solid #666; border-radius: 6px;">Close</button>
-                </div>
+    overlay.innerHTML = `
+        <div style="background: linear-gradient(135deg, rgba(20,30,50,0.95), rgba(10,15,30,0.95)); padding: 40px 60px; border-radius: 20px; border: 2px solid #00ffcc; box-shadow: 0 0 50px rgba(0, 255, 204, 0.5); text-align: center;">
+            <div style="font-size: 65px; margin-bottom: 10px;">🎉🏆🎉</div>
+            <h2 style="font-size: 32px; color: #ffd700; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px;">WINNER!</h2>
+            <p style="font-size: 16px; color: #e2e8f0; margin-bottom: 20px;">Congratulations! You have won</p>
+            <div style="font-size: 42px; font-weight: bold; color: #00ffcc; text-shadow: 0 0 25px rgba(0, 255, 204, 0.8); margin-bottom: 15px;">
+                +${winAmount.toLocaleString()} PTS
             </div>
         </div>
     `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-}
 
-function viewTicketItems(ticketId) {
-    const ticket = AppState.ticketHistory.find(t => t.id === ticketId);
-    if (!ticket) return;
-
-    const detailsContainer = document.getElementById('ticket-view-details');
-    const modal = document.getElementById('ticket-view-modal');
-
-    if (detailsContainer && modal) {
-        let itemsHtml = `<p style="margin: 5px 0;"><strong>Ticket ID:</strong> ${ticket.id}</p>`;
-        itemsHtml += `<p style="margin: 5px 0;"><strong>Time:</strong> ${ticket.time}</p>`;
-        itemsHtml += `<p style="margin: 5px 0;"><strong>Total Bet:</strong> ${ticket.points} PTS</p><hr style="border-color: #333; margin: 10px 0;"/>`;
-        itemsHtml += `<ul style="list-style: none; padding: 0; margin: 0;">`;
-        ticket.items.forEach(item => {
-            itemsHtml += `<li style="padding: 6px 0; border-bottom: 1px solid #222; font-size: 13px;">${item.type} | Digit: <strong>${item.digit} (${item.word})</strong> - Amount: <span style="color:#00ffcc;">${item.amount} PTS</span></li>`;
-        });
-        itemsHtml += `</ul>`;
-
-        detailsContainer.innerHTML = itemsHtml;
-        modal.style.display = 'flex';
+    if (AppState.soundEnabled && window.speechSynthesis) {
+        const utterance = new SpeechSynthesisUtterance("Congratulations! You won!");
+        window.speechSynthesis.speak(utterance);
     }
+
+    setTimeout(() => {
+        overlay.remove();
+    }, 3500);
 }
 
-function closeTicketViewModal() {
-    const modal = document.getElementById('ticket-view-modal');
-    if (modal) modal.style.display = 'none';
+// ==========================================
+// MODULE 7: HELPER & DYNAMIC DOM INJECTION
+// ==========================================
+
+function renderTicketHistoryTable() {
+    const tableContainer = document.getElementById('history-table-body');
+    if (!tableContainer) return;
+
+    if (AppState.ticketHistory.length === 0) {
+        tableContainer.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: #888;">No ticket history found for today.</td></tr>';
+        return;
+    }
+
+    let html = '';
+    AppState.ticketHistory.forEach(ticket => {
+        let statusBadge = '<span style="color: #ffaa00; font-weight: bold;">Pending</span>';
+        if (ticket.status === 'Y') statusBadge = `<span style="color: #00ffcc; font-weight: bold;">WIN (+${ticket.winningPts.toLocaleString()})</span>`;
+        if (ticket.status === 'N') statusBadge = '<span style="color: #ff4d4d; font-weight: bold;">LOST</span>';
+
+        const itemsSummary = ticket.items.map(i => `${i.digit}(${i.word}) x${i.amount}`).join(', ');
+
+        html += `
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px;">
+                <td style="padding: 12px; color: #00ffcc;">${ticket.id}</td>
+                <td style="padding: 12px; color: #ccc;">${ticket.time}</td>
+                <td style="padding: 12px; color: #fff;">${itemsSummary}</td>
+                <td style="padding: 12px; font-weight: bold; color: #ffd700;">${ticket.points.toLocaleString()} PTS</td>
+                <td style="padding: 12px;">${statusBadge}</td>
+            </tr>
+        `;
+    });
+
+    tableContainer.innerHTML = html;
+}
+
+function injectDynamicModals() {
+    if (!document.getElementById('silent-print-frame')) {
+        const iframe = document.createElement('iframe');
+        iframe.id = 'silent-print-frame';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+    }
+
+    if (!document.getElementById('history-modal')) {
+        const historyModal = document.createElement('div');
+        historyModal.id = 'history-modal';
+        historyModal.className = 'modal-overlay hidden';
+        historyModal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
+            z-index: 99999; display: flex; align-items: center; justify-content: center;
+        `;
+        historyModal.innerHTML = `
+            <div style="background: #0f172a; width: 90%; max-width: 750px; max-height: 80vh; border-radius: 16px; border: 1px solid #00ffcc; padding: 20px; color: #fff; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,255,204,0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 15px;">
+                    <h3 style="margin: 0; color: #00ffcc; font-size: 18px;">🎫 Ticket History Today</h3>
+                    <button onclick="closeTicketHistory()" style="background: transparent; border: none; color: #ff4d4d; font-size: 22px; cursor: pointer; font-weight: bold;">✕</button>
+                </div>
+                <div style="overflow-y: auto; flex: 1;">
+                    <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                        <thead>
+                            <tr style="color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 12px; text-transform: uppercase;">
+                                <th style="padding: 10px;">Ticket ID</th>
+                                <th style="padding: 10px;">Time</th>
+                                <th style="padding: 10px;">Selections</th>
+                                <th style="padding: 10px;">Total Bet</th>
+                                <th style="padding: 10px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(historyModal);
+    }
 }
