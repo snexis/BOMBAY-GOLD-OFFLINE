@@ -221,7 +221,7 @@ body {
    ========================================================== */
 #app-container {
     display: grid;
-    grid-template-columns: 260px 1fr 310px;
+    grid-template-columns: 250px 1fr 290px;
     height: 100vh;
     width: 100vw;
     background: radial-gradient(circle at center, #0a1128 0%, #030712 100%),
@@ -236,30 +236,31 @@ body {
 .sidebar-left {
     background: rgba(10, 15, 30, 0.92);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 15px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     backdrop-filter: blur(10px);
+    overflow: hidden;
 }
 
 .profile-header {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    padding: 12px;
+    border-radius: 10px;
+    padding: 8px;
 }
 
 .profile-user-info {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
 .user-avatar {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     background: #1e293b;
     border-radius: 50%;
     display: flex;
@@ -269,55 +270,55 @@ body {
 }
 
 .user-details .user-label {
-    font-size: 11px;
+    font-size: 10px;
     color: #64748b;
     display: block;
 }
 
 .user-details strong {
-    font-size: 16px;
+    font-size: 14px;
     color: #f8fafc;
 }
 
 .account-balances {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .balance-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     background: rgba(0, 0, 0, 0.3);
-    padding: 6px 10px;
+    padding: 4px 8px;
     border-radius: 6px;
 }
 
 .bal-text label {
-    font-size: 10px;
+    font-size: 9px;
     color: #94a3b8;
     display: block;
     text-transform: uppercase;
 }
 
 .bal-text strong {
-    font-size: 14px;
+    font-size: 12px;
     color: #38bdf8;
     font-family: 'Orbitron', sans-serif;
 }
 
 .btn-logout {
     width: 100%;
-    margin-top: 10px;
-    padding: 8px;
+    margin-top: 6px;
+    padding: 6px;
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.4);
     color: #ef4444;
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 11px;
     transition: all 0.2s;
 }
 
@@ -328,7 +329,7 @@ body {
 
 /* Left Menu List */
 .nav-menu {
-    margin: 15px 0;
+    margin: 10px 0;
     flex-grow: 1;
     overflow-y: auto;
 }
@@ -338,19 +339,19 @@ body {
 }
 
 .nav-menu li {
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .nav-menu a {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
+    gap: 8px;
+    padding: 8px 10px;
     color: #94a3b8;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: 6px;
     transition: all 0.2s;
 }
 
@@ -364,15 +365,15 @@ body {
 .live-draw-status-card {
     background: rgba(15, 23, 42, 0.9);
     border: 1px solid rgba(56, 189, 248, 0.3);
-    border-radius: 12px;
-    padding: 12px;
+    border-radius: 10px;
+    padding: 10px;
 }
 
 .status-header {
     display: flex;
     align-items: center;
     gap: 6px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-size: 11px;
 }
 
@@ -406,7 +407,7 @@ body {
     justify-content: space-between;
     font-size: 11px;
     color: #94a3b8;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .status-row strong {
@@ -415,49 +416,53 @@ body {
 
 .btn-view-history {
     width: 100%;
-    margin-top: 8px;
+    margin-top: 6px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #38bdf8;
-    padding: 6px;
+    padding: 5px;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 10px;
     cursor: pointer;
 }
 
 /* ==========================================================
-   2. CENTER MAIN GAME CONTENT
+   2. CENTER MAIN GAME CONTENT (FIXED OVERFLOW & SCALING)
    ========================================================== */
 .main-content {
-    padding: 15px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     overflow-y: auto;
+    overflow-x: hidden;
     background: rgba(3, 7, 18, 0.4);
+    height: 100vh;
 }
 
 .game-lock-banner {
     background: #ef4444;
     color: #fff;
     text-align: center;
-    padding: 8px;
+    padding: 6px;
     font-weight: bold;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 12px;
     letter-spacing: 1px;
+    flex-shrink: 0;
 }
 
 /* Top Results Section (Current Result + 12-Slot History) */
 .todays-result-panel {
     display: grid;
-    grid-template-columns: 180px 1fr;
-    gap: 12px;
+    grid-template-columns: 160px 1fr;
+    gap: 10px;
     background: rgba(15, 23, 42, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 12px;
+    border-radius: 10px;
+    padding: 8px 10px;
     backdrop-filter: blur(8px);
+    flex-shrink: 0;
 }
 
 /* Current Result Box */
@@ -465,17 +470,17 @@ body {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
     border: 1px solid #38bdf8;
     border-radius: 8px;
-    padding: 8px;
+    padding: 6px;
     text-align: center;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
 }
 
 .highlight-header {
-    font-size: 10px;
+    font-size: 9px;
     color: #38bdf8;
     font-weight: 700;
     letter-spacing: 1px;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .highlight-card {
@@ -485,16 +490,16 @@ body {
 }
 
 .highlight-id, .highlight-time {
-    font-size: 10px;
+    font-size: 9px;
     color: #94a3b8;
 }
 
 .highlight-number {
     font-family: 'Orbitron', sans-serif;
-    font-size: 26px;
+    font-size: 22px;
     color: #38bdf8;
-    text-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
-    margin-top: 2px;
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+    margin-top: 1px;
 }
 
 /* Today's 12-Slot History Slider */
@@ -509,11 +514,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .slider-header h3 {
-    font-size: 11px;
+    font-size: 10px;
     color: #f59e0b;
     letter-spacing: 1px;
 }
@@ -522,93 +527,94 @@ body {
     background: rgba(255, 255, 255, 0.08);
     border: none;
     color: #fff;
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 9px;
 }
 
 .results-12-grid {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     overflow-x: auto;
     scroll-behavior: smooth;
-    padding-bottom: 4px;
+    padding-bottom: 2px;
 }
 
 .results-12-grid::-webkit-scrollbar {
-    height: 4px;
+    height: 3px;
 }
 
 .results-12-grid::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
 .res-card-slot {
-    min-width: 65px;
+    min-width: 58px;
     background: rgba(30, 41, 59, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 6px;
-    padding: 6px;
+    padding: 4px;
     text-align: center;
     flex-shrink: 0;
 }
 
 .res-card-slot .slot-id {
-    font-size: 9px;
+    font-size: 8px;
     color: #64748b;
     display: block;
 }
 
 .res-card-slot .slot-time {
-    font-size: 8px;
+    font-size: 7px;
     color: #94a3b8;
     display: block;
 }
 
 .res-card-slot .slot-val {
     font-family: 'Orbitron', sans-serif;
-    font-size: 15px;
+    font-size: 13px;
     color: #22c55e;
     font-weight: bold;
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
 /* Single Board (0-9) Row */
 .single-board-container {
     background: rgba(15, 23, 42, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    padding: 10px 12px;
+    border-radius: 8px;
+    padding: 8px 10px;
+    flex-shrink: 0;
 }
 
 .section-title-yellow {
-    font-size: 11px;
+    font-size: 10px;
     color: #f59e0b;
     letter-spacing: 1px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .single-cards-row {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
-    gap: 6px;
+    gap: 5px;
 }
 
 .single-card {
     background: rgba(255, 255, 255, 0.95);
     color: #0f172a;
-    height: 38px;
-    border-radius: 6px;
+    height: 32px;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 16px;
+    font-size: 14px;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
     transition: all 0.15s;
     position: relative;
 }
@@ -617,57 +623,62 @@ body {
     background: #f59e0b;
     color: #000;
     transform: translateY(-2px);
-    box-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
 }
 
-/* Main Grid Container (22×10 Matrix) */
+/* Main Grid Container (22×10 Matrix) - Perfectly Scaled to Fit Screen */
 .main-grid-container {
     background: rgba(15, 23, 42, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 12px;
+    border-radius: 10px;
+    padding: 8px 10px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0; /* Important for flex child scrolling */
 }
 
 .grid-column-headers {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 4px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .col-head {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
     color: #38bdf8;
     background: rgba(30, 41, 59, 0.6);
-    padding: 4px;
+    padding: 3px;
     border-radius: 4px;
 }
 
-/* 22x10 Grid Matrix (10 Columns, 22 Cards Each) */
+/* 22x10 Grid Matrix (10 Columns, 22 Cards Each - Compact & Fixed to Avoid Breaking) */
 .triple-matrix-22x10 {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
-    gap: 4px;
+    grid-template-rows: repeat(22, 1fr); /* Forces exact 22 rows distribution without breaking layout */
+    gap: 3px;
     flex-grow: 1;
+    min-height: 0;
 }
 
 .matrix-card {
     background: rgba(255, 255, 255, 0.92);
     color: #000000;
-    height: 28px;
-    border-radius: 4px;
+    height: 100%; /* Adapts dynamically to available vertical space */
+    min-height: 20px;
+    border-radius: 3px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
     cursor: pointer;
-    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.3);
     transition: all 0.15s ease;
     position: relative;
 }
@@ -677,13 +688,13 @@ body {
     color: #000;
     transform: scale(1.05);
     z-index: 10;
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
 }
 
 .matrix-card.selected {
     background: #22c55e !important;
     color: #fff !important;
-    box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.9);
 }
 
 /* Bottom Announcement Bar */
@@ -691,12 +702,13 @@ body {
     background: rgba(15, 23, 42, 0.9);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 6px;
-    padding: 6px 12px;
+    padding: 5px 10px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 12px;
+    gap: 8px;
+    font-size: 11px;
     color: #f59e0b;
+    flex-shrink: 0;
 }
 
 /* ==========================================================
@@ -705,24 +717,25 @@ body {
 .sidebar-right {
     background: rgba(10, 15, 30, 0.95);
     border-left: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 15px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     backdrop-filter: blur(10px);
+    overflow: hidden;
 }
 
 .bet-panel-block {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    padding: 10px;
+    border-radius: 8px;
+    padding: 8px;
 }
 
 .panel-block-title {
-    font-size: 11px;
+    font-size: 10px;
     color: #94a3b8;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     letter-spacing: 1px;
 }
 
@@ -730,14 +743,14 @@ body {
 .range-btn-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
+    gap: 5px;
 }
 
 .btn-range {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: #fff;
-    padding: 8px;
+    padding: 6px 8px;
     border-radius: 6px;
     cursor: pointer;
     display: flex;
@@ -749,11 +762,11 @@ body {
 .btn-range .range-tag {
     font-weight: 800;
     color: #22c55e;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .btn-range .range-val {
-    font-size: 11px;
+    font-size: 10px;
     color: #94a3b8;
 }
 
@@ -766,17 +779,17 @@ body {
 .bet-type-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+    gap: 5px;
 }
 
 .btn-type {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: #94a3b8;
-    padding: 8px;
+    padding: 6px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: bold;
     transition: all 0.2s;
 }
@@ -790,20 +803,21 @@ body {
 /* Chips & Custom Input */
 .chips-grid {
     display: flex;
-    gap: 6px;
+    gap: 5px;
     align-items: center;
     flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 .btn-chip {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     background: radial-gradient(circle, #334155 0%, #0f172a 100%);
     border: 2px dashed #38bdf8;
     color: #38bdf8;
     font-weight: bold;
-    font-size: 11px;
+    font-size: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -819,13 +833,13 @@ body {
 }
 
 .btn-custom-wrapper input {
-    width: 65px;
+    width: 60px;
     background: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
-    padding: 6px;
+    padding: 5px;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 10px;
     text-align: center;
     outline: none;
 }
@@ -835,66 +849,68 @@ body {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0;
 }
 
 .cart-header {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
-    margin-bottom: 6px;
+    font-size: 10px;
+    margin-bottom: 4px;
 }
 
 .total-pts-tag strong {
     color: #22c55e;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .cart-items-box {
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 6px;
-    padding: 8px;
+    padding: 6px;
     flex-grow: 1;
-    max-height: 140px;
     overflow-y: auto;
-    font-size: 11px;
+    font-size: 10px;
+    min-height: 0;
 }
 
 .empty-msg {
     color: #64748b;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 .btn-clear-all {
     width: 100%;
-    margin-top: 6px;
+    margin-top: 4px;
     background: rgba(239, 68, 68, 0.15);
     border: 1px solid rgba(239, 68, 68, 0.3);
     color: #ef4444;
-    padding: 6px;
+    padding: 4px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 10px;
 }
 
 /* Action Buttons */
 .bet-action-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 6px;
+    flex-shrink: 0;
 }
 
 .btn-reset {
     background: #16a34a;
     color: #fff;
     border: none;
-    padding: 12px;
-    border-radius: 8px;
+    padding: 10px;
+    border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
-    font-size: 13px;
-    box-shadow: 0 0 10px rgba(22, 163, 74, 0.4);
+    font-size: 12px;
+    box-shadow: 0 0 8px rgba(22, 163, 74, 0.4);
     transition: all 0.2s;
 }
 
@@ -906,12 +922,12 @@ body {
     background: #2563eb;
     color: #fff;
     border: none;
-    padding: 12px;
-    border-radius: 8px;
+    padding: 10px;
+    border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
-    font-size: 13px;
-    box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+    font-size: 12px;
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
     transition: all 0.2s;
 }
 
@@ -969,11 +985,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 8px;
+    padding: 4px 6px;
     background: rgba(255, 255, 255, 0.04);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 4px;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .cart-item-num {
@@ -990,9 +1006,9 @@ body {
     background: none;
     border: none;
     color: #ef4444;
-    font-size: 14px;
+    font-size: 12px;
     cursor: pointer;
-    margin-left: 6px;
+    margin-left: 4px;
     line-height: 1;
 }
 
@@ -1011,15 +1027,15 @@ body {
 
 .chip-badge {
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: -4px;
+    right: -4px;
     background: #ef4444;
     color: #ffffff;
-    font-size: 8px;
+    font-size: 7px;
     font-weight: 800;
-    padding: 1px 4px;
-    border-radius: 8px;
-    box-shadow: 0 0 5px rgba(239, 68, 68, 0.8);
+    padding: 1px 3px;
+    border-radius: 6px;
+    box-shadow: 0 0 4px rgba(239, 68, 68, 0.8);
     pointer-events: none;
     z-index: 15;
 }
