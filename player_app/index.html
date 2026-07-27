@@ -16,17 +16,37 @@
         </div>
     </div>
 
-    <!-- Login Modal -->
-    <div id="login-modal" class="modal-overlay">
+    <!-- International Dark Login Modal with Glowing Background Effect -->
+    <div id="login-modal" class="modal-overlay glow-backdrop">
         <div class="login-card premium-gaming-card">
-            <h2>A2Z BOMBAY PORTAL</h2>
-            <p>Enter your credentials to start playing</p>
+            <div class="login-brand-header">
+                <h4>A2Z BOMBAY</h4>
+                <p class="announcement-tag"> ANNOUNCEMENT ONLY </p>
+            </div>
             <form id="login-form">
                 <div class="form-group">
                     <label for="username">User ID / Terminal Name</label>
-                    <input type="text" id="username" placeholder="e.g. DEMO_PLAYER_01" value="DEMO_PLAYER_01" required>
+                    <div class="input-with-icon">
+                        <input type="text" id="username" placeholder="Enter User ID" value="DEMO_PLAYER_01" required>
+                    </div>
                 </div>
-                <button type="submit" class="btn-primary">Login / Enter Game</button>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Enter Password" value="12345">
+                        <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility()">👁️</button>
+                    </div>
+                </div>
+
+                <div class="form-row-checkbox">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="remember-me" checked>
+                        <span class="checkmark"></span> Remember Terminal
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-primary btn-glow">Enter Game / Login</button>
             </form>
         </div>
     </div>
@@ -189,6 +209,20 @@
 
     <!-- Hidden Silent Thermal Print Frame -->
     <iframe id="silent-print-frame" style="display: none;"></iframe>
+
+    <!-- Password Eye Toggle Script -->
+    <script>
+        function togglePasswordVisibility() {
+            const pwdInput = document.getElementById('password');
+            if (pwdInput) {
+                if (pwdInput.type === 'password') {
+                    pwdInput.type = 'text';
+                } else {
+                    pwdInput.type = 'password';
+                }
+            }
+        }
+    </script>
 
     <!-- Load App Logic -->
     <script src="app.js"></script>
