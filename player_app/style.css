@@ -1,161 +1,466 @@
 /* ==========================================================
-   A2Z BOMBAY - MATTE BLACK & CHARCOAL LUXURY THEME
+   A2Z BOMBAY - INTERNATIONAL LUXURY CASINO & ANNOUNCEMENT THEME
    ========================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #0b0b0b;
+    color: #ffffff;
+    overflow-x: hidden;
+}
 
 .hidden {
     display: none !important;
 }
 
-.modal-overlay, .network-overlay {
+/* --- Modal & Glow Backdrop --- */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(10, 10, 10, 0.95);
-    backdrop-filter: blur(8px);
+    background: rgba(5, 5, 5, 0.85);
+    backdrop-filter: blur(10px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 99999;
 }
 
-.login-card, .network-card {
-    background: linear-gradient(135deg, #181818 0%, #222222 100%);
+/* Background Joker Image Integration for Login */
+.glow-backdrop {
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), url('joker-bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* --- Premium Gaming Card (Login & Modals) --- */
+.premium-gaming-card {
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(30, 30, 30, 0.95) 100%);
     border: 1px solid rgba(255, 215, 0, 0.4);
-    box-shadow: 0 0 35px rgba(255, 215, 0, 0.15), 0 20px 40px rgba(0, 0, 0, 0.9);
-    border-radius: 12px;
-    padding: 28px;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.2), 0 25px 50px rgba(0, 0, 0, 0.9);
+    border-radius: 16px;
+    padding: 32px;
     color: #fff;
     width: 90%;
-    max-width: 380px;
+    max-width: 420px;
     text-align: center;
+    backdrop-filter: blur(5px);
 }
 
-.login-card h2 {
+.login-brand-header h2 {
     color: #ffd700;
-    font-size: 24px;
+    font-size: 26px;
     margin-bottom: 6px;
-    letter-spacing: 1.5px;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    letter-spacing: 2px;
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.5);
 }
 
-.login-card p {
-    color: #a3a3a3;
-    font-size: 11px;
-    margin-bottom: 20px;
+.announcement-tag {
+    color: #00ffcc;
+    font-size: 10px;
+    margin-bottom: 24px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
+    font-weight: 700;
 }
 
 .form-group {
-    margin-bottom: 14px;
+    margin-bottom: 18px;
     text-align: left;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     color: #d4d4d4;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.form-group input, .form-group select {
+.form-group input {
     width: 100%;
-    padding: 11px 12px;
+    padding: 12px 14px;
     background: #111111;
     border: 1px solid #333333;
     color: #fff;
-    border-radius: 6px;
-    font-size: 13px;
+    border-radius: 8px;
+    font-size: 14px;
     outline: none;
+    transition: all 0.3s;
 }
 
-.form-group input:focus, .form-group select:focus {
+.form-group input:focus {
     border-color: #ffd700;
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
 }
 
-.password-field-wrap {
+/* Password Eye Toggle Styling */
+.password-wrapper {
     position: relative;
 }
 
-.eye-btn {
+.eye-toggle-btn {
     position: absolute;
-    right: 10px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #a3a3a3;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 16px;
+    color: #888;
 }
 
-.eye-btn:hover {
+.eye-toggle-btn:hover {
     color: #ffd700;
 }
 
-.form-row-check {
+.form-row-checkbox {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     text-align: left;
 }
 
-.form-row-check input[type="checkbox"] {
+.checkbox-container {
+    font-size: 12px;
+    color: #bbb;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-container input {
+    accent-color: #ffd700;
     width: 16px;
     height: 16px;
-    cursor: pointer;
-    accent-color: #ffd700;
 }
 
-.form-row-check label {
-    font-size: 12px;
-    color: #a3a3a3;
-    cursor: pointer;
-    margin-bottom: 0;
-    text-transform: none;
-}
-
-.btn-submit {
+/* Glow Button */
+.btn-glow {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     background: linear-gradient(135deg, #ffd700 0%, #cca100 100%);
     color: #000;
     font-weight: 800;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 15px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    letter-spacing: 1.5px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
     transition: all 0.2s ease;
 }
 
-.btn-submit:hover {
+.btn-glow:hover {
     background: #ffea75;
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.7);
 }
 
-.network-card {
-    border: 2px solid #ef4444;
-    box-shadow: 0 0 25px rgba(239, 68, 68, 0.3);
+/* --- App Header & Navigation --- */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #141414;
+    border-bottom: 1px solid #262626;
+    padding: 12px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.network-card h3 {
-    color: #fca5a5;
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand-title {
+    color: #ffd700;
+    font-size: 20px;
+    letter-spacing: 1px;
+}
+
+.btn-icon, .btn-control {
+    background: #222;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-control.active {
+    border-color: #ffd700;
+    color: #ffd700;
+}
+
+.balance-display {
+    background: #1c1c1c;
+    border: 1px solid #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.balance-display strong {
+    color: #00ffcc;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* --- Dashboard Main Content & Live Strip --- */
+.dashboard-main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.live-strip {
+    display: flex;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #181818, #242424);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.live-result-box span, .draw-timer-box span {
+    color: #aaa;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.live-result-box strong {
+    color: #ffd700;
     font-size: 18px;
-    margin-bottom: 6px;
+    margin-left: 8px;
 }
 
-.network-card p {
-    color: #d4d4d4;
+.draw-timer-box strong {
+    color: #00ffcc;
+    font-size: 18px;
+    margin-left: 8px;
+}
+
+/* Recent Results Stripe */
+.recent-results-section {
+    background: #151515;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+}
+
+.recent-results-section h3 {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.recent-stripe-container {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.recent-item {
+    background: #202020;
+    border: 1px solid #333;
+    padding: 6px 12px;
+    border-radius: 6px;
     font-size: 12px;
-    margin-bottom: 0;
-    text-transform: none;
+    white-space: nowrap;
+    display: flex;
+    gap: 8px;
+}
+
+.recent-item .time {
+    color: #888;
+}
+
+.recent-item .res {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+/* --- Mode & Range Selectors --- */
+.mode-selector, .range-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-mode, .btn-range {
+    background: #1b1b1b;
+    border: 1px solid #333;
+    color: #ccc;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.btn-mode.active, .btn-range.active {
+    background: #ffd700;
+    color: #000;
+    border-color: #ffd700;
+}
+
+/* --- Boards Grid Layout --- */
+.board-section {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+}
+
+.board-section h3 {
+    font-size: 14px;
+    color: #ffd700;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.single-grid, .triple-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+    gap: 10px;
+}
+
+/* --- Real Casino Chips Style Footer --- */
+.betting-footer-panel {
+    background: #121212;
+    border-top: 1px solid #262626;
+    padding: 15px 20px;
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+}
+
+.bet-chip-section {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+/* Original Casino Round Chips */
+.btn-chip {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #2a2a2a 0%, #151515 100%);
+    border: 3px dashed #ffd700;
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 11px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.6), inset 0 2px 5px rgba(255,215,0,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.btn-chip:hover, .btn-chip.active {
+    background: radial-gradient(circle, #ffd700 0%, #b8860b 100%);
+    color: #000;
+    border-color: #fff;
+    transform: scale(1.08);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+#custom-bet-input {
+    background: #181818;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    width: 100px;
+    outline: none;
+    text-align: center;
+}
+
+.cart-summary-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a1a1a;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #2c2c2c;
+}
+
+.cart-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-danger-light {
+    background: #331a1a;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* --- Side Drawer --- */
+.side-drawer {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 280px;
+    height: 100vh;
+    background: #161616;
+    border-right: 1px solid #262626;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    padding: 20px;
+}
+
+.side-drawer.open {
+    left: 0;
 }
