@@ -9,9 +9,7 @@
 </head>
 <body>
 
-    <!-- ==========================================================
-         NETWORK OFFLINE OVERLAY GUARD
-         ========================================================== -->
+    <!-- NETWORK OFFLINE OVERLAY GUARD -->
     <div id="network-offline-overlay" class="hidden">
         <div class="offline-box">
             <div class="offline-icon">⚠️</div>
@@ -21,9 +19,7 @@
         </div>
     </div>
 
-    <!-- ==========================================================
-         LOGIN MODAL SCREEN
-         ========================================================== -->
+    <!-- LOGIN MODAL SCREEN -->
     <div id="login-modal" class="modal-overlay glow-backdrop hidden">
         <div class="premium-gaming-card">
             <div class="login-brand-header">
@@ -52,9 +48,7 @@
         </div>
     </div>
 
-    <!-- ==========================================================
-         MAIN DASHBOARD (3-COLUMN LAYOUT)
-         ========================================================== -->
+    <!-- MAIN DASHBOARD -->
     <div id="app-container">
 
         <!-- 1. LEFT NAVIGATION SIDEBAR -->
@@ -90,6 +84,15 @@
                 <button id="btn-logout" class="btn-logout">Logout</button>
             </div>
 
+            <!-- BARCODE SCANNER / CLAIM WIDGET -->
+            <div class="barcode-claim-widget" style="padding: 10px; background: rgba(255,255,255,0.05); margin: 10px 0; border-radius: 8px;">
+                <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">🔍 BARCODE / CLAIM TICKET</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="barcode-input" placeholder="Scan or Enter Ticket No" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 12px;">
+                    <button id="btn-claim-ticket" style="padding: 6px 10px; background: #22c55e; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px;">Claim</button>
+                </div>
+            </div>
+
             <!-- Left Navigation Menu -->
             <nav class="nav-menu">
                 <ul>
@@ -120,17 +123,14 @@
             </div>
         </aside>
 
-
         <!-- 2. CENTER MAIN GAME CONTENT -->
         <main class="main-content">
-            <!-- Game Lock Warning Banner -->
             <div id="game-lock-banner" class="game-lock-banner hidden">
                 ⚠️ Draw calculation in progress! Betting is temporarily paused.
             </div>
 
             <!-- Todays Result Panel -->
             <section class="todays-result-panel">
-                <!-- Current Result Highlight Box -->
                 <div class="current-result-highlight">
                     <div class="highlight-header">LATEST DRAW RESULT</div>
                     <div class="highlight-card">
@@ -140,7 +140,6 @@
                     </div>
                 </div>
 
-                <!-- 12-Slot History Strip -->
                 <div class="todays-history-container">
                     <div class="slider-header">
                         <h3>TODAY'S RESULTS (12 SLOTS)</h3>
@@ -149,17 +148,14 @@
                             <button class="arrow-btn" id="btn-scroll-right">►</button>
                         </div>
                     </div>
-                    <div class="results-12-grid" id="results-12-grid">
-                        <!-- Dynamic 12 Slots rendered by JS -->
-                    </div>
+                    <div class="results-12-grid" id="results-12-grid"></div>
                 </div>
             </section>
 
-            <!-- Single Board Row (1 to 0 Sequence) -->
+            <!-- Single Board Row -->
             <section class="single-board-container">
                 <div class="section-title-yellow">SINGLE BOARD (1 - 0)</div>
                 <div class="single-cards-row" id="single-board-row">
-                    <!-- Standard 1 to 0 Single Board Buttons -->
                     <div class="single-card" data-val="1">1</div>
                     <div class="single-card" data-val="2">2</div>
                     <div class="single-card" data-val="3">3</div>
@@ -173,7 +169,7 @@
                 </div>
             </section>
 
-            <!-- Main 22x10 Matrix Grid Container (TRIPLE / PANNA BOARD) -->
+            <!-- Triple Board -->
             <section class="main-grid-container" id="triple-board-section">
                 <div class="grid-column-headers">
                     <div class="col-head">1</div>
@@ -187,32 +183,23 @@
                     <div class="col-head">9</div>
                     <div class="col-head">0</div>
                 </div>
-                <!-- 220 Cells Grid (Rendered dynamically by JS matching Chart Data) -->
-                <div class="triple-matrix-22x10" id="triple-board-grid">
-                    <!-- Dynamic 22x10 Matrix Cells generated by JS -->
-                </div>
+                <div class="triple-matrix-22x10" id="triple-board-grid"></div>
             </section>
 
-            <!-- JURI BOARD CONTAINER (00 - 99 Matrix) -->
+            <!-- Juri Board -->
             <section class="main-grid-container hidden" id="juri-board-section">
                 <div class="section-title-yellow" style="margin-bottom: 8px;">JURI BOARD (00 - 99)</div>
-                <!-- 10x10 Matrix Grid for 100 Juri Numbers -->
-                <div class="triple-matrix-22x10" id="juri-board-grid">
-                    <!-- Dynamic 100 Cells generated by JS -->
-                </div>
+                <div class="triple-matrix-22x10" id="juri-board-grid"></div>
             </section>
 
-            <!-- Bottom Announcement Bar -->
             <footer class="bottom-announcement-bar">
                 <span>📢</span>
                 <marquee scrollamount="5">Welcome to A2Z BOMBAY International Gaming System. All draws are synchronized in real-time with total accuracy.</marquee>
             </footer>
         </main>
 
-
         <!-- 3. RIGHT BETTING PANEL SIDEBAR -->
         <aside class="sidebar-right">
-            <!-- Range Selector (A, B, C, D) -->
             <div class="bet-panel-block" id="range-selector-block">
                 <div class="panel-block-title">NUMBER RANGE</div>
                 <div class="range-btn-grid">
@@ -235,7 +222,6 @@
                 </div>
             </div>
 
-            <!-- Bet Type Selector (Single, Juri, Triple) -->
             <div class="bet-panel-block">
                 <div class="panel-block-title">BET TYPE</div>
                 <div class="bet-type-grid">
@@ -245,7 +231,6 @@
                 </div>
             </div>
 
-            <!-- Chips Selector & Custom Input -->
             <div class="bet-panel-block">
                 <div class="panel-block-title">POINTS / CHIPS</div>
                 <div class="chips-grid">
@@ -259,7 +244,6 @@
                 </div>
             </div>
 
-            <!-- Selected Bet Items Cart -->
             <div class="bet-panel-block cart-block">
                 <div class="cart-header">
                     <span>SELECTED BETS (CART)</span>
@@ -271,7 +255,6 @@
                 <button class="btn-clear-all" id="btn-clear-cart">Clear All</button>
             </div>
 
-            <!-- Action Submit Buttons -->
             <div class="bet-action-buttons">
                 <button class="btn-reset" id="btn-reset-selection">Reset</button>
                 <button class="btn-submit" id="btn-submit-bets">Submit</button>
@@ -279,10 +262,7 @@
         </aside>
     </div>
 
-
-    <!-- ==========================================================
-         MODAL 1: TICKET HISTORY MODAL
-         ========================================================== -->
+    <!-- MODAL 1: TICKET HISTORY MODAL -->
     <div id="ticket-history-modal" class="modal-overlay hidden">
         <div class="modal-card">
             <div class="modal-header">
@@ -300,18 +280,13 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="ticket-history-table-body">
-                        <!-- Dynamic Ticket History Rows -->
-                    </tbody>
+                    <tbody id="ticket-history-table-body"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-
-    <!-- ==========================================================
-         MODAL 2: FULL DAY RESULT HISTORY MODAL
-         ========================================================== -->
+    <!-- MODAL 2: FULL DAY RESULT HISTORY MODAL -->
     <div id="result-history-modal" class="modal-overlay hidden">
         <div class="modal-card" style="max-width: 650px;">
             <div class="modal-header">
@@ -333,21 +308,13 @@
                             <th>Triple / Panna</th>
                         </tr>
                     </thead>
-                    <tbody id="result-history-table-body">
-                        <!-- Dynamic Result History Rows generated by JS -->
-                    </tbody>
+                    <tbody id="result-history-table-body"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-
-    <!-- ==========================================================
-         SILENT PRINT IFRAME (FOR THERMAL PRINTER)
-         ========================================================== -->
     <iframe id="silent-print-frame" class="hidden" src="about:blank"></iframe>
-
-    <!-- JAVASCRIPT LOGIC FILE -->
     <script src="script.js"></script>
 </body>
 </html>
