@@ -34,13 +34,12 @@ body {
     z-index: 99999;
 }
 
-/* Background Joker Image Integration for Login */
 .glow-backdrop {
     background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), url('joker-bg.jpg') no-repeat center center fixed;
     background-size: cover;
 }
 
-/* --- Premium Gaming Card (Login & Modals) --- */
+/* --- Premium Gaming Card --- */
 .premium-gaming-card {
     background: linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(30, 30, 30, 0.95) 100%);
     border: 1px solid rgba(255, 215, 0, 0.4);
@@ -103,7 +102,6 @@ body {
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
 }
 
-/* Password Eye Toggle Styling */
 .password-wrapper {
     position: relative;
 }
@@ -146,7 +144,6 @@ body {
     height: 16px;
 }
 
-/* Glow Button */
 .btn-glow {
     width: 100%;
     padding: 14px;
@@ -266,7 +263,6 @@ body {
     margin-left: 8px;
 }
 
-/* Recent Results Stripe */
 .recent-results-section {
     background: #151515;
     border: 1px solid #222;
@@ -309,7 +305,6 @@ body {
     font-weight: bold;
 }
 
-/* --- Mode & Range Selectors --- */
 .mode-selector, .range-selector {
     display: flex;
     gap: 10px;
@@ -334,7 +329,7 @@ body {
     border-color: #ffd700;
 }
 
-/* --- Boards Grid Layout --- */
+/* --- Boards Grid Layout (Fixed) --- */
 .board-section {
     background: #141414;
     border: 1px solid #222;
@@ -353,8 +348,32 @@ body {
 
 .single-grid, .triple-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
     gap: 10px;
+    width: 100%;
+}
+
+/* Individual grid cell styling to prevent overlapping */
+.single-grid > div, .triple-grid > div,
+.single-grid button, .triple-grid button {
+    width: 100%;
+    min-height: 45px;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.single-grid > div:hover, .triple-grid > div:hover {
+    border-color: #ffd700;
+    background: #2a2a2a;
 }
 
 /* --- Real Casino Chips Style Footer --- */
@@ -375,10 +394,9 @@ body {
     flex-wrap: wrap;
 }
 
-/* Original Casino Round Chips */
 .btn-chip {
-    width: 55px;
-    height: 55px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     background: radial-gradient(circle, #2a2a2a 0%, #151515 100%);
     border: 3px dashed #ffd700;
