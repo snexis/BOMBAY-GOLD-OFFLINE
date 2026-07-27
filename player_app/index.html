@@ -83,10 +83,12 @@
                 </div>
                 <button id="btn-logout" class="btn-logout">Logout</button>
             </div>
-<!-- Current Date & Time Widget -->
-<div class="live-draw-status-card" style="margin-bottom: 10px; padding: 8px 12px; font-size: 12px; text-align: center;">
-    <span id="live-date-time" style="color: #38bdf8; font-weight: bold;">Loading Date & Time...</span>
-</div>
+
+            <!-- Current Date & Time Widget -->
+            <div class="live-draw-status-card" style="margin-bottom: 10px; padding: 8px 12px; font-size: 12px; text-align: center;">
+                <span id="live-date-time" style="color: #38bdf8; font-weight: bold;">Loading Date & Time...</span>
+            </div>
+
             <!-- BARCODE SCANNER / CLAIM WIDGET -->
             <div class="barcode-claim-widget" style="padding: 10px; background: rgba(255,255,255,0.05); margin: 10px 0; border-radius: 8px;">
                 <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">🔍 BARCODE / CLAIM TICKET</label>
@@ -96,14 +98,14 @@
                 </div>
             </div>
 
-            <!-- Left Navigation Menu -->
+            <!-- Left Navigation Menu (Converted into Premium Action Buttons) -->
             <nav class="nav-menu">
                 <ul>
-                    <li class="active"><a href="#" id="nav-dashboard">🏠 Dashboard</a></li>
-                    <li><a href="#" id="nav-ticket-history">🎟️ Tickets History</a></li>
-                    <li><a href="#" id="nav-result-history">📊 Result History</a></li>
-                    <li><a href="#" id="nav-rules">📜 Rules & Info</a></li>
-                    <li><a href="#" id="nav-settings">⚙️ Settings</a></li>
+                    <li><button class="nav-btn active" id="nav-dashboard">🏠 Dashboard</button></li>
+                    <li><button class="nav-btn" id="nav-ticket-history">🎟️ Tickets History</button></li>
+                    <li><button class="nav-btn" id="nav-result-history">📊 Result History</button></li>
+                    <li><button class="nav-btn" id="nav-rules">📜 Rules & Info</button></li>
+                    <li><button class="nav-btn" id="nav-settings">⚙️ Settings</button></li>
                 </ul>
             </nav>
 
@@ -200,7 +202,9 @@
                 <marquee scrollamount="5">Welcome to A2Z BOMBAY International Gaming System. All draws are synchronized in real-time with total accuracy.</marquee>
             </footer>
         </main>
-<!-- CORRECTED NUMBER RANGE BLOCK -->
+
+        <!-- 3. RIGHT BETTING SIDEBAR / CONTROLS -->
+        <aside class="sidebar-right">
             <div class="bet-panel-block" id="range-selector-block">
                 <div class="panel-block-title">TRIPLE RANGE (220 PANNA)</div>
                 <div class="range-btn-grid">
@@ -315,7 +319,44 @@
         </div>
     </div>
 
+    <!-- MODAL 3: RULES & INFO MODAL -->
+    <div id="rules-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3>📜 Rules & Info</h3>
+                <button class="close-modal" id="close-rules-modal">✖</button>
+            </div>
+            <div style="max-height: 350px; overflow-y: auto; color: #cbd5e1; font-size: 13px; line-height: 1.6;">
+                <p><strong>1. Single Board:</strong> Select any single digit from 1 to 0.</p>
+                <p><strong>2. Juri Board:</strong> Select combination of 2 digits (00 - 99).</p>
+                <p><strong>3. Triple Panna:</strong> Select triple range and corresponding panna numbers.</p>
+                <p><strong>4. Claiming:</strong> Use the barcode scanner widget to instantly check and claim winning tickets.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: SETTINGS MODAL -->
+    <div id="settings-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3>⚙️ Settings</h3>
+                <button class="close-modal" id="close-settings-modal">✖</button>
+            </div>
+            <div style="max-height: 300px; overflow-y: auto; color: #cbd5e1; font-size: 13px;">
+                <p style="margin-bottom: 15px;">Configure terminal preferences and sound options below:</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span>Sound Effects</span>
+                    <input type="checkbox" id="setting-sound" checked style="transform: scale(1.2);">
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Auto-Sync Draw Data</span>
+                    <input type="checkbox" id="setting-autosync" checked style="transform: scale(1.2);">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <iframe id="silent-print-frame" class="hidden" src="about:blank"></iframe>
-   <script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
