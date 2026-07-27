@@ -906,3 +906,54 @@ function updateTimerUI(nowDate, msRemaining, totalSecs) {
     const drawTimeEl = document.getElementById('draw-time-val');
     if (drawTimeEl) drawTimeEl.innerText = timeFormatted;
 }
+// টিকিটের ভেতরে বেট করা ডিটেইলস দেখার জন্য ভিউ ফাংশন ও মডাল ইনজেকশন
+function injectDynamicModals() {
+    if (document.getElementById('ticket-view-modal')) return;
+    const modalHtml = `
+        <div id="ticket-view-modal" class="modal-overlay hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 10000;">
+            <div style="background: #1a1a1a; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; color: #fff; border: 1px solid #00ffcc; box-shadow: 0 0 20px rgba(0,255,204,0.3);">
+                <h3 style="margin-top: 0; color: #00ffcc; text-align: center;">Ticket Details</h3>
+                <div id="ticket-view-content" style="max-height: 250px; overflow-y: auto; margin: 15px 0; font-family: monospace; font-size: 13px;"></div>
+                <button onclick="closeTicketViewModal()" style="width: 100%; background: #00ffcc; color: #000; border: none; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer;">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function viewTicketItems(ticketId) {
+    const ticket = AppState.ticketHistory.find(t => t.id === ticketId);
+    if (!ticket) return;
+
+    injectDynamicModals();
+    const contentEl = document.getElementById('ticket-view-content');
+    if (contentEl) {
+        let html = `<div style="margin-bottom: 10px; border-bottom: 1px dashed #444; padding-bottom: 5px;">
+            <strong>ID:</strong> ${ticket.id}<br>
+            <strong>Time:</strong> ${ticket.time}<br>
+            <strong>Total Points:</strong> ${ticket.points} PTS
+        </div>`;
+        
+        ticket.items.forEach(item => {
+            html += `<div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #222;">
+                <span>${item.digit} (${item.word}) [${item.type}]</span>
+                <span><strong>${item.amount} PTS</strong></span>
+            </div>`;
+        });
+        contentEl.innerHTML = html;
+    }
+
+    const modal = document.getElementById('ticket-view-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+    }
+}
+
+function closeTicketViewModal() {
+    const modal = document.getElementById('ticket-view-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.add('hidden');
+    }
+}
