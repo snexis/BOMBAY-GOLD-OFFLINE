@@ -58,6 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchDeviceIP();
     initDrawTimerEngine();
     injectDynamicModals();
+    updateLiveClock(); // ডাইনামিক ক্লক চালু করা
+    setInterval(updateLiveClock, 1000); // প্রতি ১ সেকেন্ডে ক্লক আপডেট
 });
 
 function initApp() {
@@ -65,12 +67,26 @@ function initApp() {
     setupEventListeners();
     renderSingleBoard();
     renderTripleBoard();
+    renderJuriBoard(); // জুড়ি বোর্ড রেন্ডার কল
     checkAndAutoRefillBalance();
     
     if (AppState.currentResult.digit === '---') {
         onNewDrawStart();
     } else {
         renderRecentResults();
+    }
+}
+
+// ডাইনামিক রিয়েল-টাইম ডেট এবং ঘড়ি আপডেট ফাংশন
+function updateLiveClock() {
+    const now = new Date();
+    const optionsDate = { day: '2-digit', month: 'short', year: 'numeric' };
+    const dateStr = now.toLocaleDateString('en-GB', optionsDate);
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    
+    const clockElement = document.getElementById('live-date-time');
+    if (clockElement) {
+        clockElement.innerText = `${dateStr} | ${timeStr}`;
     }
 }
 
@@ -297,6 +313,7 @@ function setupEventListeners() {
             playVoiceAlert('LOGGED_IN');
             renderSingleBoard();
             renderTripleBoard();
+            renderJuriBoard();
             updateLiveResultDisplay();
             
             return false;
@@ -392,6 +409,7 @@ function switchViewMode(mode) {
 
     renderSingleBoard();
     renderTripleBoard();
+    renderJuriBoard();
     updateLiveResultDisplay();
     updateCartDisplay();
 }
@@ -410,7 +428,7 @@ function updateLiveResultDisplay() {
 }
 
 // ==========================================
-// MODULE 4: TRIPLE 220 MATRIX BOARD
+// MODULE 4: TRIPLE 220 MATRIX BOARD & JURI BOARD (00-99)
 // ==========================================
 
 const RawTripleDataEntries = [
@@ -511,6 +529,43 @@ function renderTripleBoard() {
         gridContainer.appendChild(cell);
     });
 
+    syncBoardBetDisplays();
+}
+
+// জুড়ি বোর্ড (00 - 99) রেন্ডার করার ফাংশন
+function renderJuriBoard() {
+    const juriGrid = document.getElementById('juri-board-grid');
+    if (!juriGrid) return;
+
+    juriGrid.innerHTML = '';
+
+    for (let i = 0; i < 100; i++) {
+        let numStr = i < 10 ? '0' + i : i.toString();
+        
+        const cell = document.createElement('div');
+        cell.className = 'juri-card premium-gaming-card';
+        cell.id = `juri-cell-${numStr}`;
+        
+        if (AppState.timerState.isLocked) cell.classList.add('disabled-cell');
+
+        cell.onclick = (e) => {
+            e.preventDefault();
+            if (AppState.timerState.isLocked) return;
+            addBetToCart(`JURI-${numStr}`, numStr, 'JURI', 'TRIPLE', AppState.selectedBetAmount);
+        };
+
+        cell.oncontextmenu = (e) => {
+            e.preventDefault();
+            if (AppState.timerState.isLocked) return;
+            reduceBetFromCart(`JURI-${numStr}`, AppState.selectedBetAmount);
+        };
+
+        cell.innerHTML = `
+            <div class="bet-amount-badge" id="badge-JURI-${numStr}" style="display: none;">0</div>
+            <div class="juri-val-main">${numStr}</div>
+        `;
+        juriGrid.appendChild(cell);
+    }
     syncBoardBetDisplays();
 }
 
@@ -801,6 +856,7 @@ function setLockState(locked) {
 
     renderSingleBoard();
     renderTripleBoard();
+    renderJuriBoard();
 }
 
 function onNewDrawStart() {
@@ -876,121 +932,5 @@ function triggerWinningAnimation(winAmount) {
         overlay = document.createElement('div');
         overlay.id = 'winning-animation-overlay';
         document.body.appendChild(overlay);
-    }
-
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(5, 8, 22, 0.88);
-        backdrop-filter: blur(12px);
-        z-index: 999999;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: #00ffcc;
-        font-family: Arial, sans-serif;
-        text-align: center;
-    `;
-
-    overlay.innerHTML = `
-        <div style="background: linear-gradient(135deg, rgba(20,30,50,0.95), rgba(10,15,30,0.95)); padding: 40px 60px; border-radius: 20px; border: 2px solid #00ffcc; box-shadow: 0 0 50px rgba(0, 255, 204, 0.5); text-align: center;">
-            <div style="font-size: 65px; margin-bottom: 10px;">🎉🏆🎉</div>
-            <h2 style="font-size: 32px; color: #ffd700; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 2px;">WINNER!</h2>
-            <p style="font-size: 16px; color: #e2e8f0; margin-bottom: 20px;">Congratulations! You have won</p>
-            <div style="font-size: 42px; font-weight: bold; color: #00ffcc; text-shadow: 0 0 25px rgba(0, 255, 204, 0.8); margin-bottom: 15px;">
-                +${winAmount.toLocaleString()} PTS
-            </div>
-        </div>
-    `;
-
-    if (AppState.soundEnabled && window.speechSynthesis) {
-        const utterance = new SpeechSynthesisUtterance("Congratulations! You won!");
-        window.speechSynthesis.speak(utterance);
-    }
-
-    setTimeout(() => {
-        overlay.remove();
-    }, 3500);
-}
-
-// ==========================================
-// MODULE 7: HELPER & DYNAMIC DOM INJECTION
-// ==========================================
-
-function renderTicketHistoryTable() {
-    const tableContainer = document.getElementById('history-table-body');
-    if (!tableContainer) return;
-
-    if (AppState.ticketHistory.length === 0) {
-        tableContainer.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: #888;">No ticket history found for today.</td></tr>';
-        return;
-    }
-
-    let html = '';
-    AppState.ticketHistory.forEach(ticket => {
-        let statusBadge = '<span style="color: #ffaa00; font-weight: bold;">Pending</span>';
-        if (ticket.status === 'Y') statusBadge = `<span style="color: #00ffcc; font-weight: bold;">WIN (+${ticket.winningPts.toLocaleString()})</span>`;
-        if (ticket.status === 'N') statusBadge = '<span style="color: #ff4d4d; font-weight: bold;">LOST</span>';
-
-        const itemsSummary = ticket.items.map(i => `${i.digit}(${i.word}) x${i.amount}`).join(', ');
-
-        html += `
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px;">
-                <td style="padding: 12px; color: #00ffcc;">${ticket.id}</td>
-                <td style="padding: 12px; color: #ccc;">${ticket.time}</td>
-                <td style="padding: 12px; color: #fff;">${itemsSummary}</td>
-                <td style="padding: 12px; font-weight: bold; color: #ffd700;">${ticket.points.toLocaleString()} PTS</td>
-                <td style="padding: 12px;">${statusBadge}</td>
-            </tr>
-        `;
-    });
-
-    tableContainer.innerHTML = html;
-}
-
-function injectDynamicModals() {
-    if (!document.getElementById('silent-print-frame')) {
-        const iframe = document.createElement('iframe');
-        iframe.id = 'silent-print-frame';
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-    }
-
-    if (!document.getElementById('history-modal')) {
-        const historyModal = document.createElement('div');
-        historyModal.id = 'history-modal';
-        historyModal.className = 'modal-overlay hidden';
-        historyModal.style.cssText = `
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
-            z-index: 99999; display: flex; align-items: center; justify-content: center;
-        `;
-        historyModal.innerHTML = `
-            <div style="background: #0f172a; width: 90%; max-width: 750px; max-height: 80vh; border-radius: 16px; border: 1px solid #00ffcc; padding: 20px; color: #fff; display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,255,204,0.2);">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 15px;">
-                    <h3 style="margin: 0; color: #00ffcc; font-size: 18px;">🎫 Ticket History Today</h3>
-                    <button onclick="closeTicketHistory()" style="background: transparent; border: none; color: #ff4d4d; font-size: 22px; cursor: pointer; font-weight: bold;">✕</button>
-                </div>
-                <div style="overflow-y: auto; flex: 1;">
-                    <table style="width: 100%; text-align: left; border-collapse: collapse;">
-                        <thead>
-                            <tr style="color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 12px; text-transform: uppercase;">
-                                <th style="padding: 10px;">Ticket ID</th>
-                                <th style="padding: 10px;">Time</th>
-                                <th style="padding: 10px;">Selections</th>
-                                <th style="padding: 10px;">Total Bet</th>
-                                <th style="padding: 10px;">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(historyModal);
     }
 }
