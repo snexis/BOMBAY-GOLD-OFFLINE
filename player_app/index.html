@@ -1,195 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A2Z BOMBAY</title>
+    <title>A2Z BOMBAY - Gaming Dashboard</title>
+    <!-- CSS Link -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Network Offline Overlay Guard -->
+    <!-- ==========================================================
+         NETWORK OFFLINE OVERLAY GUARD
+         ========================================================== -->
     <div id="network-offline-overlay" class="hidden">
         <div class="offline-box">
-            <div class="offline-icon">📡❌</div>
-            <h2>CONNECTION FAILED</h2>
-            <p>Internet connection lost. Game activity has been safely paused.</p>
-            <button class="btn-reconnect" onclick="attemptReconnect()">RETRY CONNECTION</button>
+            <div class="offline-icon">⚠️</div>
+            <h2>ইন্টারনেট সংযোগ নেই!</h2>
+            <p>আপনার নেটওয়ার্ক ডিসকানেক্ট হয়ে গেছে। ড্র সিঙ্ক্রোনাইজেশনের জন্য সংযোগের অপেক্ষা করা হচ্ছে...</p>
+            <button class="btn-reconnect" onclick="window.location.reload()">পুনরায় চেষ্টা করুন</button>
         </div>
     </div>
 
-    <!-- Login Modal -->
-    <div id="login-modal" class="modal-overlay glow-backdrop">
-        <div class="login-card premium-gaming-card">
+    <!-- ==========================================================
+         LOGIN MODAL SCREEN
+         ========================================================== -->
+    <div id="login-modal" class="modal-overlay glow-backdrop hidden">
+        <div class="premium-gaming-card">
             <div class="login-brand-header">
                 <h5>A2Z BOMBAY</h5>
-                <p class="announcement-tag">ANNOUNCEMENT ONLY</p>
+                <div class="announcement-tag">INTERNATIONAL GAMING SYSTEM</div>
             </div>
-            <form id="login-form" onsubmit="return handleLoginSubmit(event)">
+            <form id="login-form">
                 <div class="form-group">
-                    <label for="username">User ID / Terminal Name</label>
-                    <div class="input-with-icon">
-                        <input type="text" id="username" placeholder="Enter User ID" value="DEMO_PLAYER_01" required>
-                    </div>
+                    <label for="login-username">ইউজার আইডি (User ID)</label>
+                    <input type="text" id="login-username" placeholder="ইউজারনেম লিখুন" required autocomplete="off">
                 </div>
-
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="login-password">পাসওয়ার্ড (Password)</label>
                     <div class="password-wrapper">
-                        <input type="password" id="password" placeholder="Enter Password" value="12345" required>
-                        <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility()">👁️</button>
+                        <input type="password" id="login-password" placeholder="পাসওয়ার্ড লিখুন" required>
+                        <button type="button" class="eye-toggle-btn" id="toggle-password-visibility">👁️</button>
                     </div>
                 </div>
-
                 <div class="form-row-checkbox">
                     <label class="checkbox-container">
-                        <input type="checkbox" id="remember-me" checked>
-                        <span class="checkmark"></span> Remember Terminal
+                        <input type="checkbox" id="remember-me"> আইডি মনে রাখুন
                     </label>
                 </div>
-
-                <button type="submit" class="btn-primary btn-glow">Enter Game / Login</button>
+                <button type="submit" class="btn-glow">লগইন করুন</button>
             </form>
         </div>
     </div>
 
-    <!-- Main Game App Container -->
-    <div id="app-container" class="hidden" style="display: none;">
-        
-        <!-- ========================================== -->
-        <!-- 1. LEFT NAVIGATION SIDEBAR                 -->
-        <!-- ========================================== -->
+    <!-- ==========================================================
+         MAIN DASHBOARD (3-COLUMN LAYOUT)
+         ========================================================== -->
+    <div id="app-container">
+
+        <!-- 1. LEFT NAVIGATION SIDEBAR -->
         <aside class="sidebar-left">
-            <!-- User Profile Header -->
             <div class="profile-header">
                 <div class="profile-user-info">
                     <div class="user-avatar">👤</div>
                     <div class="user-details">
-                        <span class="user-label">Profile:</span>
-                        <strong id="drawer-user-id">Raj</strong>
+                        <span class="user-label">অপারেটর আইডি</span>
+                        <strong id="display-user-id">ADMIN01</strong>
                     </div>
                 </div>
-                
                 <div class="account-balances">
                     <div class="balance-item">
-                        <span class="bal-icon">💰</span>
                         <div class="bal-text">
-                            <label>Play Balance</label>
-                            <strong id="play-points">50000</strong>
+                            <label>প্লে পয়েন্ট (Play Points)</label>
+                            <strong id="play-points">0.00</strong>
                         </div>
                     </div>
                     <div class="balance-item">
-                        <span class="bal-icon">🏆</span>
                         <div class="bal-text">
-                            <label>Winning Balance</label>
-                            <strong id="winning-balance">1200</strong>
+                            <label>উইনিং ব্যালেন্স (Winning Balance)</label>
+                            <strong id="winning-balance">0.00</strong>
                         </div>
                     </div>
                     <div class="balance-item">
-                        <span class="bal-icon">⭐</span>
                         <div class="bal-text">
-                            <label>Reward Points</label>
-                            <strong id="reward-points">50</strong>
+                            <label>রিওয়ার্ড পয়েন্ট (Reward)</label>
+                            <strong id="reward-balance">0.00</strong>
                         </div>
                     </div>
                 </div>
-
-                <button id="logout-btn" class="btn-logout">
-                    <span class="logout-icon">🚪</span> Logout
-                </button>
+                <button id="btn-logout" class="btn-logout">লগআউট (Logout)</button>
             </div>
 
-            <!-- Left Navigation Links -->
+            <!-- Left Navigation Menu -->
             <nav class="nav-menu">
                 <ul>
-                    <li class="active"><a href="#"><span class="nav-icon">▦</span> Play Board</a></li>
-                    <li><a href="#" onclick="openWithdrawModal()"><span class="nav-icon">💳</span> Withdraw Funds</a></li>
-                    <li><a href="#" onclick="openReportModal()"><span class="nav-icon">📄</span> Transaction Report</a></li>
-                    <li><a href="#" onclick="openBalanceModal()"><span class="nav-icon">🏦</span> Account Balance</a></li>
-                    <li><a href="#" onclick="openTicketHistory()"><span class="nav-icon">📜</span> Play History</a></li>
-                    <li><a href="#" onclick="openResultsModal()"><span class="nav-icon">📊</span> Results</a></li>
-                    <li><a href="#" onclick="openSettingsModal()"><span class="nav-icon">⚙️</span> Settings</a></li>
-                    <li><a href="#" onclick="openSupportModal()"><span class="nav-icon">❓</span> Help & Support</a></li>
+                    <li class="active"><a href="#" id="nav-dashboard">🏠 ড্যাশবোর্ড (Dashboard)</a></li>
+                    <li><a href="#" id="nav-ticket-history">🎟️ টিকিট হিস্ট্রি (Tickets)</a></li>
+                    <li><a href="#" id="nav-result-history">📊 রেজাল্ট হিস্ট্রি (Result History)</a></li>
+                    <li><a href="#" id="nav-rules">📜 নিয়মানুাবলী (Rules)</a></li>
+                    <li><a href="#" id="nav-settings">⚙️ সেটিংস (Settings)</a></li>
                 </ul>
             </nav>
 
-            <!-- Bottom Live Draw Status Box -->
+            <!-- Live Draw Status Card -->
             <div class="live-draw-status-card">
                 <div class="status-header">
-                    <span class="status-indicator live-pulse"></span>
-                    <strong>LIVE DRAW STATUS</strong>
+                    <div class="live-pulse"></div>
+                    <span>লাইভ ড্র স্ট্যাটাস</span>
                     <span class="live-tag">LIVE</span>
                 </div>
-                <div class="status-body">
-                    <div class="status-row">
-                        <span>Draw Time</span>
-                        <strong id="current-draw-time">01:25:30 PM</strong>
-                    </div>
-                    <div class="status-row">
-                        <span>Draw ID</span>
-                        <strong id="current-draw-id">245678</strong>
-                    </div>
-                    <div class="status-row">
-                        <span>Next Draw</span>
-                        <strong id="draw-time-val">02:00 PM</strong>
-                    </div>
+                <div class="status-row">
+                    <span>কারেন্ট ড্র আইডি:</span>
+                    <strong id="current-draw-id">#1001</strong>
                 </div>
-                <button class="btn-view-history" onclick="openTicketHistory()">
-                    👁️ View Draw History
-                </button>
+                <div class="status-row">
+                    <span>বাকি সময়:</span>
+                    <strong id="draw-timer" style="color: #f59e0b;">00:00</strong>
+                </div>
+                <button class="btn-view-history" id="btn-open-result-history-card">সারাদিনের রেজাল্ট দেখুন</button>
             </div>
         </aside>
 
-        <!-- ========================================== -->
-        <!-- 2. CENTER MAIN GAME CONTENT                -->
-        <!-- ========================================== -->
+
+        <!-- 2. CENTER MAIN GAME CONTENT -->
         <main class="main-content">
-            
-            <!-- Game Lock Banner -->
+            <!-- Game Lock Warning Banner (Shown when draw is calculating) -->
             <div id="game-lock-banner" class="game-lock-banner hidden">
-                🔒 GAME IS LOCKED FOR DRAW CALCULATION 🔒
+                ⚠️ ড্র গণনা চলছে! নতুন বেটিং সাময়িকভাবে বন্ধ আছে।
             </div>
 
-            <!-- Top Results Section (Current Result + Today's Result 12-Slot History) -->
+            <!-- Todays Result Panel (Highlight + 12 Slot Horizontal Strip) -->
             <section class="todays-result-panel">
-                <!-- Current Main Winning Result Card -->
+                <!-- Current Result Highlight Box -->
                 <div class="current-result-highlight">
-                    <div class="highlight-header">CURRENT RESULT</div>
+                    <div class="highlight-header">সর্বশেষ ড্র এর ফলাফল</div>
                     <div class="highlight-card">
-                        <span class="highlight-id" id="current-draw-id-display">#2370</span>
-                        <span class="highlight-time" id="current-draw-time-display">01:30 PM</span>
-                        <strong class="highlight-number led-font" id="top-result-display">789</strong>
+                        <span class="highlight-id" id="current-draw-id-display">ড্র #1000</span>
+                        <span class="highlight-time" id="current-result-time">10:00 AM</span>
+                        <div class="highlight-number" id="current-result-num">---</div>
                     </div>
                 </div>
 
-                <!-- Today's Result History Horizontal Slider (12 Slots) -->
+                <!-- 12-Slot History Strip -->
                 <div class="todays-history-container">
                     <div class="slider-header">
-                        <h3>TODAY'S RESULT</h3>
+                        <h3>আজকের ড্র এর ফলাফল (১২ টি স্লট)</h3>
                         <div class="slider-arrows">
-                            <button class="arrow-btn" onclick="scrollResultSlider('left')">&#10094;</button>
-                            <button class="arrow-btn" onclick="scrollResultSlider('right')">&#10095;</button>
+                            <button class="arrow-btn" id="btn-scroll-left">◄</button>
+                            <button class="arrow-btn" id="btn-scroll-right">►</button>
                         </div>
                     </div>
-                    <!-- 12 Slot Container -->
-                    <div id="recent-results-stripe" class="results-12-grid">
-                        <!-- Dynamic Result Cards (Slots 1 to 12) render here via JavaScript -->
+                    <div class="results-12-grid" id="results-12-grid">
+                        <!-- Dynamic 12 Slots will be rendered here by JS -->
                     </div>
                 </div>
             </section>
 
-            <!-- Single Board (0-9) Section -->
+            <!-- Single Board Row (0 to 9 Numbers) -->
             <section class="single-board-container">
-                <h3 class="section-title-yellow">SINGLE BOARD (0-9)</h3>
-                <div id="single-board-grid" class="single-cards-row">
-                    <!-- 0 to 9 Single Cards render here via JavaScript -->
+                <div class="section-title-yellow">সিঙ্গেল বোর্ড (SINGLE 0 - 9)</div>
+                <div class="single-cards-row" id="single-board-row">
+                    <!-- Dynamic Single Cards (0-9) generated by JS -->
                 </div>
             </section>
 
-            <!-- Main Board Section (22×10 Grid - 220 Matrix) -->
+            <!-- Main 22x10 Matrix Grid Container -->
             <section class="main-grid-container">
-                <!-- 10 Column Headers -->
                 <div class="grid-column-headers">
+                    <div class="col-head">0</div>
                     <div class="col-head">1</div>
                     <div class="col-head">2</div>
                     <div class="col-head">3</div>
@@ -199,155 +176,159 @@
                     <div class="col-head">7</div>
                     <div class="col-head">8</div>
                     <div class="col-head">9</div>
-                    <div class="col-head">10</div>
                 </div>
-
-                <!-- 220 Matrix Container (10 Columns, 22 Cards per column) -->
-                <div id="triple-board-grid" class="triple-matrix-22x10">
-                    <!-- 220 Cards render dynamically here via JavaScript -->
+                <!-- 220 Cells Grid -->
+                <div class="triple-matrix-22x10" id="triple-board-grid">
+                    <!-- Dynamic 22x10 Matrix Cells generated by JS -->
                 </div>
             </section>
 
-            <!-- Bottom Ticker Announcement -->
-            <div class="bottom-announcement-bar">
-                <span class="speaker-icon">📢</span>
-                <marquee behavior="scroll" direction="left" scrollamount="5">
-                    Note: Please place your bet before the draw time. Welcome to A2Z BOMBAY Gaming Platform.
-                </marquee>
-            </div>
+            <!-- Bottom Announcement Bar -->
+            <footer class="bottom-announcement-bar">
+                <span>📢</span>
+                <marquee scrollamount="5">A2Z BOMBAY আন্তর্জাতিক গেমিং সিস্টেমে আপনাকে স্বাগতম। প্রতিটি ড্র নির্ধারিত সময়ে নির্ভুলভাবে পরিচালিত হয়।</marquee>
+            </footer>
         </main>
 
-        <!-- ========================================== -->
-        <!-- 3. RIGHT BETTING PANEL SIDEBAR             -->
-        <!-- ========================================== -->
+
+        <!-- 3. RIGHT BETTING PANEL SIDEBAR -->
         <aside class="sidebar-right">
-            
-            <!-- Number Range Selection (A, B, C, D) -->
+            <!-- Range Selector (A, B, C, D) -->
             <div class="bet-panel-block">
-                <h4 class="panel-block-title">NUMBER RANGE</h4>
+                <div class="panel-block-title">নম্বর রেঞ্জ (RANGE)</div>
                 <div class="range-btn-grid">
-                    <button id="btn-range-a" class="btn-range" onclick="filterRange('A')">
+                    <button class="btn-range active" data-range="A">
                         <span class="range-tag">A</span>
-                        <span class="range-val">1-55</span>
+                        <span class="range-val">100-200</span>
                     </button>
-                    <button id="btn-range-b" class="btn-range" onclick="filterRange('B')">
+                    <button class="btn-range" data-range="B">
                         <span class="range-tag">B</span>
-                        <span class="range-val">56-110</span>
+                        <span class="range-val">201-300</span>
                     </button>
-                    <button id="btn-range-c" class="btn-range" onclick="filterRange('C')">
+                    <button class="btn-range" data-range="C">
                         <span class="range-tag">C</span>
-                        <span class="range-val">111-165</span>
+                        <span class="range-val">301-400</span>
                     </button>
-                    <button id="btn-range-d" class="btn-range" onclick="filterRange('D')">
+                    <button class="btn-range" data-range="D">
                         <span class="range-tag">D</span>
-                        <span class="range-val">166-220</span>
+                        <span class="range-val">401-500</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Bet Type Selection -->
+            <!-- Bet Type Selector (Single, Jora, Triple) -->
             <div class="bet-panel-block">
-                <h4 class="panel-block-title">BET TYPE</h4>
+                <div class="panel-block-title">বেট টাইপ (BET TYPE)</div>
                 <div class="bet-type-grid">
-                    <button id="btn-type-single" class="btn-type active" onclick="setBetType('SINGLE')">Single</button>
-                    <button id="btn-type-jora" class="btn-type" onclick="setBetType('JORA')">Jora</button>
-                    <button id="btn-type-triple" class="btn-type" onclick="setBetType('TRIPLE')">Triple</button>
+                    <button class="btn-type active" data-type="single">SINGLE</button>
+                    <button class="btn-type" data-type="jora">JORA</button>
+                    <button class="btn-type" data-type="triple">TRIPLE</button>
                 </div>
             </div>
 
-            <!-- Bet Amount Chips & Custom Input -->
+            <!-- Chips Selector & Custom Input -->
             <div class="bet-panel-block">
-                <h4 class="panel-block-title">BET AMOUNT</h4>
+                <div class="panel-block-title">পয়েন্ট / চিপস (POINTS)</div>
                 <div class="chips-grid">
-                    <button class="btn-chip active" onclick="setBetAmount(10)">10</button>
-                    <button class="btn-chip" onclick="setBetAmount(20)">20</button>
-                    <button class="btn-chip" onclick="setBetAmount(50)">50</button>
-                    <button class="btn-chip" onclick="setBetAmount(100)">100</button>
-                    <button class="btn-chip btn-custom-wrapper">
-                        <input type="number" id="custom-bet-input" placeholder="Custom" oninput="setCustomAmount(this.value)">
-                    </button>
+                    <button class="btn-chip active" data-val="5">5</button>
+                    <button class="btn-chip" data-val="10">10</button>
+                    <button class="btn-chip" data-val="50">50</button>
+                    <button class="btn-chip" data-val="100">100</button>
+                    <div class="btn-custom-wrapper">
+                        <input type="number" id="custom-chip-val" placeholder="Custom" min="1">
+                    </div>
                 </div>
             </div>
 
-            <!-- Selected Items Cart Box -->
+            <!-- Selected Bet Items Cart -->
             <div class="bet-panel-block cart-block">
                 <div class="cart-header">
-                    <h4>SELECTED ITEMS ( <span id="selected-count">0</span> )</h4>
-                    <span class="total-pts-tag">Total: <strong id="total-bet-points">0</strong> PTS</span>
+                    <span>নির্বাচিত সংখ্যা (CART)</span>
+                    <span class="total-pts-tag">মোট: <strong id="total-cart-pts">0</strong> Pts</span>
                 </div>
-                <div id="selected-items-display" class="cart-items-box">
-                    <p class="empty-msg">Your selections will appear here.</p>
+                <div class="cart-items-box" id="cart-items-list">
+                    <div class="empty-msg">কোনো সংখ্যা নির্বাচিত হয়নি</div>
                 </div>
-                <button class="btn-clear-all" onclick="clearAllSelections()">Clear All</button>
+                <button class="btn-clear-all" id="btn-clear-cart">সব মুছুন (Clear All)</button>
             </div>
 
-            <!-- Action Buttons (Reset & Submit) -->
+            <!-- Action Submit Buttons -->
             <div class="bet-action-buttons">
-                <button class="btn-reset" onclick="resetBetSelections()">
-                    <span>🔄</span> Reset
-                </button>
-                <button id="btn-submit-bet" class="btn-submit" onclick="submitBetAndPrint()">
-                    <span>✈️</span> Submit Bet
-                </button>
+                <button class="btn-reset" id="btn-reset-selection">রিভিউ (Reset)</button>
+                <button class="btn-submit" id="btn-submit-bets">কনফার্ম (Submit)</button>
             </div>
         </aside>
-
     </div>
 
-    <!-- Ticket History Modal -->
-    <div id="history-modal" class="modal-overlay hidden">
-        <div class="modal-card premium-gaming-card">
+
+    <!-- ==========================================================
+         MODAL 1: TICKET HISTORY MODAL
+         ========================================================== -->
+    <div id="ticket-history-modal" class="modal-overlay hidden">
+        <div class="modal-card">
             <div class="modal-header">
-                <h3>Ticket History & Status</h3>
-                <button class="close-modal" onclick="closeTicketHistory()">&times;</button>
+                <h3>🎟️ আপনার টিকিট হিস্ট্রি</h3>
+                <button class="close-modal" id="close-ticket-history-modal">✖</button>
             </div>
-            <div class="modal-body">
-                <div class="barcode-checker-section">
-                    <input type="text" id="barcode-check-input" placeholder="Enter Ticket ID / Barcode">
-                    <button class="btn-secondary" onclick="checkTicketBarcode()">Verify Ticket</button>
-                </div>
+            <div style="max-height: 300px; overflow-y: auto;">
                 <table class="history-table">
                     <thead>
                         <tr>
-                            <th>Ticket ID</th>
-                            <th>Points</th>
-                            <th>Time</th>
-                            <th>Status</th>
+                            <th>টাইম</th>
+                            <th>টিকিট নং</th>
+                            <th>পয়েন্ট</th>
+                            <th>স্ট্যাটাস</th>
+                            <th>প্রিন্ট</th>
                         </tr>
                     </thead>
-                    <tbody id="history-table-body">
-                        <!-- Dynamic History Rows Render Here -->
+                    <tbody id="ticket-history-table-body">
+                        <!-- Dynamic Ticket History Rows -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Hidden Thermal Print Frame -->
-    <iframe id="silent-print-frame" style="display: none;"></iframe>
 
-    <!-- Inline Scripts -->
-    <script>
-        function togglePasswordVisibility() {
-            const pwdInput = document.getElementById('password');
-            if (pwdInput) {
-                pwdInput.type = (pwdInput.type === 'password') ? 'text' : 'password';
-            }
-        }
+    <!-- ==========================================================
+         MODAL 2: FULL DAY RESULT HISTORY MODAL (নতুন যুক্ত করা হয়েছে)
+         ========================================================== -->
+    <div id="result-history-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 650px;">
+            <div class="modal-header">
+                <h3>📊 সারাদিনের রেজাল্ট হিস্ট্রি (Result History)</h3>
+                <button class="close-modal" id="close-result-history-modal">✖</button>
+            </div>
+            <div style="margin-bottom: 10px; font-size: 12px; color: #94a3b8; display: flex; justify-content: space-between;">
+                <span>তারিখ: <strong id="result-history-date" style="color: #38bdf8;">আজকের তারিখ</strong></span>
+                <span>মোট ড্র: <strong id="total-draws-count" style="color: #22c55e;">0</strong> টি</span>
+            </div>
+            <div style="max-height: 380px; overflow-y: auto;">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>ড্র সময় (Time)</th>
+                            <th>ড্র আইডি (Draw ID)</th>
+                            <th>সিঙ্গেল (Single)</th>
+                            <th>জোড়া (Jora)</th>
+                            <th>পানা/ট্রিপল (Panna)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="result-history-table-body">
+                        <!-- Dynamic Result History Rows generated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-        function scrollResultSlider(direction) {
-            const container = document.getElementById('recent-results-stripe');
-            if (container) {
-                const scrollAmount = 200;
-                container.scrollBy({
-                    left: direction === 'left' ? -scrollAmount : scrollAmount,
-                    behavior: 'smooth'
-                });
-            }
-        }
-    </script>
 
-    <!-- Main JavaScript File -->
-    <script src="app.js"></script>
+    <!-- ==========================================================
+         SILENT PRINT IFRAME (FOR THERMAL PRINTER)
+         ========================================================== -->
+    <iframe id="silent-print-frame" class="hidden" src="about:blank"></iframe>
+
+    <!-- JAVASCRIPT LOGIC FILE -->
+    <script src="script.js"></script>
 </body>
 </html>
