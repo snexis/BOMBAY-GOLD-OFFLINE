@@ -21,9 +21,11 @@ window.AppState = window.AppState || {
     
     recentResults: [],
     ticketHistory: [],
+    lastResetDate: new Date().toDateString(),
     
     soundEnabled: true,
     printEnabled: true,
+    autoPaymentEnabled: true, // নতুন অটো-পেমেন্ট ফিচার
     
     activeRange: 'ALL',
     selectedBetAmount: 10,
@@ -50,10 +52,12 @@ window.AppState = window.AppState || {
 var AppState = window.AppState;
 
 document.addEventListener('DOMContentLoaded', () => {
+    checkMidnightReset();
     initApp();
     setupNetworkGuard();
     fetchDeviceIP();
     initDrawTimerEngine();
+    injectDynamicModals(); // নতুন ভিউ ও উইনিং অ্যানিমেশন মডাল যুক্ত করা হলো
 });
 
 function initApp() {
@@ -67,6 +71,15 @@ function initApp() {
         onNewDrawStart();
     } else {
         renderRecentResults();
+    }
+}
+
+// প্রতিদিন রাত ১২টায় টিকিট হিস্ট্রি অটো-ক্লিয়ার চেক
+function checkMidnightReset() {
+    const todayStr = new Date().toDateString();
+    if (AppState.lastResetDate && AppState.lastResetDate !== todayStr) {
+        AppState.ticketHistory = [];
+        AppState.lastResetDate = todayStr;
     }
 }
 
@@ -109,12 +122,35 @@ function toggleSound() {
     AppState.soundEnabled = !AppState.soundEnabled;
     const btn = document.getElementById('btn-toggle-sound');
     if (btn) btn.classList.toggle('active', AppState.soundEnabled);
+    showToast(AppState.soundEnabled ? "Sound Enabled" : "Sound Muted");
 }
 
 function togglePrint() {
     AppState.printEnabled = !AppState.printEnabled;
     const btn = document.getElementById('btn-toggle-print');
     if (btn) btn.classList.toggle('active', AppState.printEnabled);
+    showToast(AppState.printEnabled ? "Printer Mode: ON (Slip Print Active)" : "Printer Mode: OFF (Digital Mode)");
+}
+
+function toggleAutoPayment() {
+    AppState.autoPaymentEnabled = !AppState.autoPaymentEnabled;
+    showToast(AppState.autoPaymentEnabled ? "Auto-Payment: ON" : "Auto-Payment: OFF");
+}
+
+// স্ক্রিনে ছোট পপ-আপ বা টোস্ট নোটিফিকেশন দেখানোর জন্য
+function showToast(message) {
+    let toast = document.getElementById('game-toast-notification');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'game-toast-notification';
+        toast.style.cssText = "position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #00ffcc; padding: 10px 20px; border-radius: 8px; z-index: 9999; font-weight: bold; border: 1px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,204,0.4); transition: opacity 0.3s;";
+        document.body.appendChild(toast);
+    }
+    toast.innerText = message;
+    toast.style.opacity = '1';
+    setTimeout(() => {
+        toast.style.opacity = '0';
+    }, 2500);
 }
 
 function playVoiceAlert(type) {
@@ -299,56 +335,46 @@ function updateLiveResultDisplay() {
 }
 
 // ==========================================
-// MODULE 4: TRIPLE 220 MATRIX BOARD (EXACT IMAGE MATCH)
+// MODULE 4: TRIPLE 220 MATRIX BOARD
 // ==========================================
 
 const RawTripleDataEntries = [
-    // Column 1 (Exact from image)
     ["100", "ABC"], ["678", "BCD"], ["777", "CDE"], ["560", "DEF"], ["470", "EFG"], ["380", "FGH"], ["290", "GHI"], ["119", "HIJ"], ["137", "IJK"], ["236", "JKL"],
     ["146", "KLM"], ["669", "LMN"], ["579", "MNO"], ["399", "NOP"], ["588", "OPQ"], ["489", "PQR"], ["245", "QRS"], ["155", "RST"], ["227", "STU"], ["344", "TUV"],
     ["335", "UVW"], ["128", "VWX"],
     
-    // Column 2 (Exact from image)
     ["200", "WXY"], ["345", "XYZ"], ["444", "YZA"], ["570", "ZAB"], ["480", "ABC"], ["390", "BCD"], ["660", "CDE"], ["129", "DEF"], ["237", "EFG"], ["336", "FGH"],
     ["246", "GHI"], ["679", "HIJ"], ["255", "IJK"], ["147", "JKL"], ["228", "KLM"], ["499", "LMN"], ["688", "MNO"], ["778", "NOP"], ["138", "OPQ"], ["156", "PQR"],
     ["110", "QRS"], ["589", "RST"],
 
-    // Column 3 (Exact from image)
     ["300", "STU"], ["120", "TUV"], ["114", "UVW"], ["580", "VWX"], ["490", "WXY"], ["670", "XYZ"], ["238", "YZA"], ["139", "ZAB"], ["337", "ABC"], ["157", "BCD"],
     ["346", "CDE"], ["689", "DEF"], ["355", "EFG"], ["247", "FGH"], ["256", "GHI"], ["166", "HIJ"], ["599", "IJK"], ["148", "JKL"], ["788", "KLM"], ["445", "LMN"],
     ["229", "MNO"], ["779", "NOP"],
 
-    // Column 4 (Exact from image)
     ["400", "OPQ"], ["789", "PQR"], ["888", "QRS"], ["590", "RST"], ["130", "STU"], ["680", "TUV"], ["248", "UVW"], ["149", "VWX"], ["347", "WXY"], ["158", "XYZ"],
     ["446", "YZA"], ["699", "ZAB"], ["455", "ABC"], ["266", "BCD"], ["112", "CDE"], ["356", "DEF"], ["239", "EFG"], ["338", "FGH"], ["257", "GHI"], ["220", "HIJ"],
     ["770", "IJK"], ["167", "JKL"],
 
-    // Column 5 (Exact from image)
     ["500", "KLM"], ["456", "LMN"], ["555", "MNO"], ["140", "NOP"], ["230", "OPQ"], ["690", "PQR"], ["258", "QRS"], ["159", "RST"], ["357", "STU"], ["799", "TUV"],
     ["267", "UVW"], ["780", "VWX"], ["447", "WXY"], ["366", "XYZ"], ["113", "YZA"], ["122", "ZAB"], ["177", "ABC"], ["249", "BCD"], ["339", "CDE"], ["889", "DEF"],
     ["348", "EFG"], ["168", "FGH"],
 
-    // Column 6 (Exact from image)
     ["600", "GHI"], ["123", "HIJ"], ["222", "IJK"], ["150", "JKL"], ["330", "KLM"], ["240", "LMN"], ["268", "MNO"], ["169", "NOP"], ["367", "OPQ"], ["448", "PQR"],
     ["899", "QRS"], ["178", "RST"], ["790", "STU"], ["466", "TUV"], ["358", "UVW"], ["880", "VWX"], ["114", "WXY"], ["556", "XYZ"], ["259", "YZA"], ["349", "ZAB"],
     ["457", "ABC"], ["277", "BCD"],
 
-    // Column 7 (Exact from image)
     ["700", "CDE"], ["890", "DEF"], ["999", "EFG"], ["160", "FGH"], ["340", "GHI"], ["250", "HIJ"], ["278", "IJK"], ["179", "JKL"], ["377", "KLM"], ["467", "LMN"],
     ["115", "MNO"], ["124", "NOP"], ["223", "OPQ"], ["566", "PQR"], ["557", "QRS"], ["368", "RST"], ["359", "STU"], ["449", "TUV"], ["269", "UVW"], ["133", "VWX"],
     ["188", "WXY"], ["458", "XYZ"],
 
-    // Column 8 (Exact from image)
     ["800", "YZA"], ["567", "ZAB"], ["666", "ABC"], ["170", "BCD"], ["350", "CDE"], ["260", "DEF"], ["288", "EFG"], ["189", "FGH"], ["116", "GHI"], ["233", "HIJ"],
     ["459", "IJK"], ["125", "JKL"], ["224", "KLM"], ["477", "LMN"], ["990", "MNO"], ["134", "NOP"], ["558", "OPQ"], ["369", "PQR"], ["378", "QRS"], ["440", "RST"],
     ["279", "STU"], ["468", "TUV"],
 
-    // Column 9 (Exact from image)
     ["900", "UVW"], ["234", "VWX"], ["333", "WXY"], ["180", "XYZ"], ["360", "YZA"], ["270", "ZAB"], ["450", "ABC"], ["199", "BCD"], ["117", "CDE"], ["469", "DEF"],
     ["126", "EFG"], ["667", "FGH"], ["478", "GHI"], ["135", "HIJ"], ["225", "IJK"], ["144", "JKL"], ["379", "KLM"], ["559", "LMN"], ["289", "MNO"], ["388", "NOP"],
     ["577", "OPQ"], ["568", "PQR"],
 
-    // Column 10 (Exact from image)
     ["000", "QRS"], ["127", "RST"], ["190", "STU"], ["280", "TUV"], ["370", "UVW"], ["460", "VWX"], ["550", "WXY"], ["235", "XYZ"], ["118", "YZA"], ["578", "ZAB"],
     ["145", "ABC"], ["479", "BCD"], ["668", "CDE"], ["299", "DEF"], ["334", "EFG"], ["488", "FGH"], ["389", "GHI"], ["226", "HIJ"], ["569", "IJK"], ["677", "JKL"],
     ["136", "KLM"], ["244", "LMN"]
@@ -568,7 +594,10 @@ function submitBetAndPrint() {
 
     let totalCost = AppState.selectedCart.reduce((sum, item) => sum + item.amount, 0);
 
-    if (AppState.playPoints < totalCost) return;
+    if (AppState.playPoints < totalCost) {
+        showToast("Insufficient Points!");
+        return;
+    }
 
     AppState.playPoints -= totalCost;
     const playPtsEl = document.getElementById('play-points');
@@ -587,6 +616,8 @@ function submitBetAndPrint() {
         winningPts: 0
     };
     AppState.ticketHistory.unshift(ticketRecord);
+
+    showToast("Bet Successful! Slip Registered.");
 
     if (AppState.printEnabled) {
         executeSilentThermalPrint(ticketRecord);
@@ -631,7 +662,7 @@ function executeSilentThermalPrint(ticket) {
 }
 
 // ==========================================
-// MODULE 6: DRAW TIMER & RECENT RESULTS BOARD
+// MODULE 6: DRAW TIMER & WINNING ANIMATION
 // ==========================================
 
 function initDrawTimerEngine() {
@@ -737,12 +768,39 @@ function evaluateTicketWinners(result) {
     });
 
     if (totalWonThisDraw > 0) {
-        AppState.playPoints += totalWonThisDraw;
+        if (AppState.autoPaymentEnabled) {
+            AppState.playPoints += totalWonThisDraw;
+        }
+        triggerWinningAnimation(totalWonThisDraw);
         const playPtsEl = document.getElementById('play-points');
         if (playPtsEl) {
             playPtsEl.innerText = AppState.playPoints.toLocaleString();
         }
     }
+}
+
+// উইনিং অ্যানিমেশন পপআপ (১-২ সেকেন্ড বা ক্লিক করে বন্ধ করার জন্য)
+function triggerWinningAnimation(winAmount) {
+    let overlay = document.getElementById('winning-animation-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'winning-animation-overlay';
+        overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000; cursor: pointer;";
+        overlay.innerHTML = `<div style="background: linear-gradient(135deg, #00ffcc, #006644); padding: 40px; border-radius: 20px; text-align: center; color: #fff; box-shadow: 0 0 50px #00ffcc; animation: popIn 0.5s ease;">
+            <h1 style="font-size: 36px; margin: 0 0 10px 0;">🎉 CONGRATULATIONS! 🎉</h1>
+            <p style="font-size: 20px; margin: 0;">You Won</p>
+            <h2 id="winning-amount-display" style="font-size: 48px; margin: 10px 0; color: #ffff00;">0 PTS</h2>
+            <p style="font-size: 14px; margin-top: 15px; opacity: 0.8;">Click anywhere to continue</p>
+        </div>`;
+        overlay.onclick = () => { overlay.style.display = 'none'; };
+        document.body.appendChild(overlay);
+    }
+    document.getElementById('winning-amount-display').innerText = `${winAmount.toFixed(0)} PTS`;
+    overlay.style.display = 'flex';
+
+    setTimeout(() => {
+        if (overlay) overlay.style.display = 'none';
+    }, 4000);
 }
 
 function checkTicketBarcode() {
@@ -766,6 +824,7 @@ function checkTicketBarcode() {
     }
 }
 
+// টিকিট হিস্ট্রি এক্সেল স্টাইল টেবিল এবং "View" বাটন সহ রেন্ডার করা
 function renderTicketHistoryTable() {
     const tbody = document.getElementById('history-table-body');
     if (!tbody) return;
@@ -774,18 +833,68 @@ function renderTicketHistoryTable() {
     AppState.ticketHistory.forEach(ticket => {
         const tr = document.createElement('tr');
         
-        let statusBadge = '<span class="status-pending">P (Pending)</span>';
-        if (ticket.status === 'Y') statusBadge = `<span class="status-won">Y (Won ${ticket.winningPts.toFixed(0)} PTS)</span>`;
-        if (ticket.status === 'N') statusBadge = '<span class="status-lost">N (Lost)</span>';
+        let statusBadge = '<span class="status-pending">Pending</span>';
+        if (ticket.status === 'Y') statusBadge = `<span class="status-won" style="color:#00ffcc;">Won (${ticket.winningPts.toFixed(0)} PTS)</span>`;
+        if (ticket.status === 'N') statusBadge = '<span class="status-lost" style="color:#ff4444;">Lost</span>';
 
         tr.innerHTML = `
             <td>${ticket.id}</td>
             <td>${ticket.points} PTS</td>
             <td>${ticket.time}</td>
             <td>${statusBadge}</td>
+            <td><button class="btn-secondary" onclick="viewTicketItems('${ticket.id}')" style="padding: 4px 10px; font-size: 11px; cursor: pointer;">View</button></td>
         `;
         tbody.appendChild(tr);
     });
+}
+
+// টিকিটের ভেতরে বেট করা ডিটেইলস দেখার জন্য ভিউ ফাংশন ও মডাল ইনজেকশন
+function injectDynamicModals() {
+    if (document.getElementById('ticket-view-modal')) return;
+    const modalHtml = `
+        <div id="ticket-view-modal" class="modal-overlay hidden" style="position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; align-items:center; justify-content:center; z-index:10001;">
+            <div class="modal-card premium-gaming-card" style="background:#111; padding:20px; border-radius:10px; width:400px; color:#fff; border:1px solid #00ffcc;">
+                <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:10px;">
+                    <h3>Ticket Details</h3>
+                    <button onclick="closeTicketViewModal()" style="background:none; border:none; color:#fff; font-size:20px; cursor:pointer;">&times;</button>
+                </div>
+                <div id="ticket-view-body" style="padding: 15px 0; max-height: 250px; overflow-y: auto;"></div>
+                <button class="btn-primary" onclick="closeTicketViewModal()" style="width:100%; padding:8px; background:#00ffcc; border:none; font-weight:bold; cursor:pointer; border-radius:5px;">Close</button>
+            </div>
+        </div>
+    `;
+    const div = document.createElement('div');
+    div.innerHTML = modalHtml;
+    document.body.appendChild(div);
+
+    // হিস্ট্রি টেবিল হেডার আপডেট করা যাতে 'Action' কলাম যুক্ত থাকে
+    const historyHeader = document.querySelector('.history-table thead tr');
+    if (historyHeader && !historyHeader.innerHTML.includes('Action')) {
+        const th = document.createElement('th');
+        th.innerText = 'Action';
+        historyHeader.appendChild(th);
+    }
+}
+
+function viewTicketItems(ticketId) {
+    const ticket = AppState.ticketHistory.find(t => t.id === ticketId);
+    const body = document.getElementById('ticket-view-body');
+    const modal = document.getElementById('ticket-view-modal');
+    if (!ticket || !body || !modal) return;
+
+    let html = `<p><strong>Ticket ID:</strong> ${ticket.id}</p><p><strong>Time:</strong> ${ticket.time}</p><hr style="border-color:#333;"><ul>`;
+    ticket.items.forEach(i => {
+        html += `<li style="margin-bottom: 5px;">${i.digit} (${i.word}) - <strong>${i.amount} PTS</strong></li>`;
+    });
+    html += `</ul><p><strong>Total Points:</strong> ${ticket.points} PTS</p>`;
+
+    body.innerHTML = html;
+    modal.style.display = 'flex';
+}
+
+function closeTicketViewModal() {
+    const modal = document.getElementById('ticket-view-modal');
+    if (modal) modal.style.display = 'none';
 }
 
 function updateTimerUI(nowDate, msRemaining, totalSecs) {
