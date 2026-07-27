@@ -3,27 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A2Z BOMBAY - Live Gaming & Announcement System</title>
+    <title>A2Z BOMBAY</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Network Offline Overlay -->
+    <!-- Network Offline Overlay Guard -->
     <div id="network-offline-overlay" class="hidden">
         <div class="offline-box">
-            <h2>Connection Lost</h2>
-            <p>Please check your internet connection...</p>
+            <div class="offline-icon">📡❌</div>
+            <h2>CONNECTION FAILED</h2>
+            <p>Internet connection lost. Game activity has been safely paused.</p>
+            <button class="btn-reconnect" onclick="attemptReconnect()">RETRY CONNECTION</button>
         </div>
     </div>
 
-    <!-- International Dark Login Modal with Glowing Background Effect -->
+    <!-- Login Modal -->
     <div id="login-modal" class="modal-overlay glow-backdrop">
         <div class="login-card premium-gaming-card">
             <div class="login-brand-header">
                 <h5>A2Z BOMBAY</h5>
-                <p class="announcement-tag"> ANNOUNCEMENT ONLY </p>
+                <p class="announcement-tag">ANNOUNCEMENT ONLY</p>
             </div>
-            <form id="login-form">
+            <form id="login-form" onsubmit="return handleLoginSubmit(event)">
                 <div class="form-group">
                     <label for="username">User ID / Terminal Name</label>
                     <div class="input-with-icon">
@@ -34,7 +36,7 @@
                 <div class="form-group">
                     <label for="password">Password</label>
                     <div class="password-wrapper">
-                        <input type="password" id="password" placeholder="Enter Password" value="12345">
+                        <input type="password" id="password" placeholder="Enter Password" value="12345" required>
                         <button type="button" class="eye-toggle-btn" onclick="togglePasswordVisibility()">👁️</button>
                     </div>
                 </div>
@@ -51,136 +53,244 @@
         </div>
     </div>
 
-    <!-- Main App Container (Hidden until login) -->
+    <!-- Main Game App Container -->
     <div id="app-container" class="hidden" style="display: none;">
         
-        <!-- Top Navigation Bar -->
-        <header class="app-header">
-            <div class="header-left">
-                <button class="btn-icon" onclick="toggleDrawer()">&#9776;</button>
-                <h1 class="brand-title">A2Z BOMBAY</h1>
-            </div>
-            <div class="header-center">
-                <div id="current-date-display">--:-- | --/--/----</div>
-            </div>
-            <div class="header-right">
-                <div class="balance-display">
-                    <span>Points: </span>
-                    <strong id="play-points">50000</strong>
+        <!-- ========================================== -->
+        <!-- 1. LEFT NAVIGATION SIDEBAR                 -->
+        <!-- ========================================== -->
+        <aside class="sidebar-left">
+            <!-- User Profile Header -->
+            <div class="profile-header">
+                <div class="profile-user-info">
+                    <div class="user-avatar">👤</div>
+                    <div class="user-details">
+                        <span class="user-label">Profile:</span>
+                        <strong id="drawer-user-id">Raj</strong>
+                    </div>
                 </div>
-                <button id="btn-toggle-sound" class="btn-control active" onclick="toggleSound()">🔊</button>
-<button onclick="togglePrint()">
-🖨️
-</button
-                <button id="logout-btn" class="btn-danger">Logout</button>
-            </div>
-        </header>
+                
+                <div class="account-balances">
+                    <div class="balance-item">
+                        <span class="bal-icon">💰</span>
+                        <div class="bal-text">
+                            <label>Play Balance</label>
+                            <strong id="play-points">50000</strong>
+                        </div>
+                    </div>
+                    <div class="balance-item">
+                        <span class="bal-icon">🏆</span>
+                        <div class="bal-text">
+                            <label>Winning Balance</label>
+                            <strong id="winning-balance">1200</strong>
+                        </div>
+                    </div>
+                    <div class="balance-item">
+                        <span class="bal-icon">⭐</span>
+                        <div class="bal-text">
+                            <label>Reward Points</label>
+                            <strong id="reward-points">50</strong>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- Side Drawer -->
-        <aside id="side-drawer" class="side-drawer">
-            <div class="drawer-header">
-                <h3>Terminal Info</h3>
-                <button class="close-drawer" onclick="toggleDrawer()">&times;</button>
+                <button id="logout-btn" class="btn-logout">
+                    <span class="logout-icon">🚪</span> Logout
+                </button>
             </div>
-            <div class="drawer-body">
-                <p>User: <strong id="drawer-user-id">---</strong></p>
-                <hr>
-                <button class="btn-menu-item" onclick="openTicketHistory()">📋 Ticket History & Status</button>
-                <div class="barcode-checker-section" style="margin-top: 20px;">
-                    <h4>Check Ticket Barcode</h4>
-                    <input type="text" id="barcode-check-input" placeholder="Enter Ticket ID">
-                    <button class="btn-secondary" onclick="checkTicketBarcode()">Verify Ticket</button>
+
+            <!-- Left Navigation Links -->
+            <nav class="nav-menu">
+                <ul>
+                    <li class="active"><a href="#"><span class="nav-icon">▦</span> Play Board</a></li>
+                    <li><a href="#" onclick="openWithdrawModal()"><span class="nav-icon">💳</span> Withdraw Funds</a></li>
+                    <li><a href="#" onclick="openReportModal()"><span class="nav-icon">📄</span> Transaction Report</a></li>
+                    <li><a href="#" onclick="openBalanceModal()"><span class="nav-icon">🏦</span> Account Balance</a></li>
+                    <li><a href="#" onclick="openTicketHistory()"><span class="nav-icon">📜</span> Play History</a></li>
+                    <li><a href="#" onclick="openResultsModal()"><span class="nav-icon">📊</span> Results</a></li>
+                    <li><a href="#" onclick="openSettingsModal()"><span class="nav-icon">⚙️</span> Settings</a></li>
+                    <li><a href="#" onclick="openSupportModal()"><span class="nav-icon">❓</span> Help & Support</a></li>
+                </ul>
+            </nav>
+
+            <!-- Bottom Live Draw Status Box -->
+            <div class="live-draw-status-card">
+                <div class="status-header">
+                    <span class="status-indicator live-pulse"></span>
+                    <strong>LIVE DRAW STATUS</strong>
+                    <span class="live-tag">LIVE</span>
                 </div>
+                <div class="status-body">
+                    <div class="status-row">
+                        <span>Draw Time</span>
+                        <strong id="current-draw-time">01:25:30 PM</strong>
+                    </div>
+                    <div class="status-row">
+                        <span>Draw ID</span>
+                        <strong id="current-draw-id">245678</strong>
+                    </div>
+                    <div class="status-row">
+                        <span>Next Draw</span>
+                        <strong id="draw-time-val">02:00 PM</strong>
+                    </div>
+                </div>
+                <button class="btn-view-history" onclick="openTicketHistory()">
+                    👁️ View Draw History
+                </button>
             </div>
         </aside>
 
-        <!-- Game Lock Banner -->
-        <div id="game-lock-banner" class="game-lock-banner hidden">
-            🔒 GAME IS LOCKED FOR DRAW CALCULATION 🔒
-        </div>
-
-        <!-- Main Dashboard Layout -->
-        <main class="dashboard-main">
+        <!-- ========================================== -->
+        <!-- 2. CENTER MAIN GAME CONTENT                -->
+        <!-- ========================================== -->
+        <main class="main-content">
             
-            <!-- Top Live Result & Timer Strip -->
-            <section class="live-strip">
-                <div class="live-result-box">
-                    <span>Latest Result:</span>
-                    <strong id="top-result-display">---</strong>
-                </div>
-                <div class="draw-timer-box">
-                    <span>Next Draw In:</span>
-                    <strong id="draw-time-val">03:00</strong>
-                </div>
-            </section>
+            <!-- Game Lock Banner -->
+            <div id="game-lock-banner" class="game-lock-banner hidden">
+                🔒 GAME IS LOCKED FOR DRAW CALCULATION 🔒
+            </div>
 
-            <!-- Recent Results Stripe -->
-            <section class="recent-results-section">
-                <h3>Recent Draws</h3>
-                <div id="recent-results-stripe" class="recent-stripe-container">
-                    <!-- Dynamic Items Render Here -->
+            <!-- Top Results Section (Current Result + Today's Result 12-Slot History) -->
+            <section class="todays-result-panel">
+                <!-- Current Main Winning Result Card -->
+                <div class="current-result-highlight">
+                    <div class="highlight-header">CURRENT RESULT</div>
+                    <div class="highlight-card">
+                        <span class="highlight-id" id="current-draw-id-display">#2370</span>
+                        <span class="highlight-time" id="current-draw-time-display">01:30 PM</span>
+                        <strong class="highlight-number led-font" id="top-result-display">789</strong>
+                    </div>
                 </div>
-            </section>
 
-            <!-- Mode Selector -->
-            <section class="mode-selector">
-                <button id="btn-mode-both" class="btn-mode active" onclick="switchViewMode('BOTH')">Both (Digit & Word)</button>
-                <button id="btn-mode-word" class="btn-mode" onclick="switchViewMode('WORD')">Word Only</button>
-                <button id="btn-mode-digit" class="btn-mode" onclick="switchViewMode('DIGIT')">Digit Only</button>
-            </section>
-
-            <!-- Single Board Section (0-9) -->
-            <section class="board-section">
-                <h3>Single Board (0-9)</h3>
-                <div id="single-board-grid" class="single-grid">
-                    <!-- Dynamic Single Cells Render Here -->
+                <!-- Today's Result History Horizontal Slider (12 Slots) -->
+                <div class="todays-history-container">
+                    <div class="slider-header">
+                        <h3>TODAY'S RESULT</h3>
+                        <div class="slider-arrows">
+                            <button class="arrow-btn" onclick="scrollResultSlider('left')">&#10094;</button>
+                            <button class="arrow-btn" onclick="scrollResultSlider('right')">&#10095;</button>
+                        </div>
+                    </div>
+                    <!-- 12 Slot Container -->
+                    <div id="recent-results-stripe" class="results-12-grid">
+                        <!-- Dynamic Result Cards (Slots 1 to 12) render here via JavaScript -->
+                    </div>
                 </div>
             </section>
 
-            <!-- Range & Filter Selector for Triple -->
-            <section class="range-selector">
-                <button id="btn-range-all" class="btn-range active" onclick="filterRange('ALL')">All</button>
-                <button id="btn-range-a" class="btn-range" onclick="filterRange('A')">Range A</button>
-                <button id="btn-range-b" class="btn-range" onclick="filterRange('B')">Range B</button>
-                <button id="btn-range-c" class="btn-range" onclick="filterRange('C')">Range C</button>
-                <button id="btn-range-d" class="btn-range" onclick="filterRange('D')">Range D</button>
-                <button id="btn-range-jora" class="btn-range" onclick="filterRange('JORA')">Jora</button>
-            </section>
-
-            <!-- Triple Board Section (220 Matrix) -->
-            <section class="board-section">
-                <h3>Triple Board (220 Matrix)</h3>
-                <div id="triple-board-grid" class="triple-grid">
-                    <!-- Dynamic Triple Cells Render Here -->
+            <!-- Single Board (0-9) Section -->
+            <section class="single-board-container">
+                <h3 class="section-title-yellow">SINGLE BOARD (0-9)</h3>
+                <div id="single-board-grid" class="single-cards-row">
+                    <!-- 0 to 9 Single Cards render here via JavaScript -->
                 </div>
             </section>
 
+            <!-- Main Board Section (22×10 Grid - 220 Matrix) -->
+            <section class="main-grid-container">
+                <!-- 10 Column Headers -->
+                <div class="grid-column-headers">
+                    <div class="col-head">1</div>
+                    <div class="col-head">2</div>
+                    <div class="col-head">3</div>
+                    <div class="col-head">4</div>
+                    <div class="col-head">5</div>
+                    <div class="col-head">6</div>
+                    <div class="col-head">7</div>
+                    <div class="col-head">8</div>
+                    <div class="col-head">9</div>
+                    <div class="col-head">10</div>
+                </div>
+
+                <!-- 220 Matrix Container (10 Columns, 22 Cards per column) -->
+                <div id="triple-board-grid" class="triple-matrix-22x10">
+                    <!-- 220 Cards render dynamically here via JavaScript -->
+                </div>
+            </section>
+
+            <!-- Bottom Ticker Announcement -->
+            <div class="bottom-announcement-bar">
+                <span class="speaker-icon">📢</span>
+                <marquee behavior="scroll" direction="left" scrollamount="5">
+                    Note: Please place your bet before the draw time. Welcome to A2Z BOMBAY Gaming Platform.
+                </marquee>
+            </div>
         </main>
 
-        <!-- Bottom Betting & Cart Summary Panel -->
-        <footer class="betting-footer-panel">
-            <div class="bet-chip-section">
-                <button class="btn-chip active" onclick="setBetAmount(10)">10 PTS</button>
-                <button class="btn-chip" onclick="setBetAmount(50)">50 PTS</button>
-                <button class="btn-chip" onclick="setBetAmount(100)">100 PTS</button>
-                <button class="btn-chip" onclick="setBetAmount(500)">500 PTS</button>
-                <input type="number" id="custom-bet-input" placeholder="Custom" oninput="setCustomAmount(this.value)">
+        <!-- ========================================== -->
+        <!-- 3. RIGHT BETTING PANEL SIDEBAR             -->
+        <!-- ========================================== -->
+        <aside class="sidebar-right">
+            
+            <!-- Number Range Selection (A, B, C, D) -->
+            <div class="bet-panel-block">
+                <h4 class="panel-block-title">NUMBER RANGE</h4>
+                <div class="range-btn-grid">
+                    <button id="btn-range-a" class="btn-range" onclick="filterRange('A')">
+                        <span class="range-tag">A</span>
+                        <span class="range-val">1-55</span>
+                    </button>
+                    <button id="btn-range-b" class="btn-range" onclick="filterRange('B')">
+                        <span class="range-tag">B</span>
+                        <span class="range-val">56-110</span>
+                    </button>
+                    <button id="btn-range-c" class="btn-range" onclick="filterRange('C')">
+                        <span class="range-tag">C</span>
+                        <span class="range-val">111-165</span>
+                    </button>
+                    <button id="btn-range-d" class="btn-range" onclick="filterRange('D')">
+                        <span class="range-tag">D</span>
+                        <span class="range-val">166-220</span>
+                    </button>
+                </div>
             </div>
 
-            <div class="cart-summary-bar">
-                <div class="cart-info">
-                    <span>Items: <strong id="selected-count">0</strong></span>
-                    <span>Total Cost: <strong id="total-bet-points">0</strong> PTS</span>
-                </div>
-                <div id="selected-items-display" class="selected-items-scroll">
-                    <span class="empty-msg">No items selected</span>
-                </div>
-                <div class="cart-actions">
-                    <button class="btn-danger-light" onclick="clearAllSelections()">Clear All</button>
-                    <button class="btn-success" onclick="submitBetAndPrint()">Submit & Print</button>
+            <!-- Bet Type Selection -->
+            <div class="bet-panel-block">
+                <h4 class="panel-block-title">BET TYPE</h4>
+                <div class="bet-type-grid">
+                    <button id="btn-type-single" class="btn-type active" onclick="setBetType('SINGLE')">Single</button>
+                    <button id="btn-type-jora" class="btn-type" onclick="setBetType('JORA')">Jora</button>
+                    <button id="btn-type-triple" class="btn-type" onclick="setBetType('TRIPLE')">Triple</button>
                 </div>
             </div>
-        </footer>
+
+            <!-- Bet Amount Chips & Custom Input -->
+            <div class="bet-panel-block">
+                <h4 class="panel-block-title">BET AMOUNT</h4>
+                <div class="chips-grid">
+                    <button class="btn-chip active" onclick="setBetAmount(10)">10</button>
+                    <button class="btn-chip" onclick="setBetAmount(20)">20</button>
+                    <button class="btn-chip" onclick="setBetAmount(50)">50</button>
+                    <button class="btn-chip" onclick="setBetAmount(100)">100</button>
+                    <button class="btn-chip btn-custom-wrapper">
+                        <input type="number" id="custom-bet-input" placeholder="Custom" oninput="setCustomAmount(this.value)">
+                    </button>
+                </div>
+            </div>
+
+            <!-- Selected Items Cart Box -->
+            <div class="bet-panel-block cart-block">
+                <div class="cart-header">
+                    <h4>SELECTED ITEMS ( <span id="selected-count">0</span> )</h4>
+                    <span class="total-pts-tag">Total: <strong id="total-bet-points">0</strong> PTS</span>
+                </div>
+                <div id="selected-items-display" class="cart-items-box">
+                    <p class="empty-msg">Your selections will appear here.</p>
+                </div>
+                <button class="btn-clear-all" onclick="clearAllSelections()">Clear All</button>
+            </div>
+
+            <!-- Action Buttons (Reset & Submit) -->
+            <div class="bet-action-buttons">
+                <button class="btn-reset" onclick="resetBetSelections()">
+                    <span>🔄</span> Reset
+                </button>
+                <button id="btn-submit-bet" class="btn-submit" onclick="submitBetAndPrint()">
+                    <span>✈️</span> Submit Bet
+                </button>
+            </div>
+        </aside>
 
     </div>
 
@@ -192,6 +302,10 @@
                 <button class="close-modal" onclick="closeTicketHistory()">&times;</button>
             </div>
             <div class="modal-body">
+                <div class="barcode-checker-section">
+                    <input type="text" id="barcode-check-input" placeholder="Enter Ticket ID / Barcode">
+                    <button class="btn-secondary" onclick="checkTicketBarcode()">Verify Ticket</button>
+                </div>
                 <table class="history-table">
                     <thead>
                         <tr>
@@ -209,24 +323,31 @@
         </div>
     </div>
 
-    <!-- Hidden Silent Thermal Print Frame -->
+    <!-- Hidden Thermal Print Frame -->
     <iframe id="silent-print-frame" style="display: none;"></iframe>
 
-    <!-- Password Eye Toggle Script -->
+    <!-- Inline Scripts -->
     <script>
         function togglePasswordVisibility() {
             const pwdInput = document.getElementById('password');
             if (pwdInput) {
-                if (pwdInput.type === 'password') {
-                    pwdInput.type = 'text';
-                } else {
-                    pwdInput.type = 'password';
-                }
+                pwdInput.type = (pwdInput.type === 'password') ? 'text' : 'password';
+            }
+        }
+
+        function scrollResultSlider(direction) {
+            const container = document.getElementById('recent-results-stripe');
+            if (container) {
+                const scrollAmount = 200;
+                container.scrollBy({
+                    left: direction === 'left' ? -scrollAmount : scrollAmount,
+                    behavior: 'smooth'
+                });
             }
         }
     </script>
 
-    <!-- Load App Logic -->
+    <!-- Main JavaScript File -->
     <script src="app.js"></script>
 </body>
 </html>
