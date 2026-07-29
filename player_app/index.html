@@ -96,13 +96,13 @@
                 </div>
             </div>
 
-            <!-- Left Navigation Menu (Converted into Premium Action Buttons) -->
+            <!-- Left Navigation Menu -->
             <nav class="nav-menu">
                 <ul>
-                    <li><button class="nav-btn active" id="nav-dashboard">🏠 Dashboard</button></li>
-                    <li><button class="nav-btn" id="nav-ticket-history">🎟️ Tickets History</button></li>
-                    <li><button class="nav-btn" id="nav-result-history">📊 Result History</button></li>
-                    <li><button class="nav-btn" id="nav-rules">📜 Rules & Info</button></li>
+                    <li><button class="nav-btn active" id="nav-dashboard">📊 Dashboard</button></li>
+                    <li><button class="nav-btn" id="nav-ticket-history">📋 Tickets History</button></li>
+                    <li><button class="nav-btn" id="nav-result-history">🏆 Result History</button></li>
+                    <li><button class="nav-btn" id="nav-rules">📖 Rules & Info</button></li>
                     <li><button class="nav-btn" id="nav-settings">⚙️ Settings</button></li>
                 </ul>
             </nav>
@@ -129,7 +129,7 @@
         <!-- 2. CENTER MAIN GAME CONTENT -->
         <main class="main-content">
             <div id="game-lock-banner" class="game-lock-banner hidden">
-                ⚠️ Draw calculation in progress! Betting is temporarily paused.
+                🔒 Draw calculation in progress! Betting is temporarily paused.
             </div>
 
             <!-- Todays Result Panel -->
@@ -147,8 +147,8 @@
                     <div class="slider-header">
                         <h3>TODAY'S RESULTS (12 SLOTS)</h3>
                         <div class="slider-arrows">
-                            <button class="arrow-btn" id="btn-scroll-left">◄</button>
-                            <button class="arrow-btn" id="btn-scroll-right">►</button>
+                            <button class="arrow-btn" id="btn-scroll-left">◀</button>
+                            <button class="arrow-btn" id="btn-scroll-right">▶</button>
                         </div>
                     </div>
                     <div class="results-12-grid" id="results-12-grid"></div>
@@ -284,8 +284,8 @@
     <div id="ticket-history-modal" class="modal-overlay hidden">
         <div class="modal-card">
             <div class="modal-header">
-                <h3>🎟️ Ticket History</h3>
-                <button class="close-modal" id="close-ticket-history-modal">✖</button>
+                <h3>📋 Ticket History</h3>
+                <button class="close-modal" id="close-ticket-history-modal">✕</button>
             </div>
             <div style="max-height: 300px; overflow-y: auto;">
                 <table class="history-table">
@@ -308,8 +308,8 @@
     <div id="result-history-modal" class="modal-overlay hidden">
         <div class="modal-card" style="max-width: 650px;">
             <div class="modal-header">
-                <h3>📊 Daily Result History</h3>
-                <button class="close-modal" id="close-result-history-modal">✖</button>
+                <h3>🏆 Daily Result History</h3>
+                <button class="close-modal" id="close-result-history-modal">✕</button>
             </div>
             <div style="margin-bottom: 10px; font-size: 12px; color: #94a3b8; display: flex; justify-content: space-between;">
                 <span>Date: <strong id="result-history-date" style="color: #38bdf8;">---</strong></span>
@@ -336,8 +336,8 @@
     <div id="rules-modal" class="modal-overlay hidden">
         <div class="modal-card" style="max-width: 550px;">
             <div class="modal-header">
-                <h3>📜 Rules & Info</h3>
-                <button class="close-modal" id="close-rules-modal">✖</button>
+                <h3>📖 Rules & Info</h3>
+                <button class="close-modal" id="close-rules-modal">✕</button>
             </div>
             <div style="max-height: 350px; overflow-y: auto; color: #cbd5e1; font-size: 13px; line-height: 1.6;">
                 <p><strong>1. Single Board:</strong> Select any single digit from 1 to 0.</p>
@@ -353,7 +353,7 @@
         <div class="modal-card" style="max-width: 450px;">
             <div class="modal-header">
                 <h3>⚙️ Settings</h3>
-                <button class="close-modal" id="close-settings-modal">✖</button>
+                <button class="close-modal" id="close-settings-modal">✕</button>
             </div>
             <div style="max-height: 300px; overflow-y: auto; color: #cbd5e1; font-size: 13px;">
                 <p style="margin-bottom: 15px;">Configure terminal preferences and sound options below:</p>
