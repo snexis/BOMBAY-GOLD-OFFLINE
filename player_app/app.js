@@ -17,18 +17,19 @@ document.addEventListener('DOMContentLoaded', () => {
             drawIdDisplay: "1000",
             time: getCurrentTimeString(),
             nextDrawTime: getNextDrawTimeString(2),
-            timeLeft: 120 // 2 minutes test mode (24/7)
+            timeLeft: 120 // 2 minutes test mode (24/7 continuous online simulation)
         },
         adminSettings: {
             drawIntervalMinutes: 2,
             isTestMode: true
         },
         selectedRange: 'A',
-        selectedBetType: 'both', // modes: both, word, digit (No Juri)
+        selectedBetType: 'both', // modes: both, word, digit, juri
+        selectedGameType: 'single', // single, juri, triple
         selectedChip: 10, 
         customChip: 0,
         selectedNumbers: [],
-        todaysResults: getOrInitPersistentResults() // Persistent results so refresh doesn't change history
+        todaysResults: getOrInitPersistentResults() // Persistent results so refresh/offline doesn't change history
     };
 
     // Helper functions for dynamic and persistent generation
@@ -61,20 +62,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Generate initial 20+ live past records if none exist (Current/Latest at the front)
+        // Generate initial live past records if none exist (Latest at the front)
         let initialResults = [];
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < 30; i++) {
             const pastTime = new Date();
             pastTime.setMinutes(pastTime.getMinutes() - (i * 2));
             const randomNum = Math.floor(Math.random() * 900) + 100;
             const strNum = String(randomNum);
             const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
+            const juriVal = String(Math.floor(Math.random() * 90)).padStart(2, '0');
 
             initialResults.push({
                 draw: `${Math.floor(Math.random() * 90000) + 10000}`,
                 time: pastTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 num: strNum,
                 single: singleVal,
+                juri: juriVal,
                 statusClass: ""
             });
         }
@@ -93,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTodaysResults();
         renderSingleBoard();
         renderTripleBoardGrid();
-        renderJuriBoardGrid(); // Or hidden if not needed, kept for fallback
+        renderJuriBoardGrid(); // Fully unlocked Bombay Fatafat Juri Board (00 to 99)
         setupEventListeners();
         
         const loginModal = document.getElementById('login-modal');
@@ -123,46 +126,70 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. LIVE TIMER COUNTDOWN & AUTO-DRAW TRIGGER
+    // 5. LIVE TIMER COUNTDOWN & AUTO-DRAW TRIGGER (Online-like continuous 24/7 simulator)
     function initLiveTimer() {
         const timerEl = document.getElementById('draw-timer');
         if (!timerEl) return;
 
+        // Check if offline/closed time elapsed and auto-sync time left
+        let lastTimestamp = localStorage.getItem('a2z_last_timestamp');
+        const currentTime = Date.now();
+        if (lastTimestamp) {
+            const elapsedSecs = Math.floor((currentTime - parseInt(lastTimestamp, 10)) / 1000);
+            if (elapsedSecs > 0) {
+                state.currentDraw.timeLeft -= elapsedSecs;
+                while (state.currentDraw.timeLeft <= 0) {
+                    triggerAutoDrawSequence(true); // Catch-up past missed draws if closed
+                    const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
+                    state.currentDraw.timeLeft += (intervalMins * 60);
+                }
+            }
+        }
+
         setInterval(() => {
+            localStorage.setItem('a2z_last_timestamp', Date.now().toString());
             if (state.currentDraw.timeLeft > 0) {
                 state.currentDraw.timeLeft--;
                 const mins = String(Math.floor(state.currentDraw.timeLeft / 60)).padStart(2, '0');
                 const secs = String(state.currentDraw.timeLeft % 60).padStart(2, '0');
                 timerEl.textContent = `${mins}:${secs}`;
             } else {
-                // Timer reached 0: Trigger Auto-Draw & Results Generation
-                triggerAutoDrawSequence();
+                // Timer reached 0: Trigger Auto-Draw & Results Generation with 1s Glow Animation
+                triggerAutoDrawSequence(false);
             }
         }, 1000);
     }
 
-    function triggerAutoDrawSequence() {
+    function triggerAutoDrawSequence(isCatchup = false) {
         const randomNum = Math.floor(Math.random() * 900) + 100;
         const strNum = String(randomNum);
         const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
+        const juriVal = String(Math.floor(Math.random() * 90)).padStart(2, '0');
 
+        const drawIdToUse = state.currentDraw.id;
         const newResultItem = {
-            draw: state.currentDraw.id,
+            draw: drawIdToUse,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             num: strNum,
             single: singleVal,
-            statusClass: "highlight-live"
+            juri: juriVal,
+            statusClass: isCatchup ? "" : "highlight-anim"
         };
 
-        // Unshift to put the latest current result at the very front/top (Back date pushed to back)
+        // Unshift to put the latest current result at the very front/top
         state.todaysResults.unshift(newResultItem);
         if (state.todaysResults.length > 50) state.todaysResults.pop();
         
-        // Save to LocalStorage so refresh won't alter or lose it (Fixed permanent historical data)
+        // Save to LocalStorage permanently
         localStorage.setItem('a2z_todays_results', JSON.stringify(state.todaysResults));
 
         renderLatestDrawBox();
         renderTodaysResults();
+
+        // 1-second visual highlight animation effect on winning cells
+        if (!isCatchup) {
+            highlightWinningCellsOnBoard(strNum, singleVal, juriVal);
+        }
 
         const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
         state.currentDraw.timeLeft = intervalMins * 60;
@@ -175,28 +202,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 6. RENDER LATEST DRAW BOX (Animated live result display on the left)
-    function renderLatestDrawBox() {
-        const latestBox = document.querySelector('.latest-draw-result-box') || document.getElementById('latest-draw-result-container');
-        if (!latestBox && !document.getElementById('results-12-grid')) return;
+    function highlightWinningCellsOnBoard(num, single, juri) {
+        // Highlight corresponding cells for 1 second to give true live game feedback
+        const allCells = document.querySelectorAll('.matrix-cell, .single-card');
+        allCells.forEach(cell => {
+            const txt = cell.textContent.trim();
+            if (txt === num || txt === single || txt === juri || cell.getAttribute('data-val') === single) {
+                cell.classList.add('win-glow-animation');
+                setTimeout(() => {
+                    cell.classList.remove('win-glow-animation');
+                }, 1500);
+            }
+        });
+    }
 
-        // Get the absolute latest result (first item in todaysResults)
+    // 6. RENDER LATEST DRAW BOX (Animated live result display with sliding glow border)
+    function renderLatestDrawBox() {
         const latest = state.todaysResults[0];
         if (!latest) return;
 
-        // Find or inject latest draw result container with glowing sliding animation and multi-color large fonts
+        // Update Live Draw Status ID field cleanly without hash
+        const liveDrawIdEl = document.getElementById('current-draw-id');
+        if (liveDrawIdEl) {
+            liveDrawIdEl.textContent = state.currentDraw.id;
+        }
+
+        // Target or create latest draw result box
         let targetContainer = document.getElementById('latest-draw-box-inner');
-        if (!targetContainer) {
-            // Try targeting by selector or create element if structure varies
-            const potentialParent = document.querySelector('.latest-draw-result-box, div[class*="latest"]');
-            if (potentialParent) {
-                potentialParent.style.cssText += "animation: borderGlow 2s infinite alternate; border: 2px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,200,0.4);";
-                potentialParent.innerHTML = `
-                    <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
-                    <div id="latest-draw-box-inner"></div>
-                `;
-                targetContainer = document.getElementById('latest-draw-box-inner');
-            }
+        let potentialParent = document.querySelector('.latest-draw-result-box, div[class*="latest"]');
+        
+        if (potentialParent && !targetContainer) {
+            potentialParent.style.cssText += "animation: borderGlow 2s infinite alternate; border: 2px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,200,0.4); position: relative;";
+            potentialParent.innerHTML = `
+                <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
+                <div id="latest-draw-box-inner"></div>
+            `;
+            targetContainer = document.getElementById('latest-draw-box-inner');
         }
 
         if (targetContainer) {
@@ -205,10 +246,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>`;
             } else if (state.selectedBetType === 'digit') {
                 modeContent = `<div style="font-size: 28px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,200,0.6);">${latest.single}</div>`;
+            } else if (state.selectedBetType === 'juri') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ffff33; text-shadow: 0 0 8px rgba(255,255,51,0.6);">${latest.juri}</div>`;
             } else {
                 modeContent = `
                     <div style="font-size: 26px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>
-                    <div style="font-size: 18px; font-weight: bold; color: #00ffcc; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.3); padding-top: 3px;">Single: ${latest.single}</div>
+                    <div style="font-size: 16px; font-weight: bold; color: #00ffcc; margin-top: 3px; border-top: 1px dashed rgba(255,255,255,0.3); padding-top: 2px;">Single: ${latest.single} | Juri: ${latest.juri}</div>
                 `;
             }
 
@@ -226,7 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!grid) return;
         grid.innerHTML = '';
 
-        // Display top 12 results on dashboard grid, current/latest result first (Front)
         const displayList = state.todaysResults.slice(0, 12);
         const multiColors = ['#ff3366', '#00ffcc', '#ff9900', '#33ccff', '#cc33ff', '#ffff33', '#33ff66', '#ff66ff'];
 
@@ -235,18 +277,19 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = 'result-slot-card';
             const accentColor = multiColors[idx % multiColors.length];
             
-            // Applied multi-color styling & larger prominent font sizes with clean cards (No draw ID on top)
-            card.style.cssText = `background: linear-gradient(135deg, rgba(20,30,48,0.95), rgba(36,59,85,0.95)); border: 1px solid ${accentColor}; border-radius: 8px; padding: 10px 6px; text-align: center; min-width: 90px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);`;
+            card.style.cssText = `background: linear-gradient(135deg, rgba(20,30,48,0.95), rgba(36,59,85,0.95)); border: 1px solid ${accentColor}; border-radius: 8px; padding: 10px 6px; text-align: center; min-width: 90px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); ${item.statusClass ? 'animation: pulseGlow 1s ease-in-out infinite;' : ''}`;
             
             let modeDisplayContent = "";
             if (state.selectedBetType === 'word') {
-                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900; text-shadow: 0 0 5px ${accentColor}44;">${item.num}</span>`;
+                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900;">${item.num}</span>`;
             } else if (state.selectedBetType === 'digit') {
-                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900; text-shadow: 0 0 5px ${accentColor}44;">${item.single}</span>`;
+                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900;">${item.single}</span>`;
+            } else if (state.selectedBetType === 'juri') {
+                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900;">${item.juri}</span>`;
             } else {
                 modeDisplayContent = `
-                    <div style="color: ${accentColor}; font-size: 17px; font-weight: 900; text-shadow: 0 0 5px ${accentColor}44;">${item.num}</div>
-                    <div style="color: #00ffcc; font-size: 13px; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.25); margin-top: 4px; padding-top: 3px;">Single: ${item.single}</div>
+                    <div style="color: ${accentColor}; font-size: 17px; font-weight: 900;">${item.num}</div>
+                    <div style="color: #00ffcc; font-size: 12px; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.25); margin-top: 4px; padding-top: 3px;">Single: ${item.single}</div>
                 `;
             }
 
@@ -273,7 +316,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span style="color: #a0c4ff; font-weight: bold;">Draw ${item.draw}</span>
                 <span style="color: #ccc;">${item.time}</span>
                 <span style="color: #ff9900; font-weight: 900; font-size: 16px;">${item.num}</span>
-                <span style="color: #00ffcc; font-weight: bold; font-size: 15px;">Single: ${item.single}</span>
+                <span style="color: #00ffcc; font-weight: bold; font-size: 14px;">Single: ${item.single}</span>
+                <span style="color: #ffff33; font-weight: bold; font-size: 14px;">Juri: ${item.juri}</span>
             `;
             historyContainer.appendChild(row);
         });
@@ -338,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 10. JURI BOARD (Fallback)
+    // 10. JURI BOARD (Fully Unlocked Bombay Fatafat Juri Logic: 00 to 99)
     function renderJuriBoardGrid() {
         const grid = document.getElementById('juri-board-grid');
         if (!grid) return;
@@ -346,8 +390,9 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i <= 99; i++) {
             const val = String(i).padStart(2, '0');
             const cell = document.createElement('div');
-            cell.className = 'matrix-cell';
+            cell.className = 'matrix-cell juri-cell';
             cell.textContent = val;
+            cell.style.cssText = "background: rgba(30, 40, 60, 0.9); border: 1px solid rgba(255, 255, 0, 0.3); color: #ffff33; font-weight: bold;";
             cell.addEventListener('click', () => {
                 toggleSelection(`Juri-${val}`, val);
                 cell.classList.toggle('selected');
@@ -356,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 11. CART & DYNAMIC CHIPS LOGIC (Non-fixed chips, Right-click/Plus/Minus handling)
+    // 11. CART & DYNAMIC CHIPS LOGIC
     function toggleSelection(name, value) {
         const existingIndex = state.selectedNumbers.findIndex(item => item.name === name);
         if (existingIndex > -1) {
@@ -394,7 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
 
-                // Plus and Minus button logic inside cart
                 div.querySelector('.btn-cart-plus').addEventListener('click', (e) => {
                     e.stopPropagation();
                     item.amount += (state.customChip > 0 ? state.customChip : state.selectedChip);
@@ -422,7 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 12. EVENT LISTENERS (Strictly 3 Modes: Word, Digit, Both & Non-fixed Chips)
+    // 12. EVENT LISTENERS
     function setupEventListeners() {
         document.querySelectorAll('.btn-range').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -432,20 +476,46 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        // Bet On Mode (Word, Digit, Both, Juri)
         document.querySelectorAll('.btn-type').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.btn-type').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                const typeAttr = (btn.getAttribute('data-type') || btn.textContent).toLowerCase();
-                if (typeAttr.includes('word') || typeAttr.includes('panna') || typeAttr.includes('triple')) {
-                    state.selectedBetType = 'word';
-                } else if (typeAttr.includes('digit') || typeAttr.includes('single')) {
-                    state.selectedBetType = 'digit';
+                // Check if it's game type selector (Single, Juri, Triple) or Bet Mode selector
+                const btnText = btn.textContent.toLowerCase();
+                if (btnText.includes('single') || btnText.includes('juri') || btnText.includes('triple')) {
+                    document.querySelectorAll('.btn-type').forEach(b => {
+                        if(b.textContent.toLowerCase().includes('single') || b.textContent.toLowerCase().includes('juri') || b.textContent.toLowerCase().includes('triple')) {
+                            b.classList.remove('active');
+                        }
+                    });
+                    btn.classList.add('active');
+                    if (btnText.includes('juri')) {
+                        state.selectedGameType = 'juri';
+                        state.selectedBetType = 'juri';
+                    } else if (btnText.includes('single')) {
+                        state.selectedGameType = 'single';
+                        state.selectedBetType = 'digit';
+                    } else {
+                        state.selectedGameType = 'triple';
+                        state.selectedBetType = 'word';
+                    }
                 } else {
-                    state.selectedBetType = 'both';
+                    document.querySelectorAll('.btn-type').forEach(b => {
+                        if(!b.textContent.toLowerCase().includes('single') && !b.textContent.toLowerCase().includes('juri') && !b.textContent.toLowerCase().includes('triple')) {
+                            b.classList.remove('active');
+                        }
+                    });
+                    btn.classList.add('active');
+                    const typeAttr = (btn.getAttribute('data-type') || btn.textContent).toLowerCase();
+                    if (typeAttr.includes('word') || typeAttr.includes('panna')) {
+                        state.selectedBetType = 'word';
+                    } else if (typeAttr.includes('digit') || typeAttr.includes('single')) {
+                        state.selectedBetType = 'digit';
+                    } else if (typeAttr.includes('juri')) {
+                        state.selectedBetType = 'juri';
+                    } else {
+                        state.selectedBetType = 'both';
+                    }
                 }
-                
                 renderTodaysResults();
             });
         });
@@ -458,7 +528,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.customChip = 0;
             });
 
-            // Right-click chip interaction (adds custom multiplier or increment)
             btn.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
                 state.selectedChip += 50;
