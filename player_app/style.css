@@ -551,7 +551,7 @@ body {
     border-radius: 3px;
 }
 
-.res-card-slot {
+.result-slot-card {
     min-width: 58px;
     background: rgba(30, 41, 59, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -559,26 +559,37 @@ body {
     padding: 4px;
     text-align: center;
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.res-card-slot .slot-id {
+.result-slot-card .res-draw {
     font-size: 8px;
     color: #64748b;
     display: block;
 }
 
-.res-card-slot .slot-time {
+.result-slot-card .res-time {
     font-size: 7px;
     color: #94a3b8;
     display: block;
 }
 
-.res-card-slot .slot-val {
+.result-slot-card .res-num {
     font-family: 'Orbitron', sans-serif;
     font-size: 13px;
     color: #22c55e;
     font-weight: bold;
     margin-top: 1px;
+}
+
+.result-slot-card .res-num.highlight-red {
+    color: #ef4444 !important;
+}
+
+.result-slot-card .res-num.highlight-pink {
+    color: #ec4899 !important;
 }
 
 /* Single Board (0-9) Row */
@@ -635,7 +646,7 @@ body {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    min-height: 0; /* Important for flex child scrolling */
+    min-height: 0;
 }
 
 .grid-column-headers {
@@ -660,16 +671,16 @@ body {
 .triple-matrix-22x10 {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(22, 1fr); /* Forces exact 22 rows distribution without breaking layout */
+    grid-template-rows: repeat(22, 1fr);
     gap: 3px;
     flex-grow: 1;
     min-height: 0;
 }
 
-.matrix-card {
+.matrix-cell {
     background: rgba(255, 255, 255, 0.92);
     color: #000000;
-    height: 100%; /* Adapts dynamically to available vertical space */
+    height: 100%;
     min-height: 20px;
     border-radius: 3px;
     display: flex;
@@ -683,7 +694,7 @@ body {
     position: relative;
 }
 
-.matrix-card:hover {
+.matrix-cell:hover {
     background: #38bdf8;
     color: #000;
     transform: scale(1.05);
@@ -691,7 +702,7 @@ body {
     box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
 }
 
-.matrix-card.selected {
+.matrix-cell.selected {
     background: #22c55e !important;
     color: #fff !important;
     box-shadow: 0 0 8px rgba(34, 197, 94, 0.9);
@@ -977,10 +988,8 @@ body {
 }
 
 /* ==========================================================
-   4. DYNAMIC JS UTILITY STYLES (NEW ADDITIONS)
+   4. DYNAMIC JS UTILITY STYLES
    ========================================================== */
-
-/* Dynamic Cart Items */
 .cart-item {
     display: flex;
     justify-content: space-between;
@@ -1016,8 +1025,7 @@ body {
     color: #ff6b6b;
 }
 
-/* Active Bet Highlights & Badges on Grid Cells */
-.matrix-card.has-active-bet,
+.matrix-cell.has-active-bet,
 .single-card.has-active-bet {
     border: 2px solid #f59e0b !important;
     background: #fef08a !important;
@@ -1040,7 +1048,6 @@ body {
     z-index: 15;
 }
 
-/* Game Locked State */
 .disabled-cell,
 .triple-matrix-22x10.disabled,
 .single-cards-row.disabled {
