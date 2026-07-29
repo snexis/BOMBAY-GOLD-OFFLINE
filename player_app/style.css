@@ -761,29 +761,36 @@ body {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: #fff;
-    padding: 6px 8px;
-    border-radius: 6px;
+    padding: 8px 10px;
+    border-radius: 8px;
     cursor: pointer;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     transition: all 0.2s;
 }
 
 .btn-range .range-tag {
-    font-weight: 800;
-    color: #22c55e;
-    font-size: 13px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    margin-bottom: 2px;
 }
 
-.btn-range .range-val {
-    font-size: 10px;
-    color: #94a3b8;
-}
+/* A - Green */
+.btn-range:nth-child(1) .range-tag, .btn-range:nth-child(1) .range-val { color: #22c55e; }
+/* B - Blue */
+.btn-range:nth-child(2) .range-tag, .btn-range:nth-child(2) .range-val { color: #38bdf8; }
+/* C - Orange/Red */
+.btn-range:nth-child(3) .range-tag, .btn-range:nth-child(3) .range-val { color: #f59e0b; }
+/* D - Purple/Pink */
+.btn-range:nth-child(4) .range-tag, .btn-range:nth-child(4) .range-val { color: #ec4899; }
 
 .btn-range:hover, .btn-range.active {
-    background: rgba(34, 197, 94, 0.2);
-    border-color: #22c55e;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #fff;
+    transform: translateY(-2px);
 }
 
 /* Bet Type Buttons */
@@ -809,6 +816,34 @@ body {
     background: #2563eb;
     color: #fff;
     border-color: #38bdf8;
+}
+
+/* --- BET ON (Both, Word, Digit) SECTION STYLING --- */
+.bet-on-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin-top: 4px;
+}
+
+.btn-bet-on {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #94a3b8;
+    padding: 8px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.btn-bet-on.active, .btn-bet-on:hover {
+    background: #2563eb;
+    color: #fff;
+    border-color: #38bdf8;
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
 }
 
 /* Chips & Custom Input */
