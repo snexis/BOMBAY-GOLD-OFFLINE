@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         currentDraw: {
             id: getOrInitPersistentDrawId(),
-            drawIdDisplay: "Draw 1000",
+            drawIdDisplay: "1000",
             time: getCurrentTimeString(),
             nextDrawTime: getNextDrawTimeString(2),
             timeLeft: 120 // 2 minutes test mode (24/7)
@@ -61,9 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Generate initial 20+ live past records if none exist
+        // Generate initial 20+ live past records if none exist (Current/Latest at the front)
         let initialResults = [];
-        for (let i = 20; i > 0; i--) {
+        for (let i = 0; i < 25; i++) {
             const pastTime = new Date();
             pastTime.setMinutes(pastTime.getMinutes() - (i * 2));
             const randomNum = Math.floor(Math.random() * 900) + 100;
@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setInterval(updateDateTime, 1000);
         
         initLiveTimer();
+        renderLatestDrawBox();
         renderTodaysResults();
         renderSingleBoard();
         renderTripleBoardGrid();
@@ -146,20 +147,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
 
         const newResultItem = {
-            draw: `${Math.floor(Math.random() * 90000) + 10000}`,
+            draw: state.currentDraw.id,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             num: strNum,
             single: singleVal,
             statusClass: "highlight-live"
         };
 
-        // Unshift to put the latest current result at the very front/top
+        // Unshift to put the latest current result at the very front/top (Back date pushed to back)
         state.todaysResults.unshift(newResultItem);
-        if (state.todaysResults.length > 35) state.todaysResults.pop();
+        if (state.todaysResults.length > 50) state.todaysResults.pop();
         
-        // Save to LocalStorage so refresh won't alter or lose it
+        // Save to LocalStorage so refresh won't alter or lose it (Fixed permanent historical data)
         localStorage.setItem('a2z_todays_results', JSON.stringify(state.todaysResults));
 
+        renderLatestDrawBox();
         renderTodaysResults();
 
         const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
@@ -169,48 +171,93 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const drawIdEl = document.getElementById('current-draw-id');
         if (drawIdEl) {
-            drawIdEl.textContent = `Draw ${state.currentDraw.id}`;
+            drawIdEl.textContent = state.currentDraw.id; // Completely hash-free clean ID
         }
     }
 
-    // 6. TODAY'S RESULTS SLIDER GRID (Multi-color, Larger Bold Size, Latest on Front)
+    // 6. RENDER LATEST DRAW BOX (Animated live result display on the left)
+    function renderLatestDrawBox() {
+        const latestBox = document.querySelector('.latest-draw-result-box') || document.getElementById('latest-draw-result-container');
+        if (!latestBox && !document.getElementById('results-12-grid')) return;
+
+        // Get the absolute latest result (first item in todaysResults)
+        const latest = state.todaysResults[0];
+        if (!latest) return;
+
+        // Find or inject latest draw result container with glowing sliding animation and multi-color large fonts
+        let targetContainer = document.getElementById('latest-draw-box-inner');
+        if (!targetContainer) {
+            // Try targeting by selector or create element if structure varies
+            const potentialParent = document.querySelector('.latest-draw-result-box, div[class*="latest"]');
+            if (potentialParent) {
+                potentialParent.style.cssText += "animation: borderGlow 2s infinite alternate; border: 2px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,200,0.4);";
+                potentialParent.innerHTML = `
+                    <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
+                    <div id="latest-draw-box-inner"></div>
+                `;
+                targetContainer = document.getElementById('latest-draw-box-inner');
+            }
+        }
+
+        if (targetContainer) {
+            let modeContent = "";
+            if (state.selectedBetType === 'word') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>`;
+            } else if (state.selectedBetType === 'digit') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,200,0.6);">${latest.single}</div>`;
+            } else {
+                modeContent = `
+                    <div style="font-size: 26px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>
+                    <div style="font-size: 18px; font-weight: bold; color: #00ffcc; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.3); padding-top: 3px;">Single: ${latest.single}</div>
+                `;
+            }
+
+            targetContainer.innerHTML = `
+                <div style="font-size: 14px; font-weight: bold; color: #a0c4ff;">Draw ${latest.draw}</div>
+                <div style="font-size: 12px; color: #ccc; margin-bottom: 6px;">${latest.time}</div>
+                ${modeContent}
+            `;
+        }
+    }
+
+    // 7. TODAY'S RESULTS SLIDER GRID (Multi-color, Larger Bold Size, Latest on Front, No Draw ID on top)
     function renderTodaysResults() {
         const grid = document.getElementById('results-12-grid');
         if (!grid) return;
         grid.innerHTML = '';
 
-        // Display top 12 results on dashboard grid, current result first
+        // Display top 12 results on dashboard grid, current/latest result first (Front)
         const displayList = state.todaysResults.slice(0, 12);
+        const multiColors = ['#ff3366', '#00ffcc', '#ff9900', '#33ccff', '#cc33ff', '#ffff33', '#33ff66', '#ff66ff'];
 
         displayList.forEach((item, idx) => {
             const card = document.createElement('div');
             card.className = 'result-slot-card';
-            // Applied multi-color styling & larger prominent font sizes
-            card.style.cssText = "background: linear-gradient(135deg, rgba(20,30,48,0.9), rgba(36,59,85,0.9)); border: 1px solid rgba(0,255,200,0.3); border-radius: 8px; padding: 8px; text-align: center; min-width: 85px;";
+            const accentColor = multiColors[idx % multiColors.length];
             
-            // Render depending on mode (Word, Digit, Both) along with single digit
+            // Applied multi-color styling & larger prominent font sizes with clean cards (No draw ID on top)
+            card.style.cssText = `background: linear-gradient(135deg, rgba(20,30,48,0.95), rgba(36,59,85,0.95)); border: 1px solid ${accentColor}; border-radius: 8px; padding: 10px 6px; text-align: center; min-width: 90px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);`;
+            
             let modeDisplayContent = "";
             if (state.selectedBetType === 'word') {
-                modeDisplayContent = `<span style="color: #ff9900; font-size: 16px; font-weight: bold;">${item.num}</span>`;
+                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900; text-shadow: 0 0 5px ${accentColor}44;">${item.num}</span>`;
             } else if (state.selectedBetType === 'digit') {
-                modeDisplayContent = `<span style="color: #00ffcc; font-size: 16px; font-weight: bold;">${item.single}</span>`;
+                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900; text-shadow: 0 0 5px ${accentColor}44;">${item.single}</span>`;
             } else {
-                // Both mode showing word + single clear format
                 modeDisplayContent = `
-                    <div style="color: #ff9900; font-size: 15px; font-weight: bold;">${item.num}</div>
-                    <div style="color: #00ffcc; font-size: 14px; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.2); margin-top: 2px; padding-top: 2px;">Single: ${item.single}</div>
+                    <div style="color: ${accentColor}; font-size: 17px; font-weight: 900; text-shadow: 0 0 5px ${accentColor}44;">${item.num}</div>
+                    <div style="color: #00ffcc; font-size: 13px; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.25); margin-top: 4px; padding-top: 3px;">Single: ${item.single}</div>
                 `;
             }
 
             card.innerHTML = `
-                <div style="color: #a0c4ff; font-size: 11px; font-weight: 600;">${item.draw}</div>
-                <div style="color: #888; font-size: 10px; margin-bottom: 3px;">${item.time}</div>
+                <div style="color: #bbb; font-size: 11px; font-weight: 600; margin-bottom: 4px;">${item.time}</div>
                 ${modeDisplayContent}
             `;
             grid.appendChild(card);
         });
 
-        // Also update Result History modal list if open (showing 20+ records)
+        renderLatestDrawBox();
         renderResultHistoryModalList();
     }
 
@@ -221,18 +268,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         state.todaysResults.forEach(item => {
             const row = document.createElement('div');
-            row.style.cssText = "display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px;";
+            row.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px;";
             row.innerHTML = `
-                <span style="color: #a0c4ff;">Draw ${item.draw}</span>
-                <span style="color: #bbb;">${item.time}</span>
-                <span style="color: #ff9900; font-weight: bold;">${item.num}</span>
-                <span style="color: #00ffcc; font-weight: bold;">Single: ${item.single}</span>
+                <span style="color: #a0c4ff; font-weight: bold;">Draw ${item.draw}</span>
+                <span style="color: #ccc;">${item.time}</span>
+                <span style="color: #ff9900; font-weight: 900; font-size: 16px;">${item.num}</span>
+                <span style="color: #00ffcc; font-weight: bold; font-size: 15px;">Single: ${item.single}</span>
             `;
             historyContainer.appendChild(row);
         });
     }
 
-    // 7. SINGLE BOARD (1 - 0)
+    // 8. SINGLE BOARD (1 - 0)
     function renderSingleBoard() {
         const row = document.getElementById('single-board-row');
         if (!row) return;
@@ -246,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 8. TRIPLE BOARD MATRIX
+    // 9. TRIPLE BOARD MATRIX
     function renderTripleBoardGrid() {
         const grid = document.getElementById('triple-board-grid');
         if (!grid) return;
@@ -291,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 9. JURI BOARD (Fallback)
+    // 10. JURI BOARD (Fallback)
     function renderJuriBoardGrid() {
         const grid = document.getElementById('juri-board-grid');
         if (!grid) return;
@@ -309,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 10. CART & DYNAMIC CHIPS LOGIC
+    // 11. CART & DYNAMIC CHIPS LOGIC (Non-fixed chips, Right-click/Plus/Minus handling)
     function toggleSelection(name, value) {
         const existingIndex = state.selectedNumbers.findIndex(item => item.name === name);
         if (existingIndex > -1) {
@@ -333,12 +380,37 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.selectedNumbers.length === 0) {
             cartList.innerHTML = `<div class="empty-msg">No numbers selected</div>`;
         } else {
-            state.selectedNumbers.forEach(item => {
+            state.selectedNumbers.forEach((item, index) => {
                 totalPts += item.amount;
                 const div = document.createElement('div');
                 div.className = 'cart-item-row';
-                div.style.cssText = "display: flex; justify-content: space-between; padding: 4px 8px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px;";
-                div.innerHTML = `<span>${item.name}</span><strong>${item.amount} Pts</strong>`;
+                div.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px;";
+                div.innerHTML = `
+                    <span>${item.name}</span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <button type="button" class="btn-cart-minus" style="background:#333; color:#fff; border:none; width:20px; height:20px; border-radius:4px; cursor:pointer; font-weight:bold;">-</button>
+                        <strong>${item.amount} Pts</strong>
+                        <button type="button" class="btn-cart-plus" style="background:#333; color:#fff; border:none; width:20px; height:20px; border-radius:4px; cursor:pointer; font-weight:bold;">+</button>
+                    </div>
+                `;
+
+                // Plus and Minus button logic inside cart
+                div.querySelector('.btn-cart-plus').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    item.amount += (state.customChip > 0 ? state.customChip : state.selectedChip);
+                    updateCartUI();
+                });
+
+                div.querySelector('.btn-cart-minus').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const activeStep = state.customChip > 0 ? state.customChip : state.selectedChip;
+                    item.amount -= activeStep;
+                    if (item.amount <= 0) {
+                        state.selectedNumbers.splice(index, 1);
+                    }
+                    updateCartUI();
+                });
+
                 cartList.appendChild(div);
             });
         }
@@ -350,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 11. EVENT LISTENERS (Strictly 3 Modes: Word, Digit, Both)
+    // 12. EVENT LISTENERS (Strictly 3 Modes: Word, Digit, Both & Non-fixed Chips)
     function setupEventListeners() {
         document.querySelectorAll('.btn-range').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -365,7 +437,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.btn-type').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 
-                // Map to Word, Digit, or Both modes
                 const typeAttr = (btn.getAttribute('data-type') || btn.textContent).toLowerCase();
                 if (typeAttr.includes('word') || typeAttr.includes('panna') || typeAttr.includes('triple')) {
                     state.selectedBetType = 'word';
@@ -375,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.selectedBetType = 'both';
                 }
                 
-                renderTodaysResults(); // Re-render results grid to reflect chosen mode instantly
+                renderTodaysResults();
             });
         });
 
@@ -383,7 +454,15 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.btn-chip').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                state.selectedChip = parseInt(btn.getAttribute('data-val'), 10);
+                state.selectedChip = parseInt(btn.getAttribute('data-val'), 10) || 10;
+                state.customChip = 0;
+            });
+
+            // Right-click chip interaction (adds custom multiplier or increment)
+            btn.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                state.selectedChip += 50;
+                btn.textContent = state.selectedChip;
                 state.customChip = 0;
             });
         });
