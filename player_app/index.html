@@ -201,30 +201,42 @@
             </footer>
         </main>
 
-        <!-- 3. RIGHT BETTING SIDEBAR / CONTROLS -->
+        <!-- 3. RIGHT BETTING PANEL SIDEBAR -->
         <aside class="sidebar-right">
-            <div class="bet-panel-block" id="range-selector-block">
+            <!-- Number Range Block (A, B, C, D) -->
+            <div class="bet-panel-block">
                 <div class="panel-block-title">TRIPLE RANGE (220 PANNA)</div>
                 <div class="range-btn-grid">
                     <button class="btn-range active" data-range="A">
                         <span class="range-tag">A</span>
-                        <span class="range-val">1 - 55</span>
+                        <span class="range-val">1-55</span>
                     </button>
                     <button class="btn-range" data-range="B">
                         <span class="range-tag">B</span>
-                        <span class="range-val">56 - 110</span>
+                        <span class="range-val">56-110</span>
                     </button>
                     <button class="btn-range" data-range="C">
                         <span class="range-tag">C</span>
-                        <span class="range-val">111 - 165</span>
+                        <span class="range-val">111-165</span>
                     </button>
                     <button class="btn-range" data-range="D">
                         <span class="range-tag">D</span>
-                        <span class="range-val">166 - 220</span>
+                        <span class="range-val">166-220</span>
                     </button>
                 </div>
             </div>
 
+            <!-- Bet On Block (Both / Word / Digit) -->
+            <div class="bet-panel-block">
+                <div class="panel-block-title">BET ON</div>
+                <div class="bet-on-grid">
+                    <button class="btn-bet-on active" data-beton="both">Both</button>
+                    <button class="btn-bet-on" data-beton="word">Word</button>
+                    <button class="btn-bet-on" data-beton="digit">Digit</button>
+                </div>
+            </div>
+
+            <!-- Bet Type Block -->
             <div class="bet-panel-block">
                 <div class="panel-block-title">BET TYPE</div>
                 <div class="bet-type-grid">
@@ -234,33 +246,36 @@
                 </div>
             </div>
 
+            <!-- Chips / Points Block -->
             <div class="bet-panel-block">
                 <div class="panel-block-title">POINTS / CHIPS</div>
                 <div class="chips-grid">
-                    <button class="btn-chip active" data-val="5">5</button>
-                    <button class="btn-chip" data-val="10">10</button>
-                    <button class="btn-chip" data-val="50">50</button>
-                    <button class="btn-chip" data-val="100">100</button>
+                    <button class="btn-chip active" data-chip="5">5</button>
+                    <button class="btn-chip" data-chip="10">10</button>
+                    <button class="btn-chip" data-chip="50">50</button>
+                    <button class="btn-chip" data-chip="100">100</button>
                     <div class="btn-custom-wrapper">
-                        <input type="number" id="custom-chip-val" placeholder="Custom" min="1">
+                        <input type="number" id="custom-points-input" placeholder="Custom" min="1">
                     </div>
                 </div>
             </div>
 
+            <!-- Cart / Selected Items Block -->
             <div class="bet-panel-block cart-block">
                 <div class="cart-header">
-                    <span>SELECTED BETS (CART)</span>
-                    <span class="total-pts-tag">Total: <strong id="total-cart-pts">0</strong> Pts</span>
+                    <span class="panel-block-title" style="margin:0;">SELECTED ITEMS (<span id="cart-count">0</span>)</span>
+                    <span class="total-pts-tag">Total: <strong id="cart-total-pts">0</strong> Pts</span>
                 </div>
-                <div class="cart-items-box" id="cart-items-list">
-                    <div class="empty-msg">No numbers selected</div>
+                <div class="cart-items-box" id="cart-items-container">
+                    <div class="empty-msg">No items selected</div>
                 </div>
                 <button class="btn-clear-all" id="btn-clear-cart">Clear All</button>
             </div>
 
+            <!-- Action Buttons -->
             <div class="bet-action-buttons">
-                <button class="btn-reset" id="btn-reset-selection">Reset</button>
-                <button class="btn-submit" id="btn-submit-bets">Submit</button>
+                <button class="btn-reset" id="btn-reset-bet">RESET</button>
+                <button class="btn-submit" id="btn-submit-bet">SUBMIT</button>
             </div>
         </aside>
     </div>
