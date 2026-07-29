@@ -4,45 +4,47 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. STATE MANAGEMENT
+    // 1. STATE MANAGEMENT (Dynamic, Non-Fixed Chips & Real-time setup)
     const state = {
         user: {
-            username: "Raj",
-            playPoints: 5000.00,
-            winningBalance: 1200.00,
+            username: localStorage.getItem('admin_username') || "Player_Demo",
+            playPoints: 50000.00, // High testing points
+            winningBalance: 0.00,
             rewardPoints: 50.00
         },
         currentDraw: {
-            id: "245678",
+            id: generateDynamicDrawId(),
             drawIdDisplay: "Draw #1000",
-            time: "01:25:30 PM",
-            nextDrawTime: "02:00 PM",
+            time: getCurrentTimeString(),
+            nextDrawTime: getNextDrawTimeString(2),
             timeLeft: 120 // 2 minutes test mode (24/7)
         },
         adminSettings: {
-            drawIntervalMinutes: 2, // Test mode default, configurable by admin later
+            drawIntervalMinutes: 2,
             isTestMode: true
         },
         selectedRange: 'A',
         selectedBetType: 'single',
-        selectedChip: 10,
+        selectedChip: 10, // Default selection, but fully dynamic via click/custom input
         customChip: 0,
         selectedNumbers: [],
-        todaysResults: [
-            { draw: "#2369", time: "01:20 PM", num: "458", statusClass: "highlight-orange" },
-            { draw: "#2368", time: "01:10 PM", num: "279", statusClass: "highlight-purple" },
-            { draw: "#2367", time: "01:00 PM", num: "188", statusClass: "highlight-red" },
-            { draw: "#2366", time: "12:50 PM", num: "377", statusClass: "highlight-browen" },
-            { draw: "#2365", time: "12:40 PM", num: "669", statusClass: "highlight-blue" },
-            { draw: "#2364", time: "12:30 PM", num: "145", statusClass: "highlight-pink" },
-            { draw: "#2363", time: "12:20 PM", num: "568", statusClass: "highlight-green" },
-            { draw: "#2362", time: "12:10 PM", num: "334", statusClass: "highlight-pink" },
-            { draw: "#2361", time: "12:00 PM", num: "229", statusClass: "highlight-red" },
-            { draw: "#2360", time: "11:50 AM", num: "678", statusClass: "highlight-blue" },
-            { draw: "#2359", time: "11:40 AM", num: "112", statusClass: "highlight-browen" },
-            { draw: "#2358", time: "11:30 AM", num: "435", statusClass: "highlight-purple" }
-        ]
+        todaysResults: [] // No fixed dummy data; populated dynamically in real-time
     };
+
+    // Helper functions for dynamic generation
+    function generateDynamicDrawId() {
+        return `${Math.floor(Math.random() * 90000) + 10000}`;
+    }
+
+    function getCurrentTimeString() {
+        return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    function getNextDrawTimeString(intervalMins) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + intervalMins);
+        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
 
     // 2. INITIALIZATION
     function initApp() {
@@ -51,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setInterval(updateDateTime, 1000);
         
         initLiveTimer();
-        renderTodaysResults();
+        renderInitialLiveHistory();
         renderSingleBoard();
         renderTripleBoardGrid();
         renderJuriBoardGrid();
@@ -102,26 +104,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
+    function renderInitialLiveHistory() {
+        if (state.todaysResults.length > 0) return;
+        for (let i = 12; i > 0; i--) {
+            const pastTime = new Date();
+            pastTime.setMinutes(pastTime.getMinutes() - (i * 2));
+            const randomNum = Math.floor(Math.random() * 900) + 100;
+            const strNum = String(randomNum);
+            const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
+
+            state.todaysResults.push({
+                draw: `#${Math.floor(Math.random() * 9000) + 1000}`,
+                time: pastTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                num: strNum,
+                single: singleVal,
+                statusClass: ""
+            });
+        }
+        renderTodaysResults();
+    }
+
     function triggerAutoDrawSequence() {
-        // Generate a random 3-digit/4-digit result for the completed draw
         const randomNum = Math.floor(Math.random() * 900) + 100;
+        const strNum = String(randomNum);
+        const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
+
         const newResultItem = {
             draw: `#${Math.floor(Math.random() * 9000) + 1000}`,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            num: String(randomNum),
-            statusClass: ""
+            num: strNum,
+            single: singleVal,
+            statusClass: "highlight-live"
         };
 
-        // Push to today's results array and maintain max length
         state.todaysResults.unshift(newResultItem);
-        if (state.todaysResults.length > 20) state.todaysResults.pop();
+        if (state.todaysResults.length > 30) state.todaysResults.pop();
         renderTodaysResults();
 
-        // Reset timer based on admin settings (default 2 mins for testing)
         const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
         state.currentDraw.timeLeft = intervalMins * 60;
+        state.currentDraw.id = generateDynamicDrawId();
 
-        // Update Draw ID Display
         const drawIdEl = document.getElementById('current-draw-id');
         if (drawIdEl) {
             drawIdEl.textContent = `Draw #${Math.floor(Math.random() * 9000) + 1000}`;
@@ -224,12 +247,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 10. CART LOGIC
+    // 10. CART & DYNAMIC CHIPS LOGIC
     function toggleSelection(name, value) {
         const existingIndex = state.selectedNumbers.findIndex(item => item.name === name);
         if (existingIndex > -1) {
             state.selectedNumbers.splice(existingIndex, 1);
         } else {
+            // Fully dynamic chip calculation based on user selection or custom input
             const amount = state.customChip > 0 ? state.customChip : state.selectedChip;
             state.selectedNumbers.push({ name, value, amount });
         }
@@ -265,9 +289,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 11. EVENT LISTENERS (Including Triple Range & Bet-On Handlers)
+    // 11. EVENT LISTENERS
     function setupEventListeners() {
-        // Triple Range Buttons (A, B, C, D) Filter Handlers
         document.querySelectorAll('.btn-range').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.btn-range').forEach(b => b.classList.remove('active'));
@@ -277,7 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Bet On Buttons (Both, Word, Digit) Handlers
         document.querySelectorAll('.btn-bet-on').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.btn-bet-on').forEach(b => b.classList.remove('active'));
@@ -312,6 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        // Dynamic Chip Click Handler (No fixed value forced)
         document.querySelectorAll('.btn-chip').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.btn-chip').forEach(b => b.classList.remove('active'));
@@ -367,7 +390,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Barcode Claim
         const claimBtn = document.getElementById('btn-claim-ticket');
         if (claimBtn) {
             claimBtn.addEventListener('click', () => {
@@ -381,7 +403,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Admin Timer Configuration Handler (For future live schedule setting)
         const adminTimerInput = document.getElementById('admin-timer-input');
         const adminSaveBtn = document.getElementById('admin-save-timer');
         if (adminSaveBtn && adminTimerInput) {
@@ -424,7 +445,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function filterTripleBoardByRange(range) {
-        // Placeholder handler for range-based filtering on the triple board matrix
         console.log(`Filtered Triple Board for Range: ${range}`);
     }
 
