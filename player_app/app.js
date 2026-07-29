@@ -29,18 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
         customChip: 0,
         selectedNumbers: [],
         todaysResults: [
-            { draw: "#2369", time: "01:20 PM", num: "458", statusClass: "" },
-            { draw: "#2368", time: "01:10 PM", num: "279", statusClass: "" },
+            { draw: "#2369", time: "01:20 PM", num: "458", statusClass: "highlight-orange" },
+            { draw: "#2368", time: "01:10 PM", num: "279", statusClass: "highlight-purple" },
             { draw: "#2367", time: "01:00 PM", num: "188", statusClass: "highlight-red" },
-            { draw: "#2366", time: "12:50 PM", num: "377", statusClass: "" },
-            { draw: "#2365", time: "12:40 PM", num: "669", statusClass: "" },
+            { draw: "#2366", time: "12:50 PM", num: "377", statusClass: "highlight-browen" },
+            { draw: "#2365", time: "12:40 PM", num: "669", statusClass: "highlight-blue" },
             { draw: "#2364", time: "12:30 PM", num: "145", statusClass: "highlight-pink" },
-            { draw: "#2363", time: "12:20 PM", num: "568", statusClass: "" },
-            { draw: "#2362", time: "12:10 PM", num: "334", statusClass: "" },
-            { draw: "#2361", time: "12:00 PM", num: "229", statusClass: "" },
-            { draw: "#2360", time: "11:50 AM", num: "678", statusClass: "" },
-            { draw: "#2359", time: "11:40 AM", num: "112", statusClass: "" },
-            { draw: "#2358", time: "11:30 AM", num: "435", statusClass: "" }
+            { draw: "#2363", time: "12:20 PM", num: "568", statusClass: "highlight-green" },
+            { draw: "#2362", time: "12:10 PM", num: "334", statusClass: "highlight-pink" },
+            { draw: "#2361", time: "12:00 PM", num: "229", statusClass: "highlight-red" },
+            { draw: "#2360", time: "11:50 AM", num: "678", statusClass: "highlight-blue" },
+            { draw: "#2359", time: "11:40 AM", num: "112", statusClass: "highlight-browen" },
+            { draw: "#2358", time: "11:30 AM", num: "435", statusClass: "highlight-purple" }
         ]
     };
 
