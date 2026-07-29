@@ -871,13 +871,12 @@ function setLockState(locked) {
 
 function onNewDrawStart() {
     const randomTriple = TripleData[Math.floor(Math.random() * TripleData.length)];
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     AppState.currentResult = {
         digit: randomTriple.digit,
         word: randomTriple.word,
-        time: timeStr
+        time: nowTime
     };
 
     AppState.recentResults.unshift({ ...AppState.currentResult });
@@ -885,56 +884,135 @@ function onNewDrawStart() {
         AppState.recentResults.pop();
     }
 
-    processDrawWinning(AppState.currentResult);
-    
-    renderRecentResults();
     updateLiveResultDisplay();
+    renderRecentResults();
+    evaluateActiveTickets(AppState.currentResult);
 }
 
-function processDrawWinning(result) {
-    let totalWinThisDraw = 0;
+function evaluateActiveTickets(winningResult) {
+    let totalWonPoints = 0;
 
     AppState.ticketHistory.forEach(ticket => {
         if (ticket.status === 'P') {
-            let ticketWin = 0;
+            let ticketWon = false;
+            let ticketWinningPts = 0;
+
             ticket.items.forEach(item => {
-                if (item.type === 'SINGLE' && item.digit === result.digit.slice(-1)) {
-                    ticketWin += item.amount * item.winningRatio;
-                } else if (item.type === 'TRIPLE' && item.digit === result.digit) {
-                    ticketWin += item.amount * item.winningRatio;
+                let isMatch = false;
+                if (item.type === 'SINGLE') {
+                    if (winningResult.digit.includes(item.digit) || winningResult.word === item.word) {
+                        isMatch = true;
+                    }
+                } else if (item.type === 'TRIPLE') {
+                    if (item.digit === winningResult.digit || item.word === winningResult.word) {
+                        isMatch = true;
+                    }
+                }
+
+                if (isMatch) {
+                    ticketWon = true;
+                    ticketWinningPts += item.amount * item.winningRatio;
                 }
             });
 
-            if (ticketWin > 0) {
+            if (ticketWon) {
                 ticket.status = 'W';
-                ticket.winningPts = ticketWin;
-                totalWinThisDraw += ticketWin;
+                ticket.winningPts = ticketWinningPts;
+                totalWonPoints += ticketWinningPts;
             } else {
                 ticket.status = 'L';
             }
         }
     });
 
-    if (totalWinThisDraw > 0) {
-        AppState.winPoints += totalWinThisDraw;
-        AppState.playPoints += totalWinThisDraw;
-        
+    if (totalWonPoints > 0) {
+        AppState.winPoints += totalWonPoints;
+        AppState.playPoints += totalWonPoints;
         const playPtsEl = document.getElementById('play-points');
         if (playPtsEl) playPtsEl.innerText = AppState.playPoints.toLocaleString();
-        
-        showToast(`Congratulations! You won ${totalWinThisDraw} Points!`);
+        showToast(`Congratulations! Won ${totalWonPoints.toLocaleString()} Points!`);
     }
 }
 
 function renderRecentResults() {
-    const container = document.getElementById('recent-results-container') || document.getElementById('recent-results-list');
+    const container = document.getElementById('recent-results-container');
     if (!container) return;
 
     container.innerHTML = '';
-    AppState.recentResults.forEach(res => {
-        const item = document.createElement('div');
-        item.className = 'recent-result-badge';
-        item.innerText = `${res.time} - ${res.digit} (${res.word})`;
-        container.appendChild(item);
+    AppState.recentResults.slice(0, 5).forEach(res => {
+        const badge = document.createElement('div');
+        badge.className = 'recent-result-badge';
+        badge.innerText = `${res.digit} (${res.word}) - ${res.time}`;
+        container.appendChild(badge);
+    });
+}
+
+// ==========================================
+// MODULE 7: MODALS, HISTORY & UTILITIES
+// ==========================================
+
+function injectDynamicModals() {
+    if (document.getElementById('history-modal')) return;
+
+    const modalHtml = `
+        <div id="history-modal" class="game-modal-overlay hidden">
+            <div class="game-modal-content">
+                <div class="game-modal-header">
+                    <h2>Ticket History</h2>
+                    <button onclick="closeTicketHistory()" class="btn-close">&times;</button>
+                </div>
+                <div class="game-modal-body">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Time</th>
+                                <th>Points</th>
+                                <th>Status</th>
+                                <th>Win Pts</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticket-history-tbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function renderTicketHistoryTable() {
+    const tbody = document.getElementById('ticket-history-tbody');
+    if (!tbody) return;
+
+    if (AppState.ticketHistory.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="center">No ticket history found for today.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = '';
+    AppState.ticketHistory.forEach(t => {
+        const tr = document.createElement('tr');
+        let statusText = 'Pending';
+        let statusClass = 'status-pending';
+
+        if (t.status === 'W') {
+            statusText = 'Won';
+            statusClass = 'status-won';
+        } else if (t.status === 'L') {
+            statusText = 'Lost';
+            statusClass = 'status-lost';
+        }
+
+        tr.innerHTML = `
+            <td>${t.id}</td>
+            <td>${t.time}</td>
+            <td>${t.points}</td>
+            <td><span class="${statusClass}">${statusText}</span></td>
+            <td>${t.winningPts > 0 ? t.winningPts.toFixed(0) : '-'}</td>
+        `;
+        tbody.appendChild(tr);
     });
 }
