@@ -4,7 +4,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. STATE MANAGEMENT (Dynamic, Non-Fixed Chips & Real-time setup)
+    // 1. STATE MANAGEMENT (Dynamic, Non-Fixed Chips & Real-time setup with LocalStorage Persistence)
     const state = {
         user: {
             username: localStorage.getItem('admin_username') || "Player_Demo",
@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
             rewardPoints: 50.00
         },
         currentDraw: {
-            id: generateDynamicDrawId(),
-            drawIdDisplay: "Draw #1000",
+            id: getOrInitPersistentDrawId(),
+            drawIdDisplay: "Draw 1000",
             time: getCurrentTimeString(),
             nextDrawTime: getNextDrawTimeString(2),
             timeLeft: 120 // 2 minutes test mode (24/7)
@@ -24,16 +24,21 @@ document.addEventListener('DOMContentLoaded', () => {
             isTestMode: true
         },
         selectedRange: 'A',
-        selectedBetType: 'single',
-        selectedChip: 10, // Default selection, but fully dynamic via click/custom input
+        selectedBetType: 'both', // modes: both, word, digit (No Juri)
+        selectedChip: 10, 
         customChip: 0,
         selectedNumbers: [],
-        todaysResults: [] // No fixed dummy data; populated dynamically in real-time
+        todaysResults: getOrInitPersistentResults() // Persistent results so refresh doesn't change history
     };
 
-    // Helper functions for dynamic generation
-    function generateDynamicDrawId() {
-        return `${Math.floor(Math.random() * 90000) + 10000}`;
+    // Helper functions for dynamic and persistent generation
+    function getOrInitPersistentDrawId() {
+        let savedId = localStorage.getItem('a2z_current_draw_id');
+        if (!savedId) {
+            savedId = String(Math.floor(Math.random() * 90000) + 10000);
+            localStorage.setItem('a2z_current_draw_id', savedId);
+        }
+        return savedId;
     }
 
     function getCurrentTimeString() {
@@ -46,6 +51,37 @@ document.addEventListener('DOMContentLoaded', () => {
         return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
+    function getOrInitPersistentResults() {
+        let savedResults = localStorage.getItem('a2z_todays_results');
+        if (savedResults) {
+            try {
+                return JSON.parse(savedResults);
+            } catch (e) {
+                console.error("Error parsing saved results", e);
+            }
+        }
+        
+        // Generate initial 20+ live past records if none exist
+        let initialResults = [];
+        for (let i = 20; i > 0; i--) {
+            const pastTime = new Date();
+            pastTime.setMinutes(pastTime.getMinutes() - (i * 2));
+            const randomNum = Math.floor(Math.random() * 900) + 100;
+            const strNum = String(randomNum);
+            const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
+
+            initialResults.push({
+                draw: `${Math.floor(Math.random() * 90000) + 10000}`,
+                time: pastTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                num: strNum,
+                single: singleVal,
+                statusClass: ""
+            });
+        }
+        localStorage.setItem('a2z_todays_results', JSON.stringify(initialResults));
+        return initialResults;
+    }
+
     // 2. INITIALIZATION
     function initApp() {
         updateUserInfo();
@@ -53,10 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
         setInterval(updateDateTime, 1000);
         
         initLiveTimer();
-        renderInitialLiveHistory();
+        renderTodaysResults();
         renderSingleBoard();
         renderTripleBoardGrid();
-        renderJuriBoardGrid();
+        renderJuriBoardGrid(); // Or hidden if not needed, kept for fallback
         setupEventListeners();
         
         const loginModal = document.getElementById('login-modal');
@@ -104,68 +140,95 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    function renderInitialLiveHistory() {
-        if (state.todaysResults.length > 0) return;
-        for (let i = 12; i > 0; i--) {
-            const pastTime = new Date();
-            pastTime.setMinutes(pastTime.getMinutes() - (i * 2));
-            const randomNum = Math.floor(Math.random() * 900) + 100;
-            const strNum = String(randomNum);
-            const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
-
-            state.todaysResults.push({
-                draw: `#${Math.floor(Math.random() * 9000) + 1000}`,
-                time: pastTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                num: strNum,
-                single: singleVal,
-                statusClass: ""
-            });
-        }
-        renderTodaysResults();
-    }
-
     function triggerAutoDrawSequence() {
         const randomNum = Math.floor(Math.random() * 900) + 100;
         const strNum = String(randomNum);
         const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
 
         const newResultItem = {
-            draw: `#${Math.floor(Math.random() * 9000) + 1000}`,
+            draw: `${Math.floor(Math.random() * 90000) + 10000}`,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             num: strNum,
             single: singleVal,
             statusClass: "highlight-live"
         };
 
+        // Unshift to put the latest current result at the very front/top
         state.todaysResults.unshift(newResultItem);
-        if (state.todaysResults.length > 30) state.todaysResults.pop();
+        if (state.todaysResults.length > 35) state.todaysResults.pop();
+        
+        // Save to LocalStorage so refresh won't alter or lose it
+        localStorage.setItem('a2z_todays_results', JSON.stringify(state.todaysResults));
+
         renderTodaysResults();
 
         const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
         state.currentDraw.timeLeft = intervalMins * 60;
-        state.currentDraw.id = generateDynamicDrawId();
+        state.currentDraw.id = String(Math.floor(Math.random() * 90000) + 10000);
+        localStorage.setItem('a2z_current_draw_id', state.currentDraw.id);
 
         const drawIdEl = document.getElementById('current-draw-id');
         if (drawIdEl) {
-            drawIdEl.textContent = `Draw #${Math.floor(Math.random() * 9000) + 1000}`;
+            drawIdEl.textContent = `Draw ${state.currentDraw.id}`;
         }
     }
 
-    // 6. TODAY'S RESULTS SLIDER GRID
+    // 6. TODAY'S RESULTS SLIDER GRID (Multi-color, Larger Bold Size, Latest on Front)
     function renderTodaysResults() {
         const grid = document.getElementById('results-12-grid');
         if (!grid) return;
         grid.innerHTML = '';
 
-        state.todaysResults.forEach(item => {
+        // Display top 12 results on dashboard grid, current result first
+        const displayList = state.todaysResults.slice(0, 12);
+
+        displayList.forEach((item, idx) => {
             const card = document.createElement('div');
             card.className = 'result-slot-card';
+            // Applied multi-color styling & larger prominent font sizes
+            card.style.cssText = "background: linear-gradient(135deg, rgba(20,30,48,0.9), rgba(36,59,85,0.9)); border: 1px solid rgba(0,255,200,0.3); border-radius: 8px; padding: 8px; text-align: center; min-width: 85px;";
+            
+            // Render depending on mode (Word, Digit, Both) along with single digit
+            let modeDisplayContent = "";
+            if (state.selectedBetType === 'word') {
+                modeDisplayContent = `<span style="color: #ff9900; font-size: 16px; font-weight: bold;">${item.num}</span>`;
+            } else if (state.selectedBetType === 'digit') {
+                modeDisplayContent = `<span style="color: #00ffcc; font-size: 16px; font-weight: bold;">${item.single}</span>`;
+            } else {
+                // Both mode showing word + single clear format
+                modeDisplayContent = `
+                    <div style="color: #ff9900; font-size: 15px; font-weight: bold;">${item.num}</div>
+                    <div style="color: #00ffcc; font-size: 14px; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.2); margin-top: 2px; padding-top: 2px;">Single: ${item.single}</div>
+                `;
+            }
+
             card.innerHTML = `
-                <span class="res-draw">${item.draw}</span>
-                <span class="res-time">${item.time}</span>
-                <span class="res-num ${item.statusClass}">${item.num}</span>
+                <div style="color: #a0c4ff; font-size: 11px; font-weight: 600;">${item.draw}</div>
+                <div style="color: #888; font-size: 10px; margin-bottom: 3px;">${item.time}</div>
+                ${modeDisplayContent}
             `;
             grid.appendChild(card);
+        });
+
+        // Also update Result History modal list if open (showing 20+ records)
+        renderResultHistoryModalList();
+    }
+
+    function renderResultHistoryModalList() {
+        const historyContainer = document.getElementById('result-history-list-container');
+        if (!historyContainer) return;
+        historyContainer.innerHTML = '';
+
+        state.todaysResults.forEach(item => {
+            const row = document.createElement('div');
+            row.style.cssText = "display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px;";
+            row.innerHTML = `
+                <span style="color: #a0c4ff;">Draw ${item.draw}</span>
+                <span style="color: #bbb;">${item.time}</span>
+                <span style="color: #ff9900; font-weight: bold;">${item.num}</span>
+                <span style="color: #00ffcc; font-weight: bold;">Single: ${item.single}</span>
+            `;
+            historyContainer.appendChild(row);
         });
     }
 
@@ -183,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 8. TRIPLE BOARD MATRIX (Exact 22 Rows matching reference image)
+    // 8. TRIPLE BOARD MATRIX
     function renderTripleBoardGrid() {
         const grid = document.getElementById('triple-board-grid');
         if (!grid) return;
@@ -228,12 +291,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 9. JURI BOARD (00 - 99)
+    // 9. JURI BOARD (Fallback)
     function renderJuriBoardGrid() {
         const grid = document.getElementById('juri-board-grid');
         if (!grid) return;
         grid.innerHTML = '';
-
         for (let i = 0; i <= 99; i++) {
             const val = String(i).padStart(2, '0');
             const cell = document.createElement('div');
@@ -253,7 +315,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (existingIndex > -1) {
             state.selectedNumbers.splice(existingIndex, 1);
         } else {
-            // Fully dynamic chip calculation based on user selection or custom input
             const amount = state.customChip > 0 ? state.customChip : state.selectedChip;
             state.selectedNumbers.push({ name, value, amount });
         }
@@ -289,22 +350,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 11. EVENT LISTENERS
+    // 11. EVENT LISTENERS (Strictly 3 Modes: Word, Digit, Both)
     function setupEventListeners() {
         document.querySelectorAll('.btn-range').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.btn-range').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 state.selectedRange = btn.getAttribute('data-range');
-                filterTripleBoardByRange(state.selectedRange);
-            });
-        });
-
-        document.querySelectorAll('.btn-bet-on').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.btn-bet-on').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                state.selectedBetType = btn.getAttribute('data-bet-type') || btn.textContent.toLowerCase();
             });
         });
 
@@ -312,29 +364,21 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.btn-type').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                state.selectedBetType = btn.getAttribute('data-type');
-
-                const juriSec = document.getElementById('juri-board-section');
-                const tripleSec = document.getElementById('triple-board-section');
-                const rangeBlock = document.getElementById('range-selector-block');
-
-                if (state.selectedBetType === 'juri') {
-                    if(juriSec) juriSec.classList.remove('hidden');
-                    if(tripleSec) tripleSec.classList.add('hidden');
-                    if(rangeBlock) rangeBlock.classList.add('hidden');
-                } else if (state.selectedBetType === 'triple') {
-                    if(juriSec) juriSec.classList.add('hidden');
-                    if(tripleSec) tripleSec.classList.remove('hidden');
-                    if(rangeBlock) rangeBlock.classList.remove('hidden');
+                
+                // Map to Word, Digit, or Both modes
+                const typeAttr = (btn.getAttribute('data-type') || btn.textContent).toLowerCase();
+                if (typeAttr.includes('word') || typeAttr.includes('panna') || typeAttr.includes('triple')) {
+                    state.selectedBetType = 'word';
+                } else if (typeAttr.includes('digit') || typeAttr.includes('single')) {
+                    state.selectedBetType = 'digit';
                 } else {
-                    if(juriSec) juriSec.classList.add('hidden');
-                    if(tripleSec) tripleSec.classList.remove('hidden');
-                    if(rangeBlock) rangeBlock.classList.remove('hidden');
+                    state.selectedBetType = 'both';
                 }
+                
+                renderTodaysResults(); // Re-render results grid to reflect chosen mode instantly
             });
         });
 
-        // Dynamic Chip Click Handler (No fixed value forced)
         document.querySelectorAll('.btn-chip').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.btn-chip').forEach(b => b.classList.remove('active'));
@@ -390,35 +434,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        const claimBtn = document.getElementById('btn-claim-ticket');
-        if (claimBtn) {
-            claimBtn.addEventListener('click', () => {
-                const ticketInput = document.getElementById('barcode-input');
-                if (ticketInput && ticketInput.value.trim() !== "") {
-                    alert(`Claim request submitted for Ticket: ${ticketInput.value}`);
-                    ticketInput.value = "";
-                } else {
-                    alert("Please enter or scan a valid Ticket No.");
-                }
-            });
-        }
-
-        const adminTimerInput = document.getElementById('admin-timer-input');
-        const adminSaveBtn = document.getElementById('admin-save-timer');
-        if (adminSaveBtn && adminTimerInput) {
-            adminSaveBtn.addEventListener('click', () => {
-                const mins = parseInt(adminTimerInput.value, 10);
-                if (!isNaN(mins) && mins > 0) {
-                    state.adminSettings.drawIntervalMinutes = mins;
-                    state.adminSettings.isTestMode = false;
-                    state.currentDraw.timeLeft = mins * 60;
-                    alert(`Admin updated draw timer interval to ${mins} minutes.`);
-                } else {
-                    alert("Please enter a valid minute value.");
-                }
-            });
-        }
-
         setupModal("nav-ticket-history", "ticket-history-modal", "close-ticket-history-modal");
         setupModal("nav-result-history", "result-history-modal", "close-result-history-modal");
         setupModal("btn-open-result-history-card", "result-history-modal", "close-result-history-modal");
@@ -432,20 +447,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (loginModal) loginModal.classList.remove('hidden');
             });
         }
-
-        const loginForm = document.getElementById('login-form');
-        if (loginForm) {
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const loginModal = document.getElementById('login-modal');
-                if (loginModal) loginModal.classList.add('hidden');
-                updateUserInfo();
-            });
-        }
-    }
-
-    function filterTripleBoardByRange(range) {
-        console.log(`Filtered Triple Board for Range: ${range}`);
     }
 
     function setupModal(triggerId, modalId, closeId) {
