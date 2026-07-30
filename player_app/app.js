@@ -1,6 +1,6 @@
 /**
  * A2Z BOMBAY - Main Application Logic
- * Complete Production-Ready Version with Aggressive DOM Synchronization.
+ * Complete Production-Ready Version matching exact UI/UX specifications.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const state = {
         user: {
             username: localStorage.getItem('admin_username') || "Player_Demo",
-            playPoints: 50000.00,
+            playPoints: 50000.00, // High testing points
             winningBalance: 0.00,
             rewardPoints: 50.00
         },
@@ -17,19 +17,19 @@ document.addEventListener('DOMContentLoaded', () => {
             drawIdDisplay: "1000",
             time: getCurrentTimeString(),
             nextDrawTime: getNextDrawTimeString(2),
-            timeLeft: 120 // 2 minutes test mode
+            timeLeft: 120 // 2 minutes test mode (24/7 continuous online simulation)
         },
         adminSettings: {
             drawIntervalMinutes: 2,
             isTestMode: true
         },
         selectedRange: 'A',
-        selectedBetType: 'both', 
-        selectedGameType: 'single', 
+        selectedBetType: 'both', // modes: both, word, digit, juri
+        selectedGameType: 'single', // single, juri, triple
         selectedChip: 10, 
         customChip: 0,
         selectedNumbers: [],
-        todaysResults: getOrInitPersistentResults() 
+        todaysResults: getOrInitPersistentResults() // Persistent results so refresh/offline doesn't change history
     };
 
     // Helper functions for dynamic and persistent generation
@@ -62,13 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
+        // Generate initial live past records if none exist (Latest at the front)
         let initialResults = [];
         for (let i = 0; i < 30; i++) {
             const pastTime = new Date();
             pastTime.setMinutes(pastTime.getMinutes() - (i * 2));
             const randomNum = Math.floor(Math.random() * 900) + 100;
             const strNum = String(randomNum);
-            const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a, 10) + parseInt(b, 10), 0)).slice(-1);
+            const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
             const juriVal = String(Math.floor(Math.random() * 90)).padStart(2, '0');
 
             initialResults.push({
@@ -95,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTodaysResults();
         renderSingleBoard();
         renderTripleBoardGrid();
-        renderJuriBoardGrid();
+        renderJuriBoardGrid(); // Fully unlocked Bombay Fatafat Juri Board (00 to 99)
         setupEventListeners();
         
         const loginModal = document.getElementById('login-modal');
@@ -125,11 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. LIVE TIMER COUNTDOWN & AUTO-DRAW TRIGGER
+    // 5. LIVE TIMER COUNTDOWN & AUTO-DRAW TRIGGER (Online-like continuous 24/7 simulator)
     function initLiveTimer() {
         const timerEl = document.getElementById('draw-timer');
         if (!timerEl) return;
 
+        // Check if offline/closed time elapsed and auto-sync time left
         let lastTimestamp = localStorage.getItem('a2z_last_timestamp');
         const currentTime = Date.now();
         if (lastTimestamp) {
@@ -137,29 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (elapsedSecs > 0) {
                 state.currentDraw.timeLeft -= elapsedSecs;
                 while (state.currentDraw.timeLeft <= 0) {
-                    triggerAutoDrawSequence(true); 
+                    triggerAutoDrawSequence(true); // Catch-up past missed draws if closed
                     const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
                     state.currentDraw.timeLeft += (intervalMins * 60);
                 }
             }
         }
-
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                let savedTs = localStorage.getItem('a2z_last_timestamp');
-                if (savedTs) {
-                    const elapsed = Math.floor((Date.now() - parseInt(savedTs, 10)) / 1000);
-                    if (elapsed > 0) {
-                        state.currentDraw.timeLeft -= elapsed;
-                        while (state.currentDraw.timeLeft <= 0) {
-                            triggerAutoDrawSequence(true);
-                            const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
-                            state.currentDraw.timeLeft += (intervalMins * 60);
-                        }
-                    }
-                }
-            }
-        });
 
         setInterval(() => {
             localStorage.setItem('a2z_last_timestamp', Date.now().toString());
@@ -169,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const secs = String(state.currentDraw.timeLeft % 60).padStart(2, '0');
                 timerEl.textContent = `${mins}:${secs}`;
             } else {
+                // Timer reached 0: Trigger Auto-Draw & Results Generation with 1s Glow Animation
                 triggerAutoDrawSequence(false);
             }
         }, 1000);
@@ -177,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function triggerAutoDrawSequence(isCatchup = false) {
         const randomNum = Math.floor(Math.random() * 900) + 100;
         const strNum = String(randomNum);
-        const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a, 10) + parseInt(b, 10), 0)).slice(-1);
+        const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
         const juriVal = String(Math.floor(Math.random() * 90)).padStart(2, '0');
 
         const drawIdToUse = state.currentDraw.id;
@@ -190,14 +176,17 @@ document.addEventListener('DOMContentLoaded', () => {
             statusClass: isCatchup ? "" : "highlight-anim"
         };
 
+        // Unshift to put the latest current result at the very front/top
         state.todaysResults.unshift(newResultItem);
         if (state.todaysResults.length > 50) state.todaysResults.pop();
         
+        // Save to LocalStorage permanently
         localStorage.setItem('a2z_todays_results', JSON.stringify(state.todaysResults));
 
         renderLatestDrawBox();
         renderTodaysResults();
 
+        // 1-second visual highlight animation effect on winning cells
         if (!isCatchup) {
             highlightWinningCellsOnBoard(strNum, singleVal, juriVal);
         }
@@ -206,9 +195,15 @@ document.addEventListener('DOMContentLoaded', () => {
         state.currentDraw.timeLeft = intervalMins * 60;
         state.currentDraw.id = String(Math.floor(Math.random() * 90000) + 10000);
         localStorage.setItem('a2z_current_draw_id', state.currentDraw.id);
+
+        const drawIdEl = document.getElementById('current-draw-id');
+        if (drawIdEl) {
+            drawIdEl.textContent = state.currentDraw.id; // Completely hash-free clean ID
+        }
     }
 
     function highlightWinningCellsOnBoard(num, single, juri) {
+        // Highlight corresponding cells for 1 second to give true live game feedback
         const allCells = document.querySelectorAll('.matrix-cell, .single-card');
         allCells.forEach(cell => {
             const txt = cell.textContent.trim();
@@ -221,67 +216,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 6. RENDER LATEST DRAW BOX (Single Result + Side Slide Animation + No Draw ID)
+    // 6. RENDER LATEST DRAW BOX (Animated live result display with sliding glow border)
     function renderLatestDrawBox() {
         const latest = state.todaysResults[0];
         if (!latest) return;
 
-        // Dynamic Injection of Side-Slide CSS Animation
-        if (!document.getElementById('a2z-slide-anim-style')) {
-            const styleTag = document.createElement('style');
-            styleTag.id = 'a2z-slide-anim-style';
-            styleTag.textContent = `
-                @keyframes slideFromSide {
-                    0% { transform: translateX(50px); opacity: 0; }
-                    100% { transform: translateX(0); opacity: 1; }
-                }
-                .side-slide-active {
-                    animation: slideFromSide 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-                }
-            `;
-            document.head.appendChild(styleTag);
+        // Update Live Draw Status ID field cleanly without hash
+        const liveDrawIdEl = document.getElementById('current-draw-id');
+        if (liveDrawIdEl) {
+            liveDrawIdEl.textContent = state.currentDraw.id;
         }
 
-        let modeContent = "";
-        if (state.selectedBetType === 'word') {
-            modeContent = `<div style="font-size: 32px; font-weight: 900; color: #ff9900; text-shadow: 0 0 10px rgba(255,153,0,0.7); margin-top: 4px;">${latest.num}</div>`;
-        } else if (state.selectedBetType === 'digit') {
-            modeContent = `<div style="font-size: 32px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,200,0.7); margin-top: 4px;">${latest.single}</div>`;
-        } else if (state.selectedBetType === 'juri') {
-            modeContent = `<div style="font-size: 32px; font-weight: 900; color: #ffff33; text-shadow: 0 0 10px rgba(255,255,51,0.7); margin-top: 4px;">${latest.juri}</div>`;
-        } else {
-            modeContent = `
-                <div style="font-size: 30px; font-weight: 900; color: #ff9900; text-shadow: 0 0 10px rgba(255,153,0,0.7); margin-top: 4px;">${latest.num}</div>
-                <div style="font-size: 15px; font-weight: bold; color: #00ffcc; margin-top: 6px; letter-spacing: 0.5px;">SINGLE: ${latest.single} | JURI: ${latest.juri}</div>
+        // Target or create latest draw result box
+        let targetContainer = document.getElementById('latest-draw-box-inner');
+        let potentialParent = document.querySelector('.latest-draw-result-box, div[class*="latest"]');
+        
+        if (potentialParent && !targetContainer) {
+            potentialParent.style.cssText += "animation: borderGlow 2s infinite alternate; border: 2px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,200,0.4); position: relative;";
+            potentialParent.innerHTML = `
+                <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
+                <div id="latest-draw-box-inner"></div>
             `;
+            targetContainer = document.getElementById('latest-draw-box-inner');
         }
 
-        // Clean Single HTML Content with Time only (DRAW # removed)
-        const newInnerContent = `
-            <div class="side-slide-active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center; padding: 10px 0;">
-                <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
-                <div style="font-size: 16px; font-weight: 800; color: #a0c4ff; margin-bottom: 4px;">${latest.time}</div>
-                ${modeContent}
-            </div>
-        `;
-
-        // Target primary container to completely replace all inner duplicates
-        let targetBox = document.querySelector('#latest-draw-box, .latest-draw-result-box');
-        if (!targetBox) {
-            const containers = Array.from(document.querySelectorAll('div, section')).filter(el => {
-                return el.textContent.includes('LATEST DRAW RESULT') && el.children.length > 0;
-            });
-            if (containers.length > 0) {
-                targetBox = containers[0];
+        if (targetContainer) {
+            let modeContent = "";
+            if (state.selectedBetType === 'word') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>`;
+            } else if (state.selectedBetType === 'digit') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,200,0.6);">${latest.single}</div>`;
+            } else if (state.selectedBetType === 'juri') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ffff33; text-shadow: 0 0 8px rgba(255,255,51,0.6);">${latest.juri}</div>`;
+            } else {
+                modeContent = `
+                    <div style="font-size: 26px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>
+                    <div style="font-size: 16px; font-weight: bold; color: #00ffcc; margin-top: 3px; border-top: 1px dashed rgba(255,255,255,0.3); padding-top: 2px;">Single: ${latest.single} | Juri: ${latest.juri}</div>
+                `;
             }
-        }
 
-        if (targetBox) {
-            targetBox.innerHTML = newInnerContent;
+            targetContainer.innerHTML = `
+                <div style="font-size: 14px; font-weight: bold; color: #a0c4ff;">Draw ${latest.draw}</div>
+                <div style="font-size: 12px; color: #ccc; margin-bottom: 6px;">${latest.time}</div>
+                ${modeContent}
+            `;
         }
     }
 
-    // 7. TODAY'S RESULTS SLIDER GRID
+    // 7. TODAY'S RESULTS SLIDER GRID (Multi-color, Larger Bold Size, Latest on Front, No Draw ID on top)
     function renderTodaysResults() {
         const grid = document.getElementById('results-12-grid');
         if (!grid) return;
@@ -322,58 +304,23 @@ document.addEventListener('DOMContentLoaded', () => {
         renderResultHistoryModalList();
     }
 
-    // Fix for the Empty Daily Result History Modal showing '---' and '0'
     function renderResultHistoryModalList() {
-        const modal = document.getElementById('result-history-modal');
-        if (!modal) return;
+        const historyContainer = document.getElementById('result-history-list-container');
+        if (!historyContainer) return;
+        historyContainer.innerHTML = '';
 
-        // 1. Force update "Date: ---" and "Total Draws: 0" by scanning text content
-        const allSpans = modal.querySelectorAll('span, p, div');
-        const todayStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-        
-        allSpans.forEach(el => {
-            if (el.childNodes.length === 1 && typeof el.textContent === 'string') {
-                if (el.textContent.includes('Date: ---') || el.textContent.trim() === 'Date: --') {
-                    el.textContent = `Date: ${todayStr}`;
-                }
-                if (el.textContent.includes('Total Draws: 0')) {
-                    el.textContent = `Total Draws: ${state.todaysResults.length}`;
-                }
-            }
+        state.todaysResults.forEach(item => {
+            const row = document.createElement('div');
+            row.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px;";
+            row.innerHTML = `
+                <span style="color: #a0c4ff; font-weight: bold;">Draw ${item.draw}</span>
+                <span style="color: #ccc;">${item.time}</span>
+                <span style="color: #ff9900; font-weight: 900; font-size: 16px;">${item.num}</span>
+                <span style="color: #00ffcc; font-weight: bold; font-size: 14px;">Single: ${item.single}</span>
+                <span style="color: #ffff33; font-weight: bold; font-size: 14px;">Juri: ${item.juri}</span>
+            `;
+            historyContainer.appendChild(row);
         });
-
-        // 2. Find where to put the list. If container is missing, create it dynamically under the header.
-        let historyContainer = document.getElementById('result-history-list-container');
-        
-        if (!historyContainer) {
-            // Search for the header row text to inject below it
-            const modalDivs = Array.from(modal.querySelectorAll('div'));
-            const headerRow = modalDivs.find(d => d.textContent.includes('Draw Time') && d.textContent.includes('Draw ID') && d.children.length > 2);
-            
-            if (headerRow) {
-                historyContainer = document.createElement('div');
-                historyContainer.id = 'result-history-list-container';
-                historyContainer.style.cssText = "max-height: 400px; overflow-y: auto; margin-top: 10px; width: 100%;";
-                headerRow.parentNode.insertBefore(historyContainer, headerRow.nextSibling);
-            }
-        }
-
-        // 3. Populate the container
-        if (historyContainer) {
-            historyContainer.innerHTML = '';
-            state.todaysResults.forEach(item => {
-                const row = document.createElement('div');
-                row.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px; width: 100%;";
-                row.innerHTML = `
-                    <span style="color: #ccc; width: 20%; text-align: left;">${item.time}</span>
-                    <span style="color: #a0c4ff; font-weight: bold; width: 20%; text-align: center;">${item.draw}</span>
-                    <span style="color: #00ffcc; font-weight: bold; font-size: 15px; width: 20%; text-align: center;">${item.single}</span>
-                    <span style="color: #ffff33; font-weight: bold; font-size: 15px; width: 20%; text-align: center;">${item.juri}</span>
-                    <span style="color: #ff9900; font-weight: 900; font-size: 17px; width: 20%; text-align: right;">${item.num}</span>
-                `;
-                historyContainer.appendChild(row);
-            });
-        }
     }
 
     // 8. SINGLE BOARD (1 - 0)
@@ -435,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 10. JURI BOARD 
+    // 10. JURI BOARD (Fully Unlocked Bombay Fatafat Juri Logic: 00 to 99)
     function renderJuriBoardGrid() {
         const grid = document.getElementById('juri-board-grid');
         if (!grid) return;
@@ -475,208 +422,45 @@ document.addEventListener('DOMContentLoaded', () => {
         cartList.innerHTML = '';
         let totalPts = 0;
 
-        if (state.selectedNumbers.length === 0) {
-            cartList.innerHTML = `<div class="empty-msg">No numbers selected</div>`;
-        } else {
-            state.selectedNumbers.forEach((item, index) => {
-                totalPts += item.amount;
-                const div = document.createElement('div');
-                div.className = 'cart-item-row';
-                div.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px;";
-                div.innerHTML = `
-                    <span>${item.name}</span>
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <button type="button" class="btn-cart-minus" style="background:#333; color:#fff; border:none; width:20px; height:20px; border-radius:4px; cursor:pointer; font-weight:bold;">-</button>
-                        <strong>${item.amount} Pts</strong>
-                        <button type="button" class="btn-cart-plus" style="background:#333; color:#fff; border:none; width:20px; height:20px; border-radius:4px; cursor:pointer; font-weight:bold;">+</button>
-                    </div>
-                `;
+        state.selectedNumbers.forEach(item => {
+            totalPts += item.amount;
+            const li = document.createElement('div');
+            li.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: rgba(0,0,0,0.3); margin-bottom: 4px; border-radius: 4px; font-size: 13px;";
+            li.innerHTML = `
+                <span style="color: #00ffcc; font-weight: bold;">${item.name}</span>
+                <span style="color: #ff9900;">Pts: ${item.amount}</span>
+            `;
+            cartList.appendChild(li);
+        });
 
-                div.querySelector('.btn-cart-plus').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    item.amount += (state.customChip > 0 ? state.customChip : state.selectedChip);
-                    updateCartUI();
-                });
-
-                div.querySelector('.btn-cart-minus').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const activeStep = state.customChip > 0 ? state.customChip : state.selectedChip;
-                    item.amount -= activeStep;
-                    if (item.amount <= 0) {
-                        state.selectedNumbers.splice(index, 1);
-                    }
-                    updateCartUI();
-                });
-
-                cartList.appendChild(div);
-            });
-        }
-
-        if (totalPtsTag) totalPtsTag.textContent = totalPts;
-        const selectedCountTag = document.querySelector('.bet-panel-block.cart-block .cart-header span:first-child');
-        if (selectedCountTag) {
-            selectedCountTag.textContent = `SELECTED ITEMS ( ${state.selectedNumbers.length} )`;
+        if (totalPtsTag) {
+            totalPtsTag.textContent = totalPts.toFixed(2);
         }
     }
 
-    // 12. EVENT LISTENERS
     function setupEventListeners() {
-        document.querySelectorAll('.btn-range').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.btn-range').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                state.selectedRange = btn.getAttribute('data-range');
-            });
-        });
-
-        document.querySelectorAll('.btn-type').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const btnText = btn.textContent.toLowerCase();
-                if (btnText.includes('single') || btnText.includes('juri') || btnText.includes('triple')) {
-                    document.querySelectorAll('.btn-type').forEach(b => {
-                        if(b.textContent.toLowerCase().includes('single') || b.textContent.toLowerCase().includes('juri') || b.textContent.toLowerCase().includes('triple')) {
-                            b.classList.remove('active');
-                        }
-                    });
-                    btn.classList.add('active');
-                    if (btnText.includes('juri')) {
-                        state.selectedGameType = 'juri';
-                        state.selectedBetType = 'juri';
-                    } else if (btnText.includes('single')) {
-                        state.selectedGameType = 'single';
-                        state.selectedBetType = 'digit';
-                    } else {
-                        state.selectedGameType = 'triple';
-                        state.selectedBetType = 'word';
-                    }
-                } else {
-                    document.querySelectorAll('.btn-type').forEach(b => {
-                        if(!b.textContent.toLowerCase().includes('single') && !b.textContent.toLowerCase().includes('juri') && !b.textContent.toLowerCase().includes('triple')) {
-                            b.classList.remove('active');
-                        }
-                    });
-                    btn.classList.add('active');
-                    const typeAttr = (btn.getAttribute('data-type') || btn.textContent).toLowerCase();
-                    if (typeAttr.includes('word') || typeAttr.includes('panna')) {
-                        state.selectedBetType = 'word';
-                    } else if (typeAttr.includes('digit') || typeAttr.includes('single')) {
-                        state.selectedBetType = 'digit';
-                    } else if (typeAttr.includes('juri')) {
-                        state.selectedBetType = 'juri';
-                    } else {
-                        state.selectedBetType = 'both';
-                    }
+        const placeBetBtn = document.getElementById('place-bet-btn');
+        if (placeBetBtn) {
+            placeBetBtn.addEventListener('click', () => {
+                if (state.selectedNumbers.length === 0) {
+                    alert('Please select at least one number/panna to place a bet!');
+                    return;
                 }
-                renderTodaysResults();
-            });
-        });
-
-        document.querySelectorAll('.btn-chip').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.btn-chip').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                state.selectedChip = parseInt(btn.getAttribute('data-val'), 10) || 10;
-                state.customChip = 0;
-            });
-
-            btn.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                state.selectedChip += 50;
-                btn.textContent = state.selectedChip;
-                state.customChip = 0;
-            });
-        });
-
-        const customInput = document.getElementById('custom-chip-val');
-        if (customInput) {
-            customInput.addEventListener('input', (e) => {
-                const val = parseInt(e.target.value, 10);
-                if (!isNaN(val) && val > 0) {
-                    document.querySelectorAll('.btn-chip').forEach(b => b.classList.remove('active'));
-                    state.customChip = val;
+                let totalBetAmount = state.selectedNumbers.reduce((sum, item) => sum + item.amount, 0);
+                if (state.user.playPoints < totalBetAmount) {
+                    alert('Insufficient Play Points!');
+                    return;
                 }
-            });
-        }
-
-        const clearBtn = document.getElementById('btn-clear-cart');
-        if (clearBtn) {
-            clearBtn.addEventListener('click', () => {
+                state.user.playPoints -= totalBetAmount;
+                updateUserInfo();
+                alert(`Successfully placed bets worth ${totalBetAmount} points!`);
                 state.selectedNumbers = [];
                 document.querySelectorAll('.matrix-cell.selected, .single-card.selected').forEach(el => el.classList.remove('selected'));
                 updateCartUI();
             });
         }
-
-        const resetBtn = document.getElementById('btn-reset-selection');
-        if (resetBtn) {
-            resetBtn.addEventListener('click', () => {
-                if(clearBtn) clearBtn.click();
-            });
-        }
-
-        const submitBtn = document.getElementById('btn-submit-bets');
-        if (submitBtn) {
-            submitBtn.addEventListener('click', () => {
-                if (state.selectedNumbers.length === 0) {
-                    alert("Please select at least one number to place a bet.");
-                    return;
-                }
-                let totalCost = state.selectedNumbers.reduce((sum, item) => sum + item.amount, 0);
-                if (state.user.playPoints >= totalCost) {
-                    state.user.playPoints -= totalCost;
-                    updateUserInfo();
-                    alert(`Successfully submitted ${state.selectedNumbers.length} bets totaling ${totalCost} Points!`);
-                    if(clearBtn) clearBtn.click();
-                } else {
-                    alert("Insufficient Play Points!");
-                }
-            });
-        }
-
-        setupModal("nav-ticket-history", "ticket-history-modal", "close-ticket-history-modal");
-        setupModal("nav-result-history", "result-history-modal", "close-result-history-modal");
-        
-        // Trigger Modal Update every time it opens to ensure dynamic injection works
-        const resultTrigger = document.getElementById("nav-result-history") || document.getElementById("btn-open-result-history-card");
-        if (resultTrigger) {
-            resultTrigger.addEventListener('click', () => {
-                const modal = document.getElementById("result-history-modal");
-                if(modal) {
-                    modal.classList.remove('hidden');
-                    renderResultHistoryModalList(); // Force render when clicked
-                }
-            });
-        }
-
-        setupModal("nav-rules", "rules-modal", "close-rules-modal");
-        setupModal("nav-settings", "settings-modal", "close-settings-modal");
-
-        const logoutBtn = document.getElementById('btn-logout');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                const loginModal = document.getElementById('login-modal');
-                if (loginModal) loginModal.classList.remove('hidden');
-            });
-        }
     }
 
-    function setupModal(triggerId, modalId, closeId) {
-        const trigger = document.getElementById(triggerId);
-        const modal = document.getElementById(modalId);
-        const close = document.getElementById(closeId);
-
-        if (trigger && modal) {
-            trigger.addEventListener('click', () => modal.classList.remove('hidden'));
-        }
-        if (close && modal) {
-            close.addEventListener('click', () => modal.classList.add('hidden'));
-        }
-        if (modal) {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.add('hidden');
-            });
-        }
-    }
-
+    // Initialize application execution
     initApp();
 });
