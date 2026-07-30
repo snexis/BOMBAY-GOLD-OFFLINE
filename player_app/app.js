@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 6. RENDER LATEST DRAW BOX (Aggressive DOM Fix for the '---' bug)
+  // 6. RENDER LATEST DRAW BOX (Safe Surgical Fix)
     function renderLatestDrawBox() {
         const latest = state.todaysResults[0];
         if (!latest) return;
@@ -240,34 +240,31 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
-        const newHTML = `
+        const newInnerContent = `
             <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
-            <div style="font-size: 14px; font-weight: bold; color: #a0c4ff;">Draw ${latest.draw}</div>
+            <div style="font-size: 14px; font-weight: bold; color: #a0c4ff;">Draw #${latest.draw}</div>
             <div style="font-size: 12px; color: #ccc; margin-bottom: 6px;">${latest.time}</div>
             ${modeContent}
         `;
 
-        // Strategy 1: Find by explicit text search (Solves the UI bug shown in image)
-        const allDivs = document.querySelectorAll('div');
-        let boxReplaced = false;
-
-        for (let div of allDivs) {
-            // Find the container that has "LATEST DRAW RESULT" and includes the "---"
-            if (div.textContent.includes('LATEST DRAW RESULT') && div.textContent.includes('---')) {
-                div.innerHTML = newHTML;
-                div.style.cssText += "animation: borderGlow 2s infinite alternate; border: 2px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,200,0.4); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px;";
-                boxReplaced = true;
-                break;
-            }
+        // Safe target search: Only target innermost containers to avoid breaking parent layouts
+        const specificTargets = document.querySelectorAll('#latest-draw-box, .latest-draw-result-box, [id*="latest-draw"]');
+        if (specificTargets.length > 0) {
+            specificTargets.forEach(target => {
+                target.innerHTML = newInnerContent;
+            });
+            return;
         }
 
-        // Strategy 2: If Strategy 1 fails, find by known classes/IDs
-        if (!boxReplaced) {
-            const targetContainer = document.querySelector('.latest-draw-result-box, #latest-draw-box, div[class*="latest"]');
-            if (targetContainer) {
-                targetContainer.innerHTML = newHTML;
-                targetContainer.style.cssText += "animation: borderGlow 2s infinite alternate; border: 2px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,200,0.4); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px;";
-            }
+        // Fallback: Find leaf node containing 'LATEST DRAW RESULT'
+        const candidateDivs = Array.from(document.querySelectorAll('div, section, article')).filter(el => {
+            return el.children.length <= 4 && el.textContent.includes('LATEST DRAW RESULT');
+        });
+
+        if (candidateDivs.length > 0) {
+            // Pick the deepest matching child
+            const target = candidateDivs[candidateDivs.length - 1];
+            target.innerHTML = newInnerContent;
         }
     }
 
