@@ -2,11 +2,12 @@
  * A2Z BOMBAY - Main Application Logic
  * Complete Production-Ready Version matching exact UI/UX specifications.
  */
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. STATE MANAGEMENT (Dynamic, Non-Fixed Chips & Real-time setup with LocalStorage Persistence)
     const state = {
         user: {
-            username: localStorage.getItem('admin_username') || "ADMIN01",
+            username: localStorage.getItem('admin_username') || "Player_Demo",
             playPoints: 50000.00, // High testing points
             winningBalance: 0.00,
             rewardPoints: 50.00
@@ -25,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedRange: 'A',
         selectedBetType: 'both', // modes: both, word, digit, juri
         selectedGameType: 'single', // single, juri, triple
-        selectedChip: 5, 
+        selectedChip: 10, 
         customChip: 0,
         selectedNumbers: [],
         todaysResults: getOrInitPersistentResults() // Persistent results so refresh/offline doesn't change history
@@ -61,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
+        // Generate initial live past records if none exist (Latest at the front)
         let initialResults = [];
         for (let i = 0; i < 30; i++) {
             const pastTime = new Date();
@@ -94,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTodaysResults();
         renderSingleBoard();
         renderTripleBoardGrid();
-        renderJuriBoardGrid();
+        renderJuriBoardGrid(); // Fully unlocked Bombay Fatafat Juri Board (00 to 99)
         setupEventListeners();
         
         const loginModal = document.getElementById('login-modal');
@@ -124,11 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. LIVE TIMER COUNTDOWN & AUTO-DRAW TRIGGER
+    // 5. LIVE TIMER COUNTDOWN & AUTO-DRAW TRIGGER (Online-like continuous 24/7 simulator)
     function initLiveTimer() {
         const timerEl = document.getElementById('draw-timer');
         if (!timerEl) return;
 
+        // Check if offline/closed time elapsed and auto-sync time left
         let lastTimestamp = localStorage.getItem('a2z_last_timestamp');
         const currentTime = Date.now();
         if (lastTimestamp) {
@@ -136,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (elapsedSecs > 0) {
                 state.currentDraw.timeLeft -= elapsedSecs;
                 while (state.currentDraw.timeLeft <= 0) {
-                    triggerAutoDrawSequence(true);
+                    triggerAutoDrawSequence(true); // Catch-up past missed draws if closed
                     const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
                     state.currentDraw.timeLeft += (intervalMins * 60);
                 }
@@ -151,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const secs = String(state.currentDraw.timeLeft % 60).padStart(2, '0');
                 timerEl.textContent = `${mins}:${secs}`;
             } else {
+                // Timer reached 0: Trigger Auto-Draw & Results Generation with 1s Glow Animation
                 triggerAutoDrawSequence(false);
             }
         }, 1000);
@@ -172,14 +176,17 @@ document.addEventListener('DOMContentLoaded', () => {
             statusClass: isCatchup ? "" : "highlight-anim"
         };
 
+        // Unshift to put the latest current result at the very front/top
         state.todaysResults.unshift(newResultItem);
         if (state.todaysResults.length > 50) state.todaysResults.pop();
         
+        // Save to LocalStorage permanently
         localStorage.setItem('a2z_todays_results', JSON.stringify(state.todaysResults));
 
         renderLatestDrawBox();
         renderTodaysResults();
 
+        // 1-second visual highlight animation effect on winning cells
         if (!isCatchup) {
             highlightWinningCellsOnBoard(strNum, singleVal, juriVal);
         }
@@ -191,11 +198,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const drawIdEl = document.getElementById('current-draw-id');
         if (drawIdEl) {
-            drawIdEl.textContent = `#${state.currentDraw.id}`;
+            drawIdEl.textContent = state.currentDraw.id; // Completely hash-free clean ID
         }
     }
 
     function highlightWinningCellsOnBoard(num, single, juri) {
+        // Highlight corresponding cells for 1 second to give true live game feedback
         const allCells = document.querySelectorAll('.matrix-cell, .single-card');
         allCells.forEach(cell => {
             const txt = cell.textContent.trim();
@@ -208,67 +216,110 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 6. RENDER LATEST DRAW BOX
+    // 6. RENDER LATEST DRAW BOX (Animated live result display with sliding glow border)
     function renderLatestDrawBox() {
         const latest = state.todaysResults[0];
         if (!latest) return;
 
+        // Update Live Draw Status ID field cleanly without hash
         const liveDrawIdEl = document.getElementById('current-draw-id');
         if (liveDrawIdEl) {
-            liveDrawIdEl.textContent = `#${state.currentDraw.id}`;
+            liveDrawIdEl.textContent = state.currentDraw.id;
         }
 
-        const drawIdDisplay = document.getElementById('current-draw-id-display');
-        const currentResultTime = document.getElementById('current-result-time');
-        const currentResultNum = document.getElementById('current-result-num');
+        // Target or create latest draw result box
+        let targetContainer = document.getElementById('latest-draw-box-inner');
+        let potentialParent = document.querySelector('.latest-draw-result-box, div[class*="latest"]');
+        
+        if (potentialParent && !targetContainer) {
+            potentialParent.style.cssText += "animation: borderGlow 2s infinite alternate; border: 2px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,200,0.4); position: relative;";
+            potentialParent.innerHTML = `
+                <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
+                <div id="latest-draw-box-inner"></div>
+            `;
+            targetContainer = document.getElementById('latest-draw-box-inner');
+        }
 
-        if (drawIdDisplay) drawIdDisplay.textContent = `Draw #${latest.draw}`;
-        if (currentResultTime) currentResultTime.textContent = latest.time;
-        if (currentResultNum) currentResultNum.textContent = latest.num;
+        if (targetContainer) {
+            let modeContent = "";
+            if (state.selectedBetType === 'word') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>`;
+            } else if (state.selectedBetType === 'digit') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,200,0.6);">${latest.single}</div>`;
+            } else if (state.selectedBetType === 'juri') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ffff33; text-shadow: 0 0 8px rgba(255,255,51,0.6);">${latest.juri}</div>`;
+            } else {
+                modeContent = `
+                    <div style="font-size: 26px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>
+                    <div style="font-size: 16px; font-weight: bold; color: #00ffcc; margin-top: 3px; border-top: 1px dashed rgba(255,255,255,0.3); padding-top: 2px;">Single: ${latest.single} | Juri: ${latest.juri}</div>
+                `;
+            }
+
+            targetContainer.innerHTML = `
+                <div style="font-size: 14px; font-weight: bold; color: #a0c4ff;">Draw ${latest.draw}</div>
+                <div style="font-size: 12px; color: #ccc; margin-bottom: 6px;">${latest.time}</div>
+                ${modeContent}
+            `;
+        }
     }
 
-    // 7. TODAY'S RESULTS SLIDER GRID
+    // 7. TODAY'S RESULTS SLIDER GRID (Multi-color, Larger Bold Size, Latest on Front, No Draw ID on top)
     function renderTodaysResults() {
         const grid = document.getElementById('results-12-grid');
         if (!grid) return;
         grid.innerHTML = '';
 
         const displayList = state.todaysResults.slice(0, 12);
-        displayList.forEach((item) => {
+        const multiColors = ['#ff3366', '#00ffcc', '#ff9900', '#33ccff', '#cc33ff', '#ffff33', '#33ff66', '#ff66ff'];
+
+        displayList.forEach((item, idx) => {
             const card = document.createElement('div');
-            card.className = 'result-card';
+            card.className = 'result-slot-card';
+            const accentColor = multiColors[idx % multiColors.length];
+            
+            card.style.cssText = `background: linear-gradient(135deg, rgba(20,30,48,0.95), rgba(36,59,85,0.95)); border: 1px solid ${accentColor}; border-radius: 8px; padding: 10px 6px; text-align: center; min-width: 90px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); ${item.statusClass ? 'animation: pulseGlow 1s ease-in-out infinite;' : ''}`;
+            
+            let modeDisplayContent = "";
+            if (state.selectedBetType === 'word') {
+                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900;">${item.num}</span>`;
+            } else if (state.selectedBetType === 'digit') {
+                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900;">${item.single}</span>`;
+            } else if (state.selectedBetType === 'juri') {
+                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900;">${item.juri}</span>`;
+            } else {
+                modeDisplayContent = `
+                    <div style="color: ${accentColor}; font-size: 17px; font-weight: 900;">${item.num}</div>
+                    <div style="color: #00ffcc; font-size: 12px; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.25); margin-top: 4px; padding-top: 3px;">Single: ${item.single}</div>
+                `;
+            }
+
             card.innerHTML = `
-                <span class="res-time">${item.time}</span>
-                <span class="res-num">${item.num}</span>
-                <span class="res-single">S: ${item.single} | J: ${item.juri}</span>
+                <div style="color: #bbb; font-size: 11px; font-weight: 600; margin-bottom: 4px;">${item.time}</div>
+                ${modeDisplayContent}
             `;
             grid.appendChild(card);
         });
 
+        renderLatestDrawBox();
         renderResultHistoryModalList();
     }
 
     function renderResultHistoryModalList() {
-        const tbody = document.getElementById('result-history-table-body');
-        const totalDrawsEl = document.getElementById('total-draws-count');
-        const resultDateEl = document.getElementById('result-history-date');
-
-        if (totalDrawsEl) totalDrawsEl.textContent = state.todaysResults.length;
-        if (resultDateEl) resultDateEl.textContent = new Date().toLocaleDateString();
-
-        if (!tbody) return;
-        tbody.innerHTML = '';
+        const historyContainer = document.getElementById('result-history-list-container');
+        if (!historyContainer) return;
+        historyContainer.innerHTML = '';
 
         state.todaysResults.forEach(item => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${item.time}</td>
-                <td>#${item.draw}</td>
-                <td>${item.single}</td>
-                <td>${item.juri}</td>
-                <td>${item.num}</td>
+            const row = document.createElement('div');
+            row.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px;";
+            row.innerHTML = `
+                <span style="color: #a0c4ff; font-weight: bold;">Draw ${item.draw}</span>
+                <span style="color: #ccc;">${item.time}</span>
+                <span style="color: #ff9900; font-weight: 900; font-size: 16px;">${item.num}</span>
+                <span style="color: #00ffcc; font-weight: bold; font-size: 14px;">Single: ${item.single}</span>
+                <span style="color: #ffff33; font-weight: bold; font-size: 14px;">Juri: ${item.juri}</span>
             `;
-            tbody.appendChild(tr);
+            historyContainer.appendChild(row);
         });
     }
 
@@ -331,7 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 10. JURI BOARD (00 to 99)
+    // 10. JURI BOARD (Fully Unlocked Bombay Fatafat Juri Logic: 00 to 99)
     function renderJuriBoardGrid() {
         const grid = document.getElementById('juri-board-grid');
         if (!grid) return;
@@ -341,6 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const cell = document.createElement('div');
             cell.className = 'matrix-cell juri-cell';
             cell.textContent = val;
+            cell.style.cssText = "background: rgba(30, 40, 60, 0.9); border: 1px solid rgba(255, 255, 0, 0.3); color: #ffff33; font-weight: bold;";
             cell.addEventListener('click', () => {
                 toggleSelection(`Juri-${val}`, val);
                 cell.classList.toggle('selected');
@@ -349,176 +401,217 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 11. CART & CHIPS LOGIC
+    // 11. CART & DYNAMIC CHIPS LOGIC
     function toggleSelection(name, value) {
         const existingIndex = state.selectedNumbers.findIndex(item => item.name === name);
         if (existingIndex > -1) {
             state.selectedNumbers.splice(existingIndex, 1);
         } else {
-            const customInput = document.getElementById('custom-points-input');
-            const customVal = customInput ? parseFloat(customInput.value) : 0;
-            const amount = (customVal > 0) ? customVal : state.selectedChip;
+            const amount = state.customChip > 0 ? state.customChip : state.selectedChip;
             state.selectedNumbers.push({ name, value, amount });
         }
         updateCartUI();
     }
 
     function updateCartUI() {
-        const cartContainer = document.getElementById('cart-items-container');
-        const cartCount = document.getElementById('cart-count');
-        const cartTotalPts = document.getElementById('cart-total-pts');
+        const cartList = document.getElementById('cart-items-list');
+        const totalPtsTag = document.getElementById('total-cart-pts');
         
-        if (!cartContainer) return;
+        if (!cartList) return;
 
-        if (state.selectedNumbers.length === 0) {
-            cartContainer.innerHTML = '<div class="empty-msg">No items selected</div>';
-            if (cartCount) cartCount.textContent = '0';
-            if (cartTotalPts) cartTotalPts.textContent = '0';
-            return;
-        }
-
-        cartContainer.innerHTML = '';
+        cartList.innerHTML = '';
         let totalPts = 0;
 
-        state.selectedNumbers.forEach((item, index) => {
-            totalPts += item.amount;
-            const itemRow = document.createElement('div');
-            itemRow.className = 'cart-item-row';
-            itemRow.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px;";
-            itemRow.innerHTML = `
-                <span>${item.name} (${item.amount}Pts)</span>
-                <button type="button" data-index="${index}" style="background: #ef4444; border: none; color: #fff; border-radius: 3px; cursor: pointer; padding: 1px 5px; font-size: 10px;">✕</button>
-            `;
-            
-            itemRow.querySelector('button').addEventListener('click', (e) => {
-                const idx = parseInt(e.target.getAttribute('data-index'));
-                state.selectedNumbers.splice(idx, 1);
-                updateCartUI();
+        if (state.selectedNumbers.length === 0) {
+            cartList.innerHTML = `<div class="empty-msg">No numbers selected</div>`;
+        } else {
+            state.selectedNumbers.forEach((item, index) => {
+                totalPts += item.amount;
+                const div = document.createElement('div');
+                div.className = 'cart-item-row';
+                div.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 13px;";
+                div.innerHTML = `
+                    <span>${item.name}</span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <button type="button" class="btn-cart-minus" style="background:#333; color:#fff; border:none; width:20px; height:20px; border-radius:4px; cursor:pointer; font-weight:bold;">-</button>
+                        <strong>${item.amount} Pts</strong>
+                        <button type="button" class="btn-cart-plus" style="background:#333; color:#fff; border:none; width:20px; height:20px; border-radius:4px; cursor:pointer; font-weight:bold;">+</button>
+                    </div>
+                `;
+
+                div.querySelector('.btn-cart-plus').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    item.amount += (state.customChip > 0 ? state.customChip : state.selectedChip);
+                    updateCartUI();
+                });
+
+                div.querySelector('.btn-cart-minus').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const activeStep = state.customChip > 0 ? state.customChip : state.selectedChip;
+                    item.amount -= activeStep;
+                    if (item.amount <= 0) {
+                        state.selectedNumbers.splice(index, 1);
+                    }
+                    updateCartUI();
+                });
+
+                cartList.appendChild(div);
             });
+        }
 
-            cartContainer.appendChild(itemRow);
-        });
-
-        if (cartCount) cartCount.textContent = state.selectedNumbers.length;
-        if (cartTotalPts) cartTotalPts.textContent = totalPts.toFixed(2);
+        if (totalPtsTag) totalPtsTag.textContent = totalPts;
+        const selectedCountTag = document.querySelector('.bet-panel-block.cart-block .cart-header span:first-child');
+        if (selectedCountTag) {
+            selectedCountTag.textContent = `SELECTED ITEMS ( ${state.selectedNumbers.length} )`;
+        }
     }
 
+    // 12. EVENT LISTENERS
     function setupEventListeners() {
-        // Navigation Buttons
-        const navButtons = document.querySelectorAll('.nav-btn');
-        const tripleBoardSection = document.getElementById('triple-board-section');
-        const juriBoardSection = document.getElementById('juri-board-section');
-        const ticketModal = document.getElementById('ticket-history-modal');
-        const resultModal = document.getElementById('result-history-modal');
-        const rulesModal = document.getElementById('rules-modal');
-        const settingsModal = document.getElementById('settings-modal');
-
-        navButtons.forEach(btn => {
+        document.querySelectorAll('.btn-range').forEach(btn => {
             btn.addEventListener('click', () => {
-                navButtons.forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.btn-range').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-
-                if (btn.id === 'nav-dashboard') {
-                    if (tripleBoardSection) tripleBoardSection.classList.remove('hidden');
-                    if (juriBoardSection) juriBoardSection.classList.add('hidden');
-                } else if (btn.id === 'nav-ticket-history') {
-                    if (ticketModal) ticketModal.classList.remove('hidden');
-                } else if (btn.id === 'nav-result-history') {
-                    if (resultModal) resultModal.classList.remove('hidden');
-                } else if (btn.id === 'nav-rules') {
-                    if (rulesModal) rulesModal.classList.remove('hidden');
-                } else if (btn.id === 'nav-settings') {
-                    if (settingsModal) settingsModal.classList.remove('hidden');
-                }
+                state.selectedRange = btn.getAttribute('data-range');
             });
         });
 
-        // Close Modals
-        document.querySelectorAll('.close-modal').forEach(btn => {
+        // Bet On Mode (Word, Digit, Both, Juri)
+        document.querySelectorAll('.btn-type').forEach(btn => {
             btn.addEventListener('click', () => {
-                if (ticketModal) ticketModal.classList.add('hidden');
-                if (resultModal) resultModal.classList.add('hidden');
-                if (rulesModal) rulesModal.classList.add('hidden');
-                if (settingsModal) settingsModal.classList.add('hidden');
-            });
-        });
-
-        // Bet Type Selection (Single / Juri / Triple tabs)
-        const typeButtons = document.querySelectorAll('.btn-type');
-        typeButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                typeButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const type = btn.getAttribute('data-type');
-                state.selectedGameType = type;
-
-                if (type === 'juri') {
-                    if (juriBoardSection) juriBoardSection.classList.remove('hidden');
-                    if (tripleBoardSection) tripleBoardSection.classList.add('hidden');
+                // Check if it's game type selector (Single, Juri, Triple) or Bet Mode selector
+                const btnText = btn.textContent.toLowerCase();
+                if (btnText.includes('single') || btnText.includes('juri') || btnText.includes('triple')) {
+                    document.querySelectorAll('.btn-type').forEach(b => {
+                        if(b.textContent.toLowerCase().includes('single') || b.textContent.toLowerCase().includes('juri') || b.textContent.toLowerCase().includes('triple')) {
+                            b.classList.remove('active');
+                        }
+                    });
+                    btn.classList.add('active');
+                    if (btnText.includes('juri')) {
+                        state.selectedGameType = 'juri';
+                        state.selectedBetType = 'juri';
+                    } else if (btnText.includes('single')) {
+                        state.selectedGameType = 'single';
+                        state.selectedBetType = 'digit';
+                    } else {
+                        state.selectedGameType = 'triple';
+                        state.selectedBetType = 'word';
+                    }
                 } else {
-                    if (juriBoardSection) juriBoardSection.classList.add('hidden');
-                    if (tripleBoardSection) tripleBoardSection.classList.remove('hidden');
+                    document.querySelectorAll('.btn-type').forEach(b => {
+                        if(!b.textContent.toLowerCase().includes('single') && !b.textContent.toLowerCase().includes('juri') && !b.textContent.toLowerCase().includes('triple')) {
+                            b.classList.remove('active');
+                        }
+                    });
+                    btn.classList.add('active');
+                    const typeAttr = (btn.getAttribute('data-type') || btn.textContent).toLowerCase();
+                    if (typeAttr.includes('word') || typeAttr.includes('panna')) {
+                        state.selectedBetType = 'word';
+                    } else if (typeAttr.includes('digit') || typeAttr.includes('single')) {
+                        state.selectedBetType = 'digit';
+                    } else if (typeAttr.includes('juri')) {
+                        state.selectedBetType = 'juri';
+                    } else {
+                        state.selectedBetType = 'both';
+                    }
                 }
+                renderTodaysResults();
             });
         });
 
-        // Chip selection
-        const chipButtons = document.querySelectorAll('.btn-chip');
-        chipButtons.forEach(btn => {
+        document.querySelectorAll('.btn-chip').forEach(btn => {
             btn.addEventListener('click', () => {
-                chipButtons.forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.btn-chip').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                state.selectedChip = parseFloat(btn.getAttribute('data-chip'));
-                const customInput = document.getElementById('custom-points-input');
-                if (customInput) customInput.value = '';
+                state.selectedChip = parseInt(btn.getAttribute('data-val'), 10) || 10;
+                state.customChip = 0;
+            });
+
+            btn.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                state.selectedChip += 50;
+                btn.textContent = state.selectedChip;
                 state.customChip = 0;
             });
         });
 
-        const customInput = document.getElementById('custom-points-input');
+        const customInput = document.getElementById('custom-chip-val');
         if (customInput) {
-            customInput.addEventListener('input', () => {
-                const val = parseFloat(customInput.value);
-                if (val > 0) {
-                    chipButtons.forEach(b => b.classList.remove('active'));
+            customInput.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value, 10);
+                if (!isNaN(val) && val > 0) {
+                    document.querySelectorAll('.btn-chip').forEach(b => b.classList.remove('active'));
                     state.customChip = val;
                 }
             });
         }
 
-        // Submit & Reset Buttons
-        const submitBtn = document.getElementById('btn-submit-bet');
-        const resetBtn = document.getElementById('btn-reset-bet');
-        const clearCartBtn = document.getElementById('btn-clear-cart');
-
-        if (submitBtn) {
-            submitBtn.addEventListener('click', () => {
-                if (state.selectedNumbers.length === 0) {
-                    alert('Please select at least one number to place a bet!');
-                    return;
-                }
-                let totalBetAmount = state.selectedNumbers.reduce((sum, item) => sum + item.amount, 0);
-                if (state.user.playPoints < totalBetAmount) {
-                    alert('Insufficient Play Points!');
-                    return;
-                }
-                state.user.playPoints -= totalBetAmount;
-                updateUserInfo();
-                alert(`Successfully placed bets worth ${totalBetAmount} points!`);
+        const clearBtn = document.getElementById('btn-clear-cart');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
                 state.selectedNumbers = [];
                 document.querySelectorAll('.matrix-cell.selected, .single-card.selected').forEach(el => el.classList.remove('selected'));
                 updateCartUI();
             });
         }
 
-        if (resetBtn || clearCartBtn) {
-            const clearAction = () => {
-                state.selectedNumbers = [];
-                document.querySelectorAll('.matrix-cell.selected, .single-card.selected').forEach(el => el.classList.remove('selected'));
-                updateCartUI();
-            };
-            if (resetBtn) resetBtn.addEventListener('click', clearAction);
-            if (clearCartBtn) clearCartBtn.addEventListener('click', clearAction);
+        const resetBtn = document.getElementById('btn-reset-selection');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                if(clearBtn) clearBtn.click();
+            });
+        }
+
+        const submitBtn = document.getElementById('btn-submit-bets');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', () => {
+                if (state.selectedNumbers.length === 0) {
+                    alert("Please select at least one number to place a bet.");
+                    return;
+                }
+                let totalCost = state.selectedNumbers.reduce((sum, item) => sum + item.amount, 0);
+                if (state.user.playPoints >= totalCost) {
+                    state.user.playPoints -= totalCost;
+                    updateUserInfo();
+                    alert(`Successfully submitted ${state.selectedNumbers.length} bets totaling ${totalCost} Points!`);
+                    if(clearBtn) clearBtn.click();
+                } else {
+                    alert("Insufficient Play Points!");
+                }
+            });
+        }
+
+        setupModal("nav-ticket-history", "ticket-history-modal", "close-ticket-history-modal");
+        setupModal("nav-result-history", "result-history-modal", "close-result-history-modal");
+        setupModal("btn-open-result-history-card", "result-history-modal", "close-result-history-modal");
+        setupModal("nav-rules", "rules-modal", "close-rules-modal");
+        setupModal("nav-settings", "settings-modal", "close-settings-modal");
+
+        const logoutBtn = document.getElementById('btn-logout');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                const loginModal = document.getElementById('login-modal');
+                if (loginModal) loginModal.classList.remove('hidden');
+            });
+        }
+    }
+
+    function setupModal(triggerId, modalId, closeId) {
+        const trigger = document.getElementById(triggerId);
+        const modal = document.getElementById(modalId);
+        const close = document.getElementById(closeId);
+
+        if (trigger && modal) {
+            trigger.addEventListener('click', () => modal.classList.remove('hidden'));
+        }
+        if (close && modal) {
+            close.addEventListener('click', () => modal.classList.add('hidden'));
+        }
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.add('hidden');
+            });
         }
     }
 
