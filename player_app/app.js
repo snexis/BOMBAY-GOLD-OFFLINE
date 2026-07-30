@@ -1,6 +1,6 @@
 /**
  * A2Z BOMBAY - Main Application Logic
- * Complete Production-Ready Version matching exact UI/UX specifications.
+ * Complete Production-Ready Version with Aggressive DOM Synchronization.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const state = {
         user: {
             username: localStorage.getItem('admin_username') || "Player_Demo",
-            playPoints: 50000.00, // High testing points
+            playPoints: 50000.00,
             winningBalance: 0.00,
             rewardPoints: 50.00
         },
@@ -17,19 +17,19 @@ document.addEventListener('DOMContentLoaded', () => {
             drawIdDisplay: "1000",
             time: getCurrentTimeString(),
             nextDrawTime: getNextDrawTimeString(2),
-            timeLeft: 120 // 2 minutes test mode (24/7 continuous online simulation)
+            timeLeft: 120 // 2 minutes test mode
         },
         adminSettings: {
             drawIntervalMinutes: 2,
             isTestMode: true
         },
         selectedRange: 'A',
-        selectedBetType: 'both', // modes: both, word, digit, juri
-        selectedGameType: 'single', // single, juri, triple
+        selectedBetType: 'both', 
+        selectedGameType: 'single', 
         selectedChip: 10, 
         customChip: 0,
         selectedNumbers: [],
-        todaysResults: getOrInitPersistentResults() // Persistent results so refresh/offline doesn't change history
+        todaysResults: getOrInitPersistentResults() 
     };
 
     // Helper functions for dynamic and persistent generation
@@ -62,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Generate initial live past records if none exist (Latest at the front)
         let initialResults = [];
         for (let i = 0; i < 30; i++) {
             const pastTime = new Date();
@@ -96,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTodaysResults();
         renderSingleBoard();
         renderTripleBoardGrid();
-        renderJuriBoardGrid(); // Fully unlocked Bombay Fatafat Juri Board (00 to 99)
+        renderJuriBoardGrid();
         setupEventListeners();
         
         const loginModal = document.getElementById('login-modal');
@@ -126,12 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. LIVE TIMER COUNTDOWN & AUTO-DRAW TRIGGER (Online-like continuous 24/7 simulator with Visibility Sync)
+    // 5. LIVE TIMER COUNTDOWN & AUTO-DRAW TRIGGER
     function initLiveTimer() {
         const timerEl = document.getElementById('draw-timer');
         if (!timerEl) return;
 
-        // Check if offline/closed time elapsed and auto-sync time left
         let lastTimestamp = localStorage.getItem('a2z_last_timestamp');
         const currentTime = Date.now();
         if (lastTimestamp) {
@@ -139,14 +137,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (elapsedSecs > 0) {
                 state.currentDraw.timeLeft -= elapsedSecs;
                 while (state.currentDraw.timeLeft <= 0) {
-                    triggerAutoDrawSequence(true); // Catch-up past missed draws if closed
+                    triggerAutoDrawSequence(true); 
                     const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
                     state.currentDraw.timeLeft += (intervalMins * 60);
                 }
             }
         }
 
-        // Handle tab visibility changes to avoid background drift
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
                 let savedTs = localStorage.getItem('a2z_last_timestamp');
@@ -172,7 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const secs = String(state.currentDraw.timeLeft % 60).padStart(2, '0');
                 timerEl.textContent = `${mins}:${secs}`;
             } else {
-                // Timer reached 0: Trigger Auto-Draw & Results Generation with 1s Glow Animation
                 triggerAutoDrawSequence(false);
             }
         }, 1000);
@@ -194,17 +190,14 @@ document.addEventListener('DOMContentLoaded', () => {
             statusClass: isCatchup ? "" : "highlight-anim"
         };
 
-        // Unshift to put the latest current result at the very front/top
         state.todaysResults.unshift(newResultItem);
         if (state.todaysResults.length > 50) state.todaysResults.pop();
         
-        // Save to LocalStorage permanently
         localStorage.setItem('a2z_todays_results', JSON.stringify(state.todaysResults));
 
         renderLatestDrawBox();
         renderTodaysResults();
 
-        // 1-second visual highlight animation effect on winning cells
         if (!isCatchup) {
             highlightWinningCellsOnBoard(strNum, singleVal, juriVal);
         }
@@ -213,15 +206,9 @@ document.addEventListener('DOMContentLoaded', () => {
         state.currentDraw.timeLeft = intervalMins * 60;
         state.currentDraw.id = String(Math.floor(Math.random() * 90000) + 10000);
         localStorage.setItem('a2z_current_draw_id', state.currentDraw.id);
-
-        const drawIdEl = document.getElementById('current-draw-id');
-        if (drawIdEl) {
-            drawIdEl.textContent = state.currentDraw.id; // Completely hash-free clean ID
-        }
     }
 
     function highlightWinningCellsOnBoard(num, single, juri) {
-        // Highlight corresponding cells for 1 second to give true live game feedback
         const allCells = document.querySelectorAll('.matrix-cell, .single-card');
         allCells.forEach(cell => {
             const txt = cell.textContent.trim();
@@ -234,54 +221,57 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 6. RENDER LATEST DRAW BOX (Animated live result display with sliding glow border)
+    // 6. RENDER LATEST DRAW BOX (Aggressive DOM Fix for the '---' bug)
     function renderLatestDrawBox() {
         const latest = state.todaysResults[0];
         if (!latest) return;
 
-        // Update Live Draw Status ID field cleanly without hash
-        const liveDrawIdEl = document.getElementById('current-draw-id');
-        if (liveDrawIdEl) {
-            liveDrawIdEl.textContent = state.currentDraw.id;
-        }
-
-        // Target or create latest draw result box
-        let targetContainer = document.getElementById('latest-draw-box-inner');
-        let potentialParent = document.querySelector('.latest-draw-result-box, div[class*="latest"]');
-        
-        if (potentialParent && !targetContainer) {
-            potentialParent.style.cssText += "animation: borderGlow 2s infinite alternate; border: 2px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,200,0.4); position: relative;";
-            potentialParent.innerHTML = `
-                <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
-                <div id="latest-draw-box-inner"></div>
+        let modeContent = "";
+        if (state.selectedBetType === 'word') {
+            modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>`;
+        } else if (state.selectedBetType === 'digit') {
+            modeContent = `<div style="font-size: 28px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,200,0.6);">${latest.single}</div>`;
+        } else if (state.selectedBetType === 'juri') {
+            modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ffff33; text-shadow: 0 0 8px rgba(255,255,51,0.6);">${latest.juri}</div>`;
+        } else {
+            modeContent = `
+                <div style="font-size: 26px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6); margin-top:5px;">${latest.num}</div>
+                <div style="font-size: 16px; font-weight: bold; color: #00ffcc; margin-top: 3px;">Single: ${latest.single} | Juri: ${latest.juri}</div>
             `;
-            targetContainer = document.getElementById('latest-draw-box-inner');
         }
 
-        if (targetContainer) {
-            let modeContent = "";
-            if (state.selectedBetType === 'word') {
-                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>`;
-            } else if (state.selectedBetType === 'digit') {
-                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,200,0.6);">${latest.single}</div>`;
-            } else if (state.selectedBetType === 'juri') {
-                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ffff33; text-shadow: 0 0 8px rgba(255,255,51,0.6);">${latest.juri}</div>`;
-            } else {
-                modeContent = `
-                    <div style="font-size: 26px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>
-                    <div style="font-size: 16px; font-weight: bold; color: #00ffcc; margin-top: 3px; border-top: 1px dashed rgba(255,255,255,0.3); padding-top: 2px;">Single: ${latest.single} | Juri: ${latest.juri}</div>
-                `;
+        const newHTML = `
+            <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
+            <div style="font-size: 14px; font-weight: bold; color: #a0c4ff;">Draw ${latest.draw}</div>
+            <div style="font-size: 12px; color: #ccc; margin-bottom: 6px;">${latest.time}</div>
+            ${modeContent}
+        `;
+
+        // Strategy 1: Find by explicit text search (Solves the UI bug shown in image)
+        const allDivs = document.querySelectorAll('div');
+        let boxReplaced = false;
+
+        for (let div of allDivs) {
+            // Find the container that has "LATEST DRAW RESULT" and includes the "---"
+            if (div.textContent.includes('LATEST DRAW RESULT') && div.textContent.includes('---')) {
+                div.innerHTML = newHTML;
+                div.style.cssText += "animation: borderGlow 2s infinite alternate; border: 2px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,200,0.4); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px;";
+                boxReplaced = true;
+                break;
             }
+        }
 
-            targetContainer.innerHTML = `
-                <div style="font-size: 14px; font-weight: bold; color: #a0c4ff;">Draw ${latest.draw}</div>
-                <div style="font-size: 12px; color: #ccc; margin-bottom: 6px;">${latest.time}</div>
-                ${modeContent}
-            `;
+        // Strategy 2: If Strategy 1 fails, find by known classes/IDs
+        if (!boxReplaced) {
+            const targetContainer = document.querySelector('.latest-draw-result-box, #latest-draw-box, div[class*="latest"]');
+            if (targetContainer) {
+                targetContainer.innerHTML = newHTML;
+                targetContainer.style.cssText += "animation: borderGlow 2s infinite alternate; border: 2px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,200,0.4); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px;";
+            }
         }
     }
 
-    // 7. TODAY'S RESULTS SLIDER GRID (Multi-color, Larger Bold Size, Latest on Front, No Draw ID on top)
+    // 7. TODAY'S RESULTS SLIDER GRID
     function renderTodaysResults() {
         const grid = document.getElementById('results-12-grid');
         if (!grid) return;
@@ -322,23 +312,58 @@ document.addEventListener('DOMContentLoaded', () => {
         renderResultHistoryModalList();
     }
 
+    // Fix for the Empty Daily Result History Modal showing '---' and '0'
     function renderResultHistoryModalList() {
-        const historyContainer = document.getElementById('result-history-list-container');
-        if (!historyContainer) return;
-        historyContainer.innerHTML = '';
+        const modal = document.getElementById('result-history-modal');
+        if (!modal) return;
 
-        state.todaysResults.forEach(item => {
-            const row = document.createElement('div');
-            row.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px;";
-            row.innerHTML = `
-                <span style="color: #a0c4ff; font-weight: bold;">Draw ${item.draw}</span>
-                <span style="color: #ccc;">${item.time}</span>
-                <span style="color: #ff9900; font-weight: 900; font-size: 16px;">${item.num}</span>
-                <span style="color: #00ffcc; font-weight: bold; font-size: 14px;">Single: ${item.single}</span>
-                <span style="color: #ffff33; font-weight: bold; font-size: 14px;">Juri: ${item.juri}</span>
-            `;
-            historyContainer.appendChild(row);
+        // 1. Force update "Date: ---" and "Total Draws: 0" by scanning text content
+        const allSpans = modal.querySelectorAll('span, p, div');
+        const todayStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        
+        allSpans.forEach(el => {
+            if (el.childNodes.length === 1 && typeof el.textContent === 'string') {
+                if (el.textContent.includes('Date: ---') || el.textContent.trim() === 'Date: --') {
+                    el.textContent = `Date: ${todayStr}`;
+                }
+                if (el.textContent.includes('Total Draws: 0')) {
+                    el.textContent = `Total Draws: ${state.todaysResults.length}`;
+                }
+            }
         });
+
+        // 2. Find where to put the list. If container is missing, create it dynamically under the header.
+        let historyContainer = document.getElementById('result-history-list-container');
+        
+        if (!historyContainer) {
+            // Search for the header row text to inject below it
+            const modalDivs = Array.from(modal.querySelectorAll('div'));
+            const headerRow = modalDivs.find(d => d.textContent.includes('Draw Time') && d.textContent.includes('Draw ID') && d.children.length > 2);
+            
+            if (headerRow) {
+                historyContainer = document.createElement('div');
+                historyContainer.id = 'result-history-list-container';
+                historyContainer.style.cssText = "max-height: 400px; overflow-y: auto; margin-top: 10px; width: 100%;";
+                headerRow.parentNode.insertBefore(historyContainer, headerRow.nextSibling);
+            }
+        }
+
+        // 3. Populate the container
+        if (historyContainer) {
+            historyContainer.innerHTML = '';
+            state.todaysResults.forEach(item => {
+                const row = document.createElement('div');
+                row.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px; width: 100%;";
+                row.innerHTML = `
+                    <span style="color: #ccc; width: 20%; text-align: left;">${item.time}</span>
+                    <span style="color: #a0c4ff; font-weight: bold; width: 20%; text-align: center;">${item.draw}</span>
+                    <span style="color: #00ffcc; font-weight: bold; font-size: 15px; width: 20%; text-align: center;">${item.single}</span>
+                    <span style="color: #ffff33; font-weight: bold; font-size: 15px; width: 20%; text-align: center;">${item.juri}</span>
+                    <span style="color: #ff9900; font-weight: 900; font-size: 17px; width: 20%; text-align: right;">${item.num}</span>
+                `;
+                historyContainer.appendChild(row);
+            });
+        }
     }
 
     // 8. SINGLE BOARD (1 - 0)
@@ -400,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 10. JURI BOARD (Fully Unlocked Bombay Fatafat Juri Logic: 00 to 99)
+    // 10. JURI BOARD 
     function renderJuriBoardGrid() {
         const grid = document.getElementById('juri-board-grid');
         if (!grid) return;
@@ -494,7 +519,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Bet On Mode (Word, Digit, Both, Juri)
         document.querySelectorAll('.btn-type').forEach(btn => {
             btn.addEventListener('click', () => {
                 const btnText = btn.textContent.toLowerCase();
@@ -601,7 +625,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setupModal("nav-ticket-history", "ticket-history-modal", "close-ticket-history-modal");
         setupModal("nav-result-history", "result-history-modal", "close-result-history-modal");
-        setupModal("btn-open-result-history-card", "result-history-modal", "close-result-history-modal");
+        
+        // Trigger Modal Update every time it opens to ensure dynamic injection works
+        const resultTrigger = document.getElementById("nav-result-history") || document.getElementById("btn-open-result-history-card");
+        if (resultTrigger) {
+            resultTrigger.addEventListener('click', () => {
+                const modal = document.getElementById("result-history-modal");
+                if(modal) {
+                    modal.classList.remove('hidden');
+                    renderResultHistoryModalList(); // Force render when clicked
+                }
+            });
+        }
+
         setupModal("nav-rules", "rules-modal", "close-rules-modal");
         setupModal("nav-settings", "settings-modal", "close-settings-modal");
 
