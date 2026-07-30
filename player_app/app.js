@@ -220,54 +220,65 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-  // 6. RENDER LATEST DRAW BOX (Safe Surgical Fix)
+// 6. RENDER LATEST DRAW BOX (Single Result + Side Slide Animation + No Draw ID)
     function renderLatestDrawBox() {
         const latest = state.todaysResults[0];
         if (!latest) return;
 
+        // Dynamic Injection of Side-Slide CSS Animation
+        if (!document.getElementById('a2z-slide-anim-style')) {
+            const styleTag = document.createElement('style');
+            styleTag.id = 'a2z-slide-anim-style';
+            styleTag.textContent = `
+                @keyframes slideFromSide {
+                    0% { transform: translateX(50px); opacity: 0; }
+                    100% { transform: translateX(0); opacity: 1; }
+                }
+                .side-slide-active {
+                    animation: slideFromSide 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+                }
+            `;
+            document.head.appendChild(styleTag);
+        }
+
         let modeContent = "";
         if (state.selectedBetType === 'word') {
-            modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>`;
+            modeContent = `<div style="font-size: 32px; font-weight: 900; color: #ff9900; text-shadow: 0 0 10px rgba(255,153,0,0.7); margin-top: 4px;">${latest.num}</div>`;
         } else if (state.selectedBetType === 'digit') {
-            modeContent = `<div style="font-size: 28px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,200,0.6);">${latest.single}</div>`;
+            modeContent = `<div style="font-size: 32px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,200,0.7); margin-top: 4px;">${latest.single}</div>`;
         } else if (state.selectedBetType === 'juri') {
-            modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ffff33; text-shadow: 0 0 8px rgba(255,255,51,0.6);">${latest.juri}</div>`;
+            modeContent = `<div style="font-size: 32px; font-weight: 900; color: #ffff33; text-shadow: 0 0 10px rgba(255,255,51,0.7); margin-top: 4px;">${latest.juri}</div>`;
         } else {
             modeContent = `
-                <div style="font-size: 26px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6); margin-top:5px;">${latest.num}</div>
-                <div style="font-size: 16px; font-weight: bold; color: #00ffcc; margin-top: 3px;">Single: ${latest.single} | Juri: ${latest.juri}</div>
+                <div style="font-size: 30px; font-weight: 900; color: #ff9900; text-shadow: 0 0 10px rgba(255,153,0,0.7); margin-top: 4px;">${latest.num}</div>
+                <div style="font-size: 15px; font-weight: bold; color: #00ffcc; margin-top: 6px; letter-spacing: 0.5px;">SINGLE: ${latest.single} | JURI: ${latest.juri}</div>
             `;
         }
 
+        // Clean Single HTML Content with Time only (DRAW # removed)
         const newInnerContent = `
-            <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
-            <div style="font-size: 14px; font-weight: bold; color: #a0c4ff;">Draw #${latest.draw}</div>
-            <div style="font-size: 12px; color: #ccc; margin-bottom: 6px;">${latest.time}</div>
-            ${modeContent}
+            <div class="side-slide-active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center; padding: 10px 0;">
+                <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
+                <div style="font-size: 16px; font-weight: 800; color: #a0c4ff; margin-bottom: 4px;">${latest.time}</div>
+                ${modeContent}
+            </div>
         `;
 
-        // Safe target search: Only target innermost containers to avoid breaking parent layouts
-        const specificTargets = document.querySelectorAll('#latest-draw-box, .latest-draw-result-box, [id*="latest-draw"]');
-        if (specificTargets.length > 0) {
-            specificTargets.forEach(target => {
-                target.innerHTML = newInnerContent;
+        // Target primary container to completely replace all inner duplicates
+        let targetBox = document.querySelector('#latest-draw-box, .latest-draw-result-box');
+        if (!targetBox) {
+            const containers = Array.from(document.querySelectorAll('div, section')).filter(el => {
+                return el.textContent.includes('LATEST DRAW RESULT') && el.children.length > 0;
             });
-            return;
+            if (containers.length > 0) {
+                targetBox = containers[0];
+            }
         }
 
-        // Fallback: Find leaf node containing 'LATEST DRAW RESULT'
-        const candidateDivs = Array.from(document.querySelectorAll('div, section, article')).filter(el => {
-            return el.children.length <= 4 && el.textContent.includes('LATEST DRAW RESULT');
-        });
-
-        if (candidateDivs.length > 0) {
-            // Pick the deepest matching child
-            const target = candidateDivs[candidateDivs.length - 1];
-            target.innerHTML = newInnerContent;
+        if (targetBox) {
+            targetBox.innerHTML = newInnerContent;
         }
     }
-
     // 7. TODAY'S RESULTS SLIDER GRID
     function renderTodaysResults() {
         const grid = document.getElementById('results-12-grid');
