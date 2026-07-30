@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pastTime.setMinutes(pastTime.getMinutes() - (i * 2));
             const randomNum = Math.floor(Math.random() * 900) + 100;
             const strNum = String(randomNum);
-            const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
+            const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a, 10) + parseInt(b, 10), 0)).slice(-1);
             const juriVal = String(Math.floor(Math.random() * 90)).padStart(2, '0');
 
             initialResults.push({
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. LIVE TIMER COUNTDOWN & AUTO-DRAW TRIGGER (Online-like continuous 24/7 simulator)
+    // 5. LIVE TIMER COUNTDOWN & AUTO-DRAW TRIGGER (Online-like continuous 24/7 simulator with Visibility Sync)
     function initLiveTimer() {
         const timerEl = document.getElementById('draw-timer');
         if (!timerEl) return;
@@ -146,6 +146,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Handle tab visibility changes to avoid background drift
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                let savedTs = localStorage.getItem('a2z_last_timestamp');
+                if (savedTs) {
+                    const elapsed = Math.floor((Date.now() - parseInt(savedTs, 10)) / 1000);
+                    if (elapsed > 0) {
+                        state.currentDraw.timeLeft -= elapsed;
+                        while (state.currentDraw.timeLeft <= 0) {
+                            triggerAutoDrawSequence(true);
+                            const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
+                            state.currentDraw.timeLeft += (intervalMins * 60);
+                        }
+                    }
+                }
+            }
+        });
+
         setInterval(() => {
             localStorage.setItem('a2z_last_timestamp', Date.now().toString());
             if (state.currentDraw.timeLeft > 0) {
@@ -163,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function triggerAutoDrawSequence(isCatchup = false) {
         const randomNum = Math.floor(Math.random() * 900) + 100;
         const strNum = String(randomNum);
-        const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
+        const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a, 10) + parseInt(b, 10), 0)).slice(-1);
         const juriVal = String(Math.floor(Math.random() * 90)).padStart(2, '0');
 
         const drawIdToUse = state.currentDraw.id;
@@ -479,7 +497,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Bet On Mode (Word, Digit, Both, Juri)
         document.querySelectorAll('.btn-type').forEach(btn => {
             btn.addEventListener('click', () => {
-                // Check if it's game type selector (Single, Juri, Triple) or Bet Mode selector
                 const btnText = btn.textContent.toLowerCase();
                 if (btnText.includes('single') || btnText.includes('juri') || btnText.includes('triple')) {
                     document.querySelectorAll('.btn-type').forEach(b => {
