@@ -2,7 +2,6 @@
  * A2Z BOMBAY - Main Application Logic
  * Complete Production-Ready Version matching exact UI/UX specifications.
  */
-
 document.addEventListener('DOMContentLoaded', () => {
     // 1. STATE MANAGEMENT (Dynamic, Non-Fixed Chips & Real-time setup with LocalStorage Persistence)
     const state = {
