@@ -220,7 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-// 6. RENDER LATEST DRAW BOX (Single Result + Side Slide Animation + No Draw ID)
+
+    // 6. RENDER LATEST DRAW BOX (Single Result + Side Slide Animation + No Draw ID)
     function renderLatestDrawBox() {
         const latest = state.todaysResults[0];
         if (!latest) return;
@@ -279,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             targetBox.innerHTML = newInnerContent;
         }
     }
+
     // 7. TODAY'S RESULTS SLIDER GRID
     function renderTodaysResults() {
         const grid = document.getElementById('results-12-grid');
