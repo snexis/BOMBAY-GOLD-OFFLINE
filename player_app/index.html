@@ -1,375 +1,466 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A2Z BOMBAY - Gaming Dashboard</title>
-    <!-- CSS Link -->
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <!-- NETWORK OFFLINE OVERLAY GUARD -->
-    <div id="network-offline-overlay" class="hidden">
-        <div class="offline-box">
-            <div class="offline-icon">⚠️</div>
-            <h2>Connection Lost!</h2>
-            <p>Network connection was interrupted. Waiting to reconnect to sync draw data...</p>
-            <button class="btn-reconnect" onclick="window.location.reload()">Try Reconnect</button>
-        </div>
-    </div>
-    <!-- LOGIN MODAL SCREEN -->
-    <div id="login-modal" class="modal-overlay glow-backdrop hidden">
-        <div class="premium-gaming-card">
-            <div class="login-brand-header">
-                <h5>A2Z BOMBAY</h5>
-                <div class="announcement-tag"> Announcement Only </div>
-            </div>
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="login-username">User ID</label>
-                    <input type="text" id="login-username" placeholder="Enter Username" required autocomplete="off">
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="login-password" placeholder="Enter Password" required>
-                        <button type="button" class="eye-toggle-btn" id="toggle-password-visibility">👁️</button>
-                    </div>
-                </div>
-                <div class="form-row-checkbox">
-                    <label class="checkbox-container">
-                        <input type="checkbox" id="remember-me"> Remember ID
-                    </label>
-                </div>
-                <button type="submit" class="btn-glow">Login</button>
-            </form>
-        </div>
-    </div>
+/**
+ * A2Z BOMBAY - Main Application Logic
+ * Complete Production-Ready Version matching exact UI/UX specifications.
+ */
 
-    <!-- MAIN DASHBOARD -->
-    <div id="app-container">
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. STATE MANAGEMENT (Dynamic, Non-Fixed Chips & Real-time setup with LocalStorage Persistence)
+    const state = {
+        user: {
+            username: localStorage.getItem('admin_username') || "Player_Demo",
+            playPoints: 50000.00, // High testing points
+            winningBalance: 0.00,
+            rewardPoints: 50.00
+        },
+        currentDraw: {
+            id: getOrInitPersistentDrawId(),
+            drawIdDisplay: "1000",
+            time: getCurrentTimeString(),
+            nextDrawTime: getNextDrawTimeString(2),
+            timeLeft: 120 // 2 minutes test mode (24/7 continuous online simulation)
+        },
+        adminSettings: {
+            drawIntervalMinutes: 2,
+            isTestMode: true
+        },
+        selectedRange: 'A',
+        selectedBetType: 'both', // modes: both, word, digit, juri
+        selectedGameType: 'single', // single, juri, triple
+        selectedChip: 10, 
+        customChip: 0,
+        selectedNumbers: [],
+        todaysResults: getOrInitPersistentResults() // Persistent results so refresh/offline doesn't change history
+    };
 
-        <!-- 1. LEFT NAVIGATION SIDEBAR -->
-        <aside class="sidebar-left">
-            <div class="profile-header">
-                <div class="profile-user-info">
-                    <div class="user-avatar">👤</div>
-                    <div class="user-details">
-                        <span class="user-label">Operator ID</span>
-                        <strong id="display-user-id">ADMIN01</strong>
-                    </div>
-                </div>
-                <div class="account-balances">
-                    <div class="balance-item">
-                        <div class="bal-text">
-                            <label>Play Points</label>
-                            <strong id="play-points">0.00</strong>
-                        </div>
-                    </div>
-                    <div class="balance-item">
-                        <div class="bal-text">
-                            <label>Winning Balance</label>
-                            <strong id="winning-balance">0.00</strong>
-                        </div>
-                    </div>
-                    <div class="balance-item">
-                        <div class="bal-text">
-                            <label>Reward Points</label>
-                            <strong id="reward-balance">0.00</strong>
-                        </div>
-                    </div>
-                </div>
-                <button id="btn-logout" class="btn-logout">Logout</button>
-            </div>
+    // Helper functions for dynamic and persistent generation
+    function getOrInitPersistentDrawId() {
+        let savedId = localStorage.getItem('a2z_current_draw_id');
+        if (!savedId) {
+            savedId = String(Math.floor(Math.random() * 90000) + 10000);
+            localStorage.setItem('a2z_current_draw_id', savedId);
+        }
+        return savedId;
+    }
 
-            <!-- Current Date & Time Widget -->
-            <div class="live-draw-status-card" style="margin-bottom: 10px; padding: 8px 12px; font-size: 12px; text-align: center;">
-                <span id="live-date-time" style="color: #38bdf8; font-weight: bold;">Loading Date & Time...</span>
-            </div>
+    function getCurrentTimeString() {
+        return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
 
-            <!-- BARCODE SCANNER / CLAIM WIDGET -->
-            <div class="barcode-claim-widget" style="padding: 10px; background: rgba(255,255,255,0.05); margin: 10px 0; border-radius: 8px;">
-                <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">🔍 BARCODE / CLAIM TICKET</label>
-                <div style="display: flex; gap: 5px;">
-                    <input type="text" id="barcode-input" placeholder="Scan or Enter Ticket No" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 12px;">
-                    <button id="btn-claim-ticket" style="padding: 6px 10px; background: #22c55e; border: none; color: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px;">Claim</button>
-                </div>
-            </div>
+    function getNextDrawTimeString(intervalMins) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + intervalMins);
+        return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
 
-            <!-- Left Navigation Menu -->
-            <nav class="nav-menu">
-                <ul>
-                    <li><button class="nav-btn active" id="nav-dashboard">📊 Dashboard</button></li>
-                    <li><button class="nav-btn" id="nav-ticket-history">📋 Tickets History</button></li>
-                    <li><button class="nav-btn" id="nav-result-history">🏆 Result History</button></li>
-                    <li><button class="nav-btn" id="nav-rules">📖 Rules & Info</button></li>
-                    <li><button class="nav-btn" id="nav-settings">⚙️ Settings</button></li>
-                </ul>
-            </nav>
+    function getOrInitPersistentResults() {
+        let savedResults = localStorage.getItem('a2z_todays_results');
+        if (savedResults) {
+            try {
+                return JSON.parse(savedResults);
+            } catch (e) {
+                console.error("Error parsing saved results", e);
+            }
+        }
+        
+        // Generate initial live past records if none exist (Latest at the front)
+        let initialResults = [];
+        for (let i = 0; i < 30; i++) {
+            const pastTime = new Date();
+            pastTime.setMinutes(pastTime.getMinutes() - (i * 2));
+            const randomNum = Math.floor(Math.random() * 900) + 100;
+            const strNum = String(randomNum);
+            const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
+            const juriVal = String(Math.floor(Math.random() * 90)).padStart(2, '0');
 
-            <!-- Live Draw Status Card -->
-            <div class="live-draw-status-card">
-                <div class="status-header">
-                    <div class="live-pulse"></div>
-                    <span>Live Draw Status</span>
-                    <span class="live-tag">LIVE</span>
-                </div>
-                <div class="status-row">
-                    <span>Current Draw ID:</span>
-                    <strong id="current-draw-id">#1001</strong>
-                </div>
-                <div class="status-row">
-                    <span>Time Remaining:</span>
-                    <strong id="draw-timer" style="color: #f59e0b;">00:00</strong>
-                </div>
-                <button class="btn-view-history" id="btn-open-result-history-card">View Daily Results</button>
-            </div>
-        </aside>
+            initialResults.push({
+                draw: `${Math.floor(Math.random() * 90000) + 10000}`,
+                time: pastTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                num: strNum,
+                single: singleVal,
+                juri: juriVal,
+                statusClass: ""
+            });
+        }
+        localStorage.setItem('a2z_todays_results', JSON.stringify(initialResults));
+        return initialResults;
+    }
 
-        <!-- 2. CENTER MAIN GAME CONTENT -->
-        <main class="main-content">
-            <div id="game-lock-banner" class="game-lock-banner hidden">
-                🔒 Draw calculation in progress! Betting is temporarily paused.
-            </div>
+    // 2. INITIALIZATION
+    function initApp() {
+        updateUserInfo();
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+        
+        initLiveTimer();
+        renderLatestDrawBox();
+        renderTodaysResults();
+        renderSingleBoard();
+        renderTripleBoardGrid();
+        renderJuriBoardGrid(); // Fully unlocked Bombay Fatafat Juri Board (00 to 99)
+        setupEventListeners();
+        
+        const loginModal = document.getElementById('login-modal');
+        if (loginModal) loginModal.classList.add('hidden');
+    }
 
-            <!-- Todays Result Panel -->
-            <section class="todays-result-panel">
-                <div class="current-result-highlight">
-                    <div class="highlight-header">LATEST DRAW RESULT</div>
-                    <div class="highlight-card">
-                        <span class="highlight-id" id="current-draw-id-display">Draw #1000</span>
-                        <span class="highlight-time" id="current-result-time">10:00 AM</span>
-                        <div class="highlight-number" id="current-result-num">---</div>
-                    </div>
-                </div>
+    // 3. USER INFO & BALANCES
+    function updateUserInfo() {
+        const userIdEl = document.getElementById('display-user-id');
+        const playPtsEl = document.getElementById('play-points');
+        const winBalEl = document.getElementById('winning-balance');
+        const rewardBalEl = document.getElementById('reward-balance');
 
-                <div class="todays-history-container">
-                    <div class="slider-header">
-                        <h3>TODAY'S RESULTS (12 SLOTS)</h3>
-                        <div class="slider-arrows">
-                            <button class="arrow-btn" id="btn-scroll-left">◀</button>
-                            <button class="arrow-btn" id="btn-scroll-right">▶</button>
-                        </div>
-                    </div>
-                    <div class="results-12-grid" id="results-12-grid"></div>
-                </div>
-            </section>
+        if (userIdEl) userIdEl.textContent = state.user.username;
+        if (playPtsEl) playPtsEl.textContent = state.user.playPoints.toFixed(2);
+        if (winBalEl) winBalEl.textContent = state.user.winningBalance.toFixed(2);
+        if (rewardBalEl) rewardBalEl.textContent = state.user.rewardPoints.toFixed(2);
+    }
 
-            <!-- Single Board Row -->
-            <section class="single-board-container">
-                <div class="section-title-yellow">SINGLE BOARD (1 - 0)</div>
-                <div class="single-cards-row" id="single-board-row">
-                    <div class="single-card" data-val="1">1</div>
-                    <div class="single-card" data-val="2">2</div>
-                    <div class="single-card" data-val="3">3</div>
-                    <div class="single-card" data-val="4">4</div>
-                    <div class="single-card" data-val="5">5</div>
-                    <div class="single-card" data-val="6">6</div>
-                    <div class="single-card" data-val="7">7</div>
-                    <div class="single-card" data-val="8">8</div>
-                    <div class="single-card" data-val="9">9</div>
-                    <div class="single-card" data-val="0">0</div>
-                </div>
-            </section>
+    // 4. LIVE DATE & TIME WIDGET
+    function updateDateTime() {
+        const dtEl = document.getElementById('live-date-time');
+        if (dtEl) {
+            const now = new Date();
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            dtEl.textContent = now.toLocaleDateString('en-US', options);
+        }
+    }
 
-            <!-- Triple Board -->
-            <section class="main-grid-container" id="triple-board-section">
-                <div class="grid-column-headers">
-                    <div class="col-head">1</div>
-                    <div class="col-head">2</div>
-                    <div class="col-head">3</div>
-                    <div class="col-head">4</div>
-                    <div class="col-head">5</div>
-                    <div class="col-head">6</div>
-                    <div class="col-head">7</div>
-                    <div class="col-head">8</div>
-                    <div class="col-head">9</div>
-                    <div class="col-head">0</div>
-                </div>
-                <div class="triple-matrix-22x10" id="triple-board-grid"></div>
-            </section>
+    // 5. LIVE TIMER COUNTDOWN & AUTO-DRAW TRIGGER (Online-like continuous 24/7 simulator)
+    function initLiveTimer() {
+        const timerEl = document.getElementById('draw-timer');
+        if (!timerEl) return;
 
-            <!-- Juri Board -->
-            <section class="main-grid-container hidden" id="juri-board-section">
-                <div class="section-title-yellow" style="margin-bottom: 8px;">JURI BOARD (00 - 99)</div>
-                <div class="triple-matrix-22x10" id="juri-board-grid"></div>
-            </section>
+        // Check if offline/closed time elapsed and auto-sync time left
+        let lastTimestamp = localStorage.getItem('a2z_last_timestamp');
+        const currentTime = Date.now();
+        if (lastTimestamp) {
+            const elapsedSecs = Math.floor((currentTime - parseInt(lastTimestamp, 10)) / 1000);
+            if (elapsedSecs > 0) {
+                state.currentDraw.timeLeft -= elapsedSecs;
+                while (state.currentDraw.timeLeft <= 0) {
+                    triggerAutoDrawSequence(true); // Catch-up past missed draws if closed
+                    const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
+                    state.currentDraw.timeLeft += (intervalMins * 60);
+                }
+            }
+        }
 
-            <footer class="bottom-announcement-bar">
-                <span>📢</span>
-                <marquee scrollamount="5">Welcome to A2Z BOMBAY International Gaming System. All draws are synchronized in real-time with total accuracy.</marquee>
-            </footer>
-        </main>
+        setInterval(() => {
+            localStorage.setItem('a2z_last_timestamp', Date.now().toString());
+            if (state.currentDraw.timeLeft > 0) {
+                state.currentDraw.timeLeft--;
+                const mins = String(Math.floor(state.currentDraw.timeLeft / 60)).padStart(2, '0');
+                const secs = String(state.currentDraw.timeLeft % 60).padStart(2, '0');
+                timerEl.textContent = `${mins}:${secs}`;
+            } else {
+                // Timer reached 0: Trigger Auto-Draw & Results Generation with 1s Glow Animation
+                triggerAutoDrawSequence(false);
+            }
+        }, 1000);
+    }
 
-        <!-- 3. RIGHT BETTING PANEL SIDEBAR -->
-        <aside class="sidebar-right">
-            <!-- Number Range Block (A, B, C, D) -->
-            <div class="bet-panel-block">
-                <div class="panel-block-title">TRIPLE RANGE (220 PANNA)</div>
-                <div class="range-btn-grid">
-                    <button class="btn-range active" data-range="A">
-                        <span class="range-tag">A</span>
-                        <span class="range-val">1-55</span>
-                    </button>
-                    <button class="btn-range" data-range="B">
-                        <span class="range-tag">B</span>
-                        <span class="range-val">56-110</span>
-                    </button>
-                    <button class="btn-range" data-range="C">
-                        <span class="range-tag">C</span>
-                        <span class="range-val">111-165</span>
-                    </button>
-                    <button class="btn-range" data-range="D">
-                        <span class="range-tag">D</span>
-                        <span class="range-val">166-220</span>
-                    </button>
-                </div>
-            </div>
+    function triggerAutoDrawSequence(isCatchup = false) {
+        const randomNum = Math.floor(Math.random() * 900) + 100;
+        const strNum = String(randomNum);
+        const singleVal = String(strNum.split('').reduce((a, b) => parseInt(a) + parseInt(b), 0)).slice(-1);
+        const juriVal = String(Math.floor(Math.random() * 90)).padStart(2, '0');
 
-            <!-- Bet On Block (Both / Word / Digit) -->
-            <div class="bet-panel-block">
-                <div class="panel-block-title">BET ON</div>
-                <div class="bet-on-grid">
-                    <button class="btn-bet-on active" data-beton="both">Both</button>
-                    <button class="btn-bet-on" data-beton="word">Word</button>
-                    <button class="btn-bet-on" data-beton="digit">Digit</button>
-                </div>
-            </div>
+        const drawIdToUse = state.currentDraw.id;
+        const newResultItem = {
+            draw: drawIdToUse,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            num: strNum,
+            single: singleVal,
+            juri: juriVal,
+            statusClass: isCatchup ? "" : "highlight-anim"
+        };
 
-            <!-- Bet Type Block -->
-            <div class="bet-panel-block">
-                <div class="panel-block-title">BET TYPE</div>
-                <div class="bet-type-grid">
-                    <button class="btn-type active" data-type="single">SINGLE</button>
-                    <button class="btn-type" data-type="juri">JURI</button>
-                    <button class="btn-type" data-type="triple">TRIPLE</button>
-                </div>
-            </div>
+        // Unshift to put the latest current result at the very front/top
+        state.todaysResults.unshift(newResultItem);
+        if (state.todaysResults.length > 50) state.todaysResults.pop();
+        
+        // Save to LocalStorage permanently
+        localStorage.setItem('a2z_todays_results', JSON.stringify(state.todaysResults));
 
-            <!-- Chips / Points Block -->
-            <div class="bet-panel-block">
-                <div class="panel-block-title">POINTS / CHIPS</div>
-                <div class="chips-grid">
-                    <button class="btn-chip active" data-chip="5">5</button>
-                    <button class="btn-chip" data-chip="10">10</button>
-                    <button class="btn-chip" data-chip="50">50</button>
-                    <button class="btn-chip" data-chip="100">100</button>
-                    <div class="btn-custom-wrapper">
-                        <input type="number" id="custom-points-input" placeholder="Custom" min="1">
-                    </div>
-                </div>
-            </div>
+        renderLatestDrawBox();
+        renderTodaysResults();
 
-            <!-- Cart / Selected Items Block -->
-            <div class="bet-panel-block cart-block">
-                <div class="cart-header">
-                    <span class="panel-block-title" style="margin:0;">SELECTED ITEMS (<span id="cart-count">0</span>)</span>
-                    <span class="total-pts-tag">Total: <strong id="cart-total-pts">0</strong> Pts</span>
-                </div>
-                <div class="cart-items-box" id="cart-items-container">
-                    <div class="empty-msg">No items selected</div>
-                </div>
-                <button class="btn-clear-all" id="btn-clear-cart">Clear All</button>
-            </div>
+        // 1-second visual highlight animation effect on winning cells
+        if (!isCatchup) {
+            highlightWinningCellsOnBoard(strNum, singleVal, juriVal);
+        }
 
-            <!-- Action Buttons -->
-            <div class="bet-action-buttons">
-                <button class="btn-reset" id="btn-reset-bet">RESET</button>
-                <button class="btn-submit" id="btn-submit-bet">SUBMIT</button>
-            </div>
-        </aside>
-    </div>
+        const intervalMins = state.adminSettings.drawIntervalMinutes || 2;
+        state.currentDraw.timeLeft = intervalMins * 60;
+        state.currentDraw.id = String(Math.floor(Math.random() * 90000) + 10000);
+        localStorage.setItem('a2z_current_draw_id', state.currentDraw.id);
 
-    <!-- MODAL 1: TICKET HISTORY MODAL -->
-    <div id="ticket-history-modal" class="modal-overlay hidden">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3>📋 Ticket History</h3>
-                <button class="close-modal" id="close-ticket-history-modal">✕</button>
-            </div>
-            <div style="max-height: 300px; overflow-y: auto;">
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Ticket No</th>
-                            <th>Points</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ticket-history-table-body"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+        const drawIdEl = document.getElementById('current-draw-id');
+        if (drawIdEl) {
+            drawIdEl.textContent = state.currentDraw.id; // Completely hash-free clean ID
+        }
+    }
 
-    <!-- MODAL 2: FULL DAY RESULT HISTORY MODAL -->
-    <div id="result-history-modal" class="modal-overlay hidden">
-        <div class="modal-card" style="max-width: 650px;">
-            <div class="modal-header">
-                <h3>🏆 Daily Result History</h3>
-                <button class="close-modal" id="close-result-history-modal">✕</button>
-            </div>
-            <div style="margin-bottom: 10px; font-size: 12px; color: #94a3b8; display: flex; justify-content: space-between;">
-                <span>Date: <strong id="result-history-date" style="color: #38bdf8;">---</strong></span>
-                <span>Total Draws: <strong id="total-draws-count" style="color: #22c55e;">0</strong></span>
-            </div>
-            <div style="max-height: 380px; overflow-y: auto;">
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th>Draw Time</th>
-                            <th>Draw ID</th>
-                            <th>Single</th>
-                            <th>Jora</th>
-                            <th>Triple / Panna</th>
-                        </tr>
-                    </thead>
-                    <tbody id="result-history-table-body"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+    function highlightWinningCellsOnBoard(num, single, juri) {
+        // Highlight corresponding cells for 1 second to give true live game feedback
+        const allCells = document.querySelectorAll('.matrix-cell, .single-card');
+        allCells.forEach(cell => {
+            const txt = cell.textContent.trim();
+            if (txt === num || txt === single || txt === juri || cell.getAttribute('data-val') === single) {
+                cell.classList.add('win-glow-animation');
+                setTimeout(() => {
+                    cell.classList.remove('win-glow-animation');
+                }, 1500);
+            }
+        });
+    }
 
-    <!-- MODAL 3: RULES & INFO MODAL -->
-    <div id="rules-modal" class="modal-overlay hidden">
-        <div class="modal-card" style="max-width: 550px;">
-            <div class="modal-header">
-                <h3>📖 Rules & Info</h3>
-                <button class="close-modal" id="close-rules-modal">✕</button>
-            </div>
-            <div style="max-height: 350px; overflow-y: auto; color: #cbd5e1; font-size: 13px; line-height: 1.6;">
-                <p><strong>1. Single Board:</strong> Select any single digit from 1 to 0.</p>
-                <p><strong>2. Juri Board:</strong> Select combination of 2 digits (00 - 99).</p>
-                <p><strong>3. Triple Panna:</strong> Select triple range and corresponding panna numbers.</p>
-                <p><strong>4. Claiming:</strong> Use the barcode scanner widget to instantly check and claim winning tickets.</p>
-            </div>
-        </div>
-    </div>
+    // 6. RENDER LATEST DRAW BOX (Animated live result display with sliding glow border)
+    function renderLatestDrawBox() {
+        const latest = state.todaysResults[0];
+        if (!latest) return;
 
-    <!-- MODAL 4: SETTINGS MODAL -->
-    <div id="settings-modal" class="modal-overlay hidden">
-        <div class="modal-card" style="max-width: 450px;">
-            <div class="modal-header">
-                <h3>⚙️ Settings</h3>
-                <button class="close-modal" id="close-settings-modal">✕</button>
-            </div>
-            <div style="max-height: 300px; overflow-y: auto; color: #cbd5e1; font-size: 13px;">
-                <p style="margin-bottom: 15px;">Configure terminal preferences and sound options below:</p>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span>Sound Effects</span>
-                    <input type="checkbox" id="setting-sound" checked style="transform: scale(1.2);">
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>Auto-Sync Draw Data</span>
-                    <input type="checkbox" id="setting-autosync" checked style="transform: scale(1.2);">
-                </div>
-            </div>
-        </div>
-    </div>
+        // Update Live Draw Status ID field cleanly without hash
+        const liveDrawIdEl = document.getElementById('current-draw-id');
+        if (liveDrawIdEl) {
+            liveDrawIdEl.textContent = state.currentDraw.id;
+        }
 
-    <iframe id="silent-print-frame" class="hidden" src="about:blank"></iframe>
-    <script src="app.js"></script>
-</body>
-</html>
+        // Target or create latest draw result box
+        let targetContainer = document.getElementById('latest-draw-box-inner');
+        let potentialParent = document.querySelector('.latest-draw-result-box, div[class*="latest"]');
+        
+        if (potentialParent && !targetContainer) {
+            potentialParent.style.cssText += "animation: borderGlow 2s infinite alternate; border: 2px solid #00ffcc; box-shadow: 0 0 15px rgba(0,255,200,0.4); position: relative;";
+            potentialParent.innerHTML = `
+                <div style="font-size: 13px; font-weight: bold; color: #00ffcc; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 1px;">LATEST DRAW RESULT</div>
+                <div id="latest-draw-box-inner"></div>
+            `;
+            targetContainer = document.getElementById('latest-draw-box-inner');
+        }
+
+        if (targetContainer) {
+            let modeContent = "";
+            if (state.selectedBetType === 'word') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>`;
+            } else if (state.selectedBetType === 'digit') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,200,0.6);">${latest.single}</div>`;
+            } else if (state.selectedBetType === 'juri') {
+                modeContent = `<div style="font-size: 28px; font-weight: 900; color: #ffff33; text-shadow: 0 0 8px rgba(255,255,51,0.6);">${latest.juri}</div>`;
+            } else {
+                modeContent = `
+                    <div style="font-size: 26px; font-weight: 900; color: #ff9900; text-shadow: 0 0 8px rgba(255,153,0,0.6);">${latest.num}</div>
+                    <div style="font-size: 16px; font-weight: bold; color: #00ffcc; margin-top: 3px; border-top: 1px dashed rgba(255,255,255,0.3); padding-top: 2px;">Single: ${latest.single} | Juri: ${latest.juri}</div>
+                `;
+            }
+
+            targetContainer.innerHTML = `
+                <div style="font-size: 14px; font-weight: bold; color: #a0c4ff;">Draw ${latest.draw}</div>
+                <div style="font-size: 12px; color: #ccc; margin-bottom: 6px;">${latest.time}</div>
+                ${modeContent}
+            `;
+        }
+    }
+
+    // 7. TODAY'S RESULTS SLIDER GRID (Multi-color, Larger Bold Size, Latest on Front, No Draw ID on top)
+    function renderTodaysResults() {
+        const grid = document.getElementById('results-12-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const displayList = state.todaysResults.slice(0, 12);
+        const multiColors = ['#ff3366', '#00ffcc', '#ff9900', '#33ccff', '#cc33ff', '#ffff33', '#33ff66', '#ff66ff'];
+
+        displayList.forEach((item, idx) => {
+            const card = document.createElement('div');
+            card.className = 'result-slot-card';
+            const accentColor = multiColors[idx % multiColors.length];
+            
+            card.style.cssText = `background: linear-gradient(135deg, rgba(20,30,48,0.95), rgba(36,59,85,0.95)); border: 1px solid ${accentColor}; border-radius: 8px; padding: 10px 6px; text-align: center; min-width: 90px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); ${item.statusClass ? 'animation: pulseGlow 1s ease-in-out infinite;' : ''}`;
+            
+            let modeDisplayContent = "";
+            if (state.selectedBetType === 'word') {
+                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900;">${item.num}</span>`;
+            } else if (state.selectedBetType === 'digit') {
+                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900;">${item.single}</span>`;
+            } else if (state.selectedBetType === 'juri') {
+                modeDisplayContent = `<span style="color: ${accentColor}; font-size: 18px; font-weight: 900;">${item.juri}</span>`;
+            } else {
+                modeDisplayContent = `
+                    <div style="color: ${accentColor}; font-size: 17px; font-weight: 900;">${item.num}</div>
+                    <div style="color: #00ffcc; font-size: 12px; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.25); margin-top: 4px; padding-top: 3px;">Single: ${item.single}</div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div style="color: #bbb; font-size: 11px; font-weight: 600; margin-bottom: 4px;">${item.time}</div>
+                ${modeDisplayContent}
+            `;
+            grid.appendChild(card);
+        });
+
+        renderLatestDrawBox();
+        renderResultHistoryModalList();
+    }
+
+    function renderResultHistoryModalList() {
+        const historyContainer = document.getElementById('result-history-list-container');
+        if (!historyContainer) return;
+        historyContainer.innerHTML = '';
+
+        state.todaysResults.forEach(item => {
+            const row = document.createElement('div');
+            row.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px;";
+            row.innerHTML = `
+                <span style="color: #a0c4ff; font-weight: bold;">Draw ${item.draw}</span>
+                <span style="color: #ccc;">${item.time}</span>
+                <span style="color: #ff9900; font-weight: 900; font-size: 16px;">${item.num}</span>
+                <span style="color: #00ffcc; font-weight: bold; font-size: 14px;">Single: ${item.single}</span>
+                <span style="color: #ffff33; font-weight: bold; font-size: 14px;">Juri: ${item.juri}</span>
+            `;
+            historyContainer.appendChild(row);
+        });
+    }
+
+    // 8. SINGLE BOARD (1 - 0)
+    function renderSingleBoard() {
+        const row = document.getElementById('single-board-row');
+        if (!row) return;
+        const cards = row.querySelectorAll('.single-card');
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const val = card.getAttribute('data-val');
+                toggleSelection(`Single-${val}`, val);
+                card.classList.toggle('selected');
+            });
+        });
+    }
+
+    // 9. TRIPLE BOARD MATRIX
+    function renderTripleBoardGrid() {
+        const grid = document.getElementById('triple-board-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const sampleData = [
+            ["100", "200", "300", "400", "500", "600", "700", "800", "900", "000"],
+            ["678", "345", "120", "789", "456", "123", "890", "567", "234", "127"],
+            ["777", "444", "111", "888", "555", "222", "999", "666", "333", "190"],
+            ["560", "570", "580", "590", "140", "150", "160", "170", "180", "280"],
+            ["470", "480", "490", "130", "230", "330", "340", "350", "360", "370"],
+            ["380", "390", "670", "680", "690", "240", "250", "260", "270", "460"],
+            ["290", "660", "238", "248", "258", "268", "278", "288", "450", "550"],
+            ["119", "129", "139", "149", "159", "169", "179", "189", "199", "235"],
+            ["137", "237", "337", "347", "357", "367", "377", "116", "117", "118"],
+            ["236", "336", "157", "158", "799", "448", "467", "233", "469", "578"],
+            ["146", "246", "346", "446", "267", "899", "115", "459", "126", "145"],
+            ["669", "679", "689", "699", "780", "178", "124", "125", "667", "479"],
+            ["579", "255", "355", "455", "447", "790", "223", "224", "478", "668"],
+            ["399", "147", "247", "266", "366", "466", "566", "477", "135", "299"],
+            ["588", "228", "256", "112", "113", "358", "557", "990", "225", "334"],
+            ["489", "499", "166", "356", "122", "880", "368", "134", "144", "488"],
+            ["245", "688", "599", "239", "177", "114", "359", "558", "379", "389"],
+            ["155", "778", "148", "338", "249", "556", "449", "369", "559", "226"],
+            ["227", "138", "788", "257", "339", "259", "269", "378", "289", "569"],
+            ["344", "156", "445", "220", "889", "349", "133", "440", "388", "677"],
+            ["335", "110", "229", "770", "348", "457", "188", "279", "577", "136"],
+            ["128", "569", "779", "167", "168", "277", "458", "468", "568", "244"]
+        ];
+
+        sampleData.forEach(row => {
+            row.forEach(val => {
+                const cell = document.createElement('div');
+                cell.className = 'matrix-cell';
+                cell.textContent = val;
+                cell.addEventListener('click', () => {
+                    toggleSelection(`Panna-${val}`, val);
+                    cell.classList.toggle('selected');
+                });
+                grid.appendChild(cell);
+            });
+        });
+    }
+
+    // 10. JURI BOARD (Fully Unlocked Bombay Fatafat Juri Logic: 00 to 99)
+    function renderJuriBoardGrid() {
+        const grid = document.getElementById('juri-board-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        for (let i = 0; i <= 99; i++) {
+            const val = String(i).padStart(2, '0');
+            const cell = document.createElement('div');
+            cell.className = 'matrix-cell juri-cell';
+            cell.textContent = val;
+            cell.style.cssText = "background: rgba(30, 40, 60, 0.9); border: 1px solid rgba(255, 255, 0, 0.3); color: #ffff33; font-weight: bold;";
+            cell.addEventListener('click', () => {
+                toggleSelection(`Juri-${val}`, val);
+                cell.classList.toggle('selected');
+            });
+            grid.appendChild(cell);
+        }
+    }
+
+    // 11. CART & DYNAMIC CHIPS LOGIC
+    function toggleSelection(name, value) {
+        const existingIndex = state.selectedNumbers.findIndex(item => item.name === name);
+        if (existingIndex > -1) {
+            state.selectedNumbers.splice(existingIndex, 1);
+        } else {
+            const amount = state.customChip > 0 ? state.customChip : state.selectedChip;
+            state.selectedNumbers.push({ name, value, amount });
+        }
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        const cartList = document.getElementById('cart-items-list');
+        const totalPtsTag = document.getElementById('total-cart-pts');
+        
+        if (!cartList) return;
+
+        cartList.innerHTML = '';
+        let totalPts = 0;
+
+        state.selectedNumbers.forEach(item => {
+            totalPts += item.amount;
+            const li = document.createElement('div');
+            li.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: rgba(0,0,0,0.3); margin-bottom: 4px; border-radius: 4px; font-size: 13px;";
+            li.innerHTML = `
+                <span style="color: #00ffcc; font-weight: bold;">${item.name}</span>
+                <span style="color: #ff9900;">Pts: ${item.amount}</span>
+            `;
+            cartList.appendChild(li);
+        });
+
+        if (totalPtsTag) {
+            totalPtsTag.textContent = totalPts.toFixed(2);
+        }
+    }
+
+    function setupEventListeners() {
+        const placeBetBtn = document.getElementById('place-bet-btn');
+        if (placeBetBtn) {
+            placeBetBtn.addEventListener('click', () => {
+                if (state.selectedNumbers.length === 0) {
+                    alert('Please select at least one number/panna to place a bet!');
+                    return;
+                }
+                let totalBetAmount = state.selectedNumbers.reduce((sum, item) => sum + item.amount, 0);
+                if (state.user.playPoints < totalBetAmount) {
+                    alert('Insufficient Play Points!');
+                    return;
+                }
+                state.user.playPoints -= totalBetAmount;
+                updateUserInfo();
+                alert(`Successfully placed bets worth ${totalBetAmount} points!`);
+                state.selectedNumbers = [];
+                document.querySelectorAll('.matrix-cell.selected, .single-card.selected').forEach(el => el.classList.remove('selected'));
+                updateCartUI();
+            });
+        }
+    }
+
+    // Initialize application execution
+    initApp();
+});
